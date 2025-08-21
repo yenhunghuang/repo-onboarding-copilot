@@ -1,0 +1,16 @@
+app:
+  name: "repo-onboarding-copilot"
+  version: "1.0.0-test"
+  debug: true
+
+logging:
+  level: "warn"
+  format: "json"
+
+security:
+  max_url_length: 1024
+  allowed_schemes:
+    - "http"
+    - "https"
+    - "git"
+  enable_sanitization: true

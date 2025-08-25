@@ -17,12 +17,12 @@ import (
 
 // CleanupOrchestrator manages automatic cleanup of resources with monitoring and verification
 type CleanupOrchestrator struct {
-	auditLogger     *logger.AuditLogger
-	gitHandler      *GitHandler
-	containerOrch   *ContainerOrchestrator
-	cleanupTasks    []CleanupTask
-	cleanupMutex    sync.RWMutex
-	monitoringChan  chan CleanupResult
+	auditLogger         *logger.AuditLogger
+	gitHandler          *GitHandler
+	containerOrch       *ContainerOrchestrator
+	cleanupTasks        []CleanupTask
+	cleanupMutex        sync.RWMutex
+	monitoringChan      chan CleanupResult
 	verificationEnabled bool
 }
 
@@ -70,12 +70,12 @@ type CleanupResult struct {
 
 // CleanupConfig represents cleanup configuration options
 type CleanupConfig struct {
-	EnableVerification     bool
-	MaxConcurrentCleanups  int
-	CleanupTimeout         time.Duration
-	RetryAttempts          int
-	RetryDelay             time.Duration
-	MonitoringEnabled      bool
+	EnableVerification    bool
+	MaxConcurrentCleanups int
+	CleanupTimeout        time.Duration
+	RetryAttempts         int
+	RetryDelay            time.Duration
+	MonitoringEnabled     bool
 }
 
 // NewCleanupOrchestrator creates a new cleanup orchestrator with secure defaults
@@ -158,7 +158,7 @@ func (co *CleanupOrchestrator) ExecuteCleanup(ctx context.Context) error {
 
 	for _, task := range tasks {
 		result := co.executeCleanupTask(ctx, task)
-		
+
 		if result.Success {
 			successCount++
 			// Remove successful task from pending tasks
@@ -176,10 +176,10 @@ func (co *CleanupOrchestrator) ExecuteCleanup(ctx context.Context) error {
 	}
 
 	co.auditLogger.LogSecurityEvent(logger.SystemCleanup, map[string]interface{}{
-		"operation":      "cleanup_execution_complete",
-		"success_count":  successCount,
-		"failure_count":  failureCount,
-		"total_tasks":    len(tasks),
+		"operation":     "cleanup_execution_complete",
+		"success_count": successCount,
+		"failure_count": failureCount,
+		"total_tasks":   len(tasks),
 	})
 
 	if failureCount > 0 {
@@ -192,7 +192,7 @@ func (co *CleanupOrchestrator) ExecuteCleanup(ctx context.Context) error {
 // executeCleanupTask executes a single cleanup task
 func (co *CleanupOrchestrator) executeCleanupTask(ctx context.Context, task CleanupTask) CleanupResult {
 	startTime := time.Now()
-	
+
 	result := CleanupResult{
 		Task:    task,
 		Details: make(map[string]interface{}),

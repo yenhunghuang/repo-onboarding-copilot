@@ -65,20 +65,20 @@ func CreateTestRepository(t *testing.T, baseDir string) string {
 
 	// Create test files
 	files := map[string]string{
-		"README.md":     "# Test Repository\n\nThis is a test repository for integration testing.",
-		"src/main.go":   "package main\n\nfunc main() {\n\tprintln(\"Hello, World!\")\n}",
-		"src/utils.go":  "package main\n\nfunc utils() {\n\t// Utility functions\n}",
-		"docs/api.md":   "# API Documentation\n\nAPI endpoints and usage.",
-		".gitignore":    "*.log\n*.tmp\nnode_modules/\n",
+		"README.md":    "# Test Repository\n\nThis is a test repository for integration testing.",
+		"src/main.go":  "package main\n\nfunc main() {\n\tprintln(\"Hello, World!\")\n}",
+		"src/utils.go": "package main\n\nfunc utils() {\n\t// Utility functions\n}",
+		"docs/api.md":  "# API Documentation\n\nAPI endpoints and usage.",
+		".gitignore":   "*.log\n*.tmp\nnode_modules/\n",
 	}
 
 	for filePath, content := range files {
 		fullPath := filepath.Join(repoDir, filePath)
 		dir := filepath.Dir(fullPath)
-		
+
 		err = os.MkdirAll(dir, 0755)
 		require.NoError(t, err)
-		
+
 		err = os.WriteFile(fullPath, []byte(content), 0644)
 		require.NoError(t, err)
 	}
@@ -110,10 +110,10 @@ func CreateTestFiles(t *testing.T, baseDir string, files map[string]string) {
 	for filePath, content := range files {
 		fullPath := filepath.Join(baseDir, filePath)
 		dir := filepath.Dir(fullPath)
-		
+
 		err := os.MkdirAll(dir, 0755)
 		require.NoError(t, err)
-		
+
 		err = os.WriteFile(fullPath, []byte(content), 0644)
 		require.NoError(t, err)
 	}
@@ -130,7 +130,7 @@ func VerifyFileExists(t *testing.T, filePath string, expectedContent ...string) 
 	if len(expectedContent) > 0 {
 		content, err := os.ReadFile(filePath)
 		require.NoError(t, err)
-		
+
 		contentStr := string(content)
 		for _, expected := range expectedContent {
 			if !strings.Contains(contentStr, expected) {
@@ -169,14 +169,14 @@ func MeasureExecutionTime(operation func()) time.Duration {
 // WaitForCondition waits for a condition to be true with timeout
 func WaitForCondition(condition func() bool, timeout time.Duration, interval time.Duration) bool {
 	deadline := time.Now().Add(timeout)
-	
+
 	for time.Now().Before(deadline) {
 		if condition() {
 			return true
 		}
 		time.Sleep(interval)
 	}
-	
+
 	return false
 }
 
@@ -197,8 +197,8 @@ func GetSystemInfo() map[string]interface{} {
 	return map[string]interface{}{
 		"docker_available": IsDockerInstalled(),
 		"git_available":    IsGitInstalled(),
-		"temp_dir":        os.TempDir(),
-		"working_dir":     func() string {
+		"temp_dir":         os.TempDir(),
+		"working_dir": func() string {
 			wd, _ := os.Getwd()
 			return wd
 		}(),
@@ -208,12 +208,12 @@ func GetSystemInfo() map[string]interface{} {
 // LogTestEnvironment logs test environment information
 func LogTestEnvironment(t *testing.T, auditLogger *logger.AuditLogger) {
 	sysInfo := GetSystemInfo()
-	
+
 	auditLogger.LogSecurityEvent(logger.SecurityScan, map[string]interface{}{
-		"operation":    "integration_test_environment_setup",
-		"system_info":  sysInfo,
-		"test_name":    t.Name(),
-		"timestamp":    time.Now().Unix(),
+		"operation":   "integration_test_environment_setup",
+		"system_info": sysInfo,
+		"test_name":   t.Name(),
+		"timestamp":   time.Now().Unix(),
 	})
 }
 
@@ -221,15 +221,15 @@ func LogTestEnvironment(t *testing.T, auditLogger *logger.AuditLogger) {
 func CreateMockSecurityViolation(auditLogger *logger.AuditLogger, violationType string, details map[string]interface{}) {
 	violationDetails := map[string]interface{}{
 		"violation_type": violationType,
-		"timestamp":     time.Now().Unix(),
-		"test_mode":     true,
+		"timestamp":      time.Now().Unix(),
+		"test_mode":      true,
 	}
-	
+
 	// Merge additional details
 	for key, value := range details {
 		violationDetails[key] = value
 	}
-	
+
 	auditLogger.LogSecurityEvent(logger.AccessViolation, violationDetails)
 }
 
@@ -246,7 +246,7 @@ func ValidateSecurityConfiguration(t *testing.T, auditLogger *logger.AuditLogger
 			"mode":      mode.String(),
 		})
 	}
-	
+
 	// Check working directory permissions
 	wd, err := os.Getwd()
 	if err == nil {
@@ -276,13 +276,13 @@ func CleanupTestResources(t *testing.T, resources []string) {
 
 // TestConstants contains constants used across integration tests
 var TestConstants = struct {
-	MaxTestDuration     time.Duration
-	DefaultTimeout      time.Duration
-	CleanupTimeout      time.Duration
-	ContainerTimeout    time.Duration
-	GitCloneTimeout     time.Duration
-	MaxMemoryUsage      uint64
-	MaxTempDirSize      int64
+	MaxTestDuration  time.Duration
+	DefaultTimeout   time.Duration
+	CleanupTimeout   time.Duration
+	ContainerTimeout time.Duration
+	GitCloneTimeout  time.Duration
+	MaxMemoryUsage   uint64
+	MaxTempDirSize   int64
 }{
 	MaxTestDuration:  10 * time.Minute,
 	DefaultTimeout:   2 * time.Minute,

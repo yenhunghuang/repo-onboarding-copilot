@@ -42,7 +42,7 @@ func TestNewContainerOrchestrator(t *testing.T) {
 				assert.NoError(t, err)
 				assert.NotNil(t, co)
 				assert.NotNil(t, co.config)
-				
+
 				// Verify default configuration
 				assert.Equal(t, 2, co.config.MemoryLimitGB)
 				assert.Equal(t, "4.0", co.config.CPULimit)
@@ -113,7 +113,7 @@ func TestBuildDockerArgs(t *testing.T) {
 	assert.Contains(t, args, "--memory=2g")
 	assert.Contains(t, args, "--cpus=4.0")
 	assert.Contains(t, args, "--network=none")
-	assert.Contains(t, args, "--user=1000:1000")
+	assert.Contains(t, args, "--user=65534:65534")
 	assert.Contains(t, args, "--workdir=/workspace")
 
 	// Verify security options
@@ -126,12 +126,12 @@ func TestBuildDockerArgs(t *testing.T) {
 
 	// Verify volume mounts
 	assert.Contains(t, args, "-v")
-	
+
 	// Verify tmpfs mounts for read-only containers
 	assert.Contains(t, args, "--tmpfs")
 
 	// Verify image and command
-	assert.Contains(t, args, "alpine:latest")
+	assert.Contains(t, args, "gcr.io/distroless/static-debian12")
 	assert.Contains(t, args, "sleep")
 	assert.Contains(t, args, "3600")
 }
@@ -155,7 +155,7 @@ func TestBuildDockerArgsWithoutReadOnly(t *testing.T) {
 
 	// Should not contain read-only flags
 	assert.NotContains(t, args, "--read-only")
-	
+
 	// Should not contain no-new-privileges if disabled
 	noNewPrivsFound := false
 	for i, arg := range args {
@@ -306,10 +306,10 @@ func TestDefaultContainerConfigValues(t *testing.T) {
 	assert.Equal(t, "none", config.NetworkMode, "Network should be isolated by default")
 	assert.True(t, config.ReadOnly, "Filesystem should be read-only by default")
 	assert.True(t, config.NoNewPrivs, "Privilege escalation should be disabled by default")
-	assert.Equal(t, "alpine:latest", config.Image, "Should use minimal Alpine image by default")
+	assert.Equal(t, "gcr.io/distroless/static-debian12", config.Image, "Should use minimal distroless image by default")
 	assert.Equal(t, "/workspace", config.WorkDir, "Should use standard workspace directory")
 	assert.Equal(t, 1*time.Hour, config.Timeout, "Should have 1-hour timeout by default")
-	assert.Equal(t, "1000:1000", config.User, "Should run as non-root user by default")
+	assert.Equal(t, "65534:65534", config.User, "Should run as nobody user by default")
 }
 
 func TestDockerArgsSecurityCompliance(t *testing.T) {
@@ -327,7 +327,105 @@ func TestDockerArgsSecurityCompliance(t *testing.T) {
 	assert.Contains(t, argsStr, "--pids-limit 100", "Should limit number of processes")
 	assert.Contains(t, argsStr, "--ulimit nofile=1024:1024", "Should limit file descriptors")
 	assert.Contains(t, argsStr, "--network=none", "Should disable network access")
-	assert.Contains(t, argsStr, "--user=1000:1000", "Should run as non-root user")
+	assert.Contains(t, argsStr, "--user=65534:65534", "Should run as non-root user")
 	assert.Contains(t, argsStr, "--read-only", "Should use read-only filesystem")
 	assert.Contains(t, argsStr, "--tmpfs /tmp:noexec,nosuid", "Should provide secure temporary space")
+}
+
+func TestEnhancedSecurityConfiguration(t *testing.T) {
+	auditLogger := logger.New()
+	co, err := NewContainerOrchestrator(auditLogger)
+	require.NoError(t, err)
+
+	config := co.GetConfig()
+
+	// Verify enhanced security defaults
+	assert.Equal(t, "distroless", config.BaseImageType, "Should default to distroless base image")
+	assert.Equal(t, "gcr.io/distroless/static-debian12", config.Image, "Should use distroless static image")
+	assert.Equal(t, "65534:65534", config.User, "Should use nobody user for enhanced security")
+	assert.Equal(t, "default", config.SeccompProfile, "Should use default seccomp profile")
+	assert.Equal(t, "docker-default", config.ApparmorProfile, "Should use docker-default AppArmor profile")
+	assert.True(t, config.UserNS, "Should enable user namespace isolation")
+}
+
+func TestSetBaseImage(t *testing.T) {
+	auditLogger := logger.New()
+	co, err := NewContainerOrchestrator(auditLogger)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name          string
+		imageType     string
+		expectedImage string
+		wantErr       bool
+	}{
+		{
+			name:          "distroless image",
+			imageType:     "distroless",
+			expectedImage: "gcr.io/distroless/static-debian12",
+			wantErr:       false,
+		},
+		{
+			name:          "scratch image",
+			imageType:     "scratch",
+			expectedImage: "scratch",
+			wantErr:       false,
+		},
+		{
+			name:          "alpine image",
+			imageType:     "alpine",
+			expectedImage: "alpine:3.19",
+			wantErr:       false,
+		},
+		{
+			name:          "unsupported image",
+			imageType:     "ubuntu",
+			expectedImage: "",
+			wantErr:       true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := co.SetBaseImage(tt.imageType)
+			if tt.wantErr {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), "unsupported base image type")
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedImage, co.GetConfig().Image)
+				assert.Equal(t, tt.imageType, co.GetConfig().BaseImageType)
+			}
+		})
+	}
+}
+
+func TestValidateSecurityConfiguration(t *testing.T) {
+	auditLogger := logger.New()
+
+	t.Run("secure configuration passes validation", func(t *testing.T) {
+		co, err := NewContainerOrchestrator(auditLogger)
+		require.NoError(t, err)
+
+		err = co.ValidateSecurityConfiguration()
+		assert.NoError(t, err, "Secure configuration should pass validation")
+	})
+
+	t.Run("insecure configuration fails validation", func(t *testing.T) {
+		co, err := NewContainerOrchestrator(auditLogger)
+		require.NoError(t, err)
+
+		// Configure insecure settings
+		config := co.GetConfig()
+		config.User = "root"
+		config.SeccompProfile = "unconfined"
+		config.ApparmorProfile = "unconfined"
+		co.SetConfig(config)
+
+		err = co.ValidateSecurityConfiguration()
+		assert.Error(t, err, "Insecure configuration should fail validation")
+		assert.Contains(t, err.Error(), "running as root user poses security risk")
+		assert.Contains(t, err.Error(), "seccomp disabled")
+		assert.Contains(t, err.Error(), "apparmor disabled")
+	})
 }

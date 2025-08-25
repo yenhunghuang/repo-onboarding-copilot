@@ -87,11 +87,11 @@ func TestTrimWhitespace(t *testing.T) {
 func TestFormatError(t *testing.T) {
 	originalErr := errors.New("original error")
 	formattedErr := FormatError("operation failed", originalErr)
-	
+
 	assert.Error(t, formattedErr)
 	assert.Contains(t, formattedErr.Error(), "operation failed")
 	assert.Contains(t, formattedErr.Error(), "original error")
-	
+
 	// Test that it wraps the original error
 	assert.ErrorIs(t, formattedErr, originalErr)
 }

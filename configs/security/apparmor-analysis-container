@@ -1,0 +1,108 @@
+#include <tunables/global>
+
+profile analysis-container flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Deny dangerous capabilities
+  deny capability sys_admin,
+  deny capability sys_boot,
+  deny capability sys_module,
+  deny capability sys_rawio,
+  deny capability sys_time,
+  deny capability sys_ptrace,
+  deny capability mac_admin,
+  deny capability mac_override,
+  deny capability sys_chroot,
+
+  # Allow basic capabilities needed for analysis
+  capability chown,
+  capability dac_override,
+  capability fowner,
+  capability fsetid,
+  capability kill,
+  capability setgid,
+  capability setuid,
+  capability net_bind_service,
+  capability sys_chroot,
+  capability mknod,
+  capability audit_write,
+  capability setfcap,
+
+  # Deny access to sensitive system areas
+  deny /proc/sys/** w,
+  deny /sys/** w,
+  deny /etc/shadow r,
+  deny /etc/passwd w,
+  deny /etc/group w,
+  deny /etc/sudoers* rw,
+  deny /root/** rw,
+  deny /home/*/.ssh/** rw,
+
+  # Allow read access to analysis workspace
+  /workspace/** r,
+  /tmp/** rw,
+  /workspace/tmp/** rw,
+
+  # Allow necessary system binaries (for distroless/scratch might be limited)
+  /bin/* rix,
+  /sbin/* rix,
+  /usr/bin/* rix,
+  /usr/sbin/* rix,
+  /usr/local/bin/* rix,
+
+  # Allow access to standard libraries
+  /lib/** mr,
+  /lib64/** mr,
+  /usr/lib/** mr,
+
+  # Allow basic system access
+  /etc/ld.so.cache r,
+  /etc/nsswitch.conf r,
+  /etc/passwd r,
+  /etc/group r,
+  /etc/hostname r,
+  /etc/hosts r,
+  /etc/localtime r,
+  /etc/timezone r,
+
+  # Proc filesystem - limited access
+  /proc/cpuinfo r,
+  /proc/meminfo r,
+  /proc/stat r,
+  /proc/uptime r,
+  /proc/version r,
+  /proc/sys/kernel/hostname r,
+  /proc/loadavg r,
+  /proc/self/stat r,
+  /proc/self/status r,
+  /proc/self/cmdline r,
+  /proc/self/environ r,
+
+  # Dev filesystem - minimal access
+  /dev/null rw,
+  /dev/zero rw,
+  /dev/full rw,
+  /dev/random r,
+  /dev/urandom r,
+  /dev/tty rw,
+  /dev/stdin r,
+  /dev/stdout w,
+  /dev/stderr w,
+
+  # Deny network access (analysis should be offline)
+  deny network,
+
+  # Deny mount operations
+  deny mount,
+  deny umount,
+
+  # Deny ptrace
+  deny ptrace,
+
+  # Deny raw socket access
+  deny capability net_raw,
+
+  # Signal access
+  signal (receive) peer=unconfined,
+  signal (send) peer=analysis-container,
+}

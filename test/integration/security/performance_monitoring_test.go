@@ -16,13 +16,13 @@ import (
 
 // PerformanceMetrics represents performance measurement data
 type PerformanceMetrics struct {
-	Duration       time.Duration
-	MemoryBefore   runtime.MemStats
-	MemoryAfter    runtime.MemStats
-	MemoryUsed     uint64
-	Timestamp      time.Time
-	Operation      string
-	Success        bool
+	Duration           time.Duration
+	MemoryBefore       runtime.MemStats
+	MemoryAfter        runtime.MemStats
+	MemoryUsed         uint64
+	Timestamp          time.Time
+	Operation          string
+	Success            bool
 	ResourcesCleanedUp bool
 }
 
@@ -71,30 +71,30 @@ func testGitHandlerPerformance(t *testing.T, basicLogger *logger.Logger, auditLo
 		// Try to clone a small repository for performance testing
 		// Use a very small repository to minimize test time
 		testRepoURL := "https://github.com/octocat/Hello-World.git"
-		
+
 		result, err := gitHandler.CloneRepository(ctx, testRepoURL)
 		if err != nil {
 			t.Logf("Git clone failed (expected in CI/network-limited environments): %v", err)
 			return false
 		}
-		
+
 		// Verify basic clone result
 		if result != nil {
 			assert.NotEmpty(t, result.LocalPath)
 			assert.Greater(t, result.RepoSize, int64(0))
 			assert.Greater(t, result.CloneDuration, time.Duration(0))
 		}
-		
+
 		return true
 	})
 
 	// Log performance metrics
 	auditLogger.LogSecurityEvent(logger.SystemCleanup, map[string]interface{}{
-		"operation":           "git_handler_performance_test",
-		"duration_ms":         metrics.Duration.Milliseconds(),
-		"memory_used_bytes":   metrics.MemoryUsed,
-		"success":            metrics.Success,
-		"resources_cleaned":  metrics.ResourcesCleanedUp,
+		"operation":         "git_handler_performance_test",
+		"duration_ms":       metrics.Duration.Milliseconds(),
+		"memory_used_bytes": metrics.MemoryUsed,
+		"success":           metrics.Success,
+		"resources_cleaned": metrics.ResourcesCleanedUp,
 	})
 
 	// Performance assertions
@@ -147,11 +147,11 @@ func testContainerOrchestrationPerformance(t *testing.T, basicLogger *logger.Log
 
 	// Log performance metrics
 	auditLogger.LogSecurityEvent(logger.ContainerCreate, map[string]interface{}{
-		"operation":           "container_orchestration_performance_test",
-		"duration_ms":         metrics.Duration.Milliseconds(),
-		"memory_used_bytes":   metrics.MemoryUsed,
-		"success":            metrics.Success,
-		"container_id":       containerID,
+		"operation":         "container_orchestration_performance_test",
+		"duration_ms":       metrics.Duration.Milliseconds(),
+		"memory_used_bytes": metrics.MemoryUsed,
+		"success":           metrics.Success,
+		"container_id":      containerID,
 	})
 
 	// Performance assertions
@@ -159,10 +159,10 @@ func testContainerOrchestrationPerformance(t *testing.T, basicLogger *logger.Log
 		// Container creation should complete within reasonable time
 		assert.Less(t, metrics.Duration, 60*time.Second, "Container creation should complete within 60 seconds")
 		assert.NotEmpty(t, containerID)
-		
+
 		// Verify container was created successfully
 		assert.NotEmpty(t, containerID)
-		
+
 		t.Logf("Container orchestration performance: %v, Memory used: %d bytes", metrics.Duration, metrics.MemoryUsed)
 	} else {
 		t.Log("Container creation test failed - performance metrics collected for analysis")
@@ -183,17 +183,17 @@ func testCleanupOrchestrationPerformance(t *testing.T, auditLogger *logger.Audit
 	// Create test resources for cleanup
 	numTestResources := 5
 	testDirs := make([]string, numTestResources)
-	
+
 	for i := 0; i < numTestResources; i++ {
 		tempDir, err := os.MkdirTemp("", "cleanup-perf-test-*")
 		require.NoError(t, err)
 		testDirs[i] = tempDir
-		
+
 		// Create test file in each directory
 		testFile := tempDir + "/test.txt"
 		err = os.WriteFile(testFile, []byte("cleanup performance test"), 0644)
 		require.NoError(t, err)
-		
+
 		// Add cleanup task
 		cleanupTask := sandbox.CleanupTask{
 			ResourceType: sandbox.ResourceTypeTempDir,
@@ -211,7 +211,7 @@ func testCleanupOrchestrationPerformance(t *testing.T, auditLogger *logger.Audit
 			t.Logf("Cleanup execution error: %v", err)
 			return false
 		}
-		
+
 		// Verify resources were cleaned up
 		for _, dir := range testDirs {
 			if _, err := os.Stat(dir); !os.IsNotExist(err) {
@@ -219,23 +219,23 @@ func testCleanupOrchestrationPerformance(t *testing.T, auditLogger *logger.Audit
 				return false
 			}
 		}
-		
+
 		return true
 	})
 
 	// Log performance metrics
 	auditLogger.LogSecurityEvent(logger.SystemCleanup, map[string]interface{}{
-		"operation":           "cleanup_orchestration_performance_test",
-		"duration_ms":         metrics.Duration.Milliseconds(),
-		"memory_used_bytes":   metrics.MemoryUsed,
-		"resources_cleaned":   numTestResources,
-		"success":            metrics.Success,
+		"operation":         "cleanup_orchestration_performance_test",
+		"duration_ms":       metrics.Duration.Milliseconds(),
+		"memory_used_bytes": metrics.MemoryUsed,
+		"resources_cleaned": numTestResources,
+		"success":           metrics.Success,
 	})
 
 	// Performance assertions
 	assert.True(t, metrics.Success, "Cleanup orchestration should succeed")
 	assert.Less(t, metrics.Duration, 10*time.Second, "Cleanup should complete quickly")
-	
+
 	// Verify no pending tasks remain
 	pendingTasks := cleanupOrch.GetPendingTasks()
 	assert.Equal(t, 0, len(pendingTasks), "All cleanup tasks should be completed")
@@ -280,14 +280,14 @@ func testResourceUtilizationMonitoring(t *testing.T, basicLogger *logger.Logger,
 
 	// Log resource utilization metrics
 	auditLogger.LogSecurityEvent(logger.ResourceLimit, map[string]interface{}{
-		"operation":                "resource_utilization_monitoring",
-		"initial_memory_bytes":     initialMem.Sys,
-		"post_init_memory_bytes":   postInitMem.Sys,
-		"post_gc_memory_bytes":     postGCMem.Sys,
-		"init_memory_usage_bytes":  initMemoryUsage,
+		"operation":                  "resource_utilization_monitoring",
+		"initial_memory_bytes":       initialMem.Sys,
+		"post_init_memory_bytes":     postInitMem.Sys,
+		"post_gc_memory_bytes":       postGCMem.Sys,
+		"init_memory_usage_bytes":    initMemoryUsage,
 		"post_gc_memory_usage_bytes": postGCMemoryUsage,
-		"goroutines":              runtime.NumGoroutine(),
-		"gc_cycles":               postGCMem.NumGC - initialMem.NumGC,
+		"goroutines":                 runtime.NumGoroutine(),
+		"gc_cycles":                  postGCMem.NumGC - initialMem.NumGC,
 	})
 
 	// Resource utilization assertions
@@ -302,26 +302,26 @@ func testResourceUtilizationMonitoring(t *testing.T, basicLogger *logger.Logger,
 // measurePerformance measures performance metrics for a given operation
 func measurePerformance(operationName string, operation func() bool) PerformanceMetrics {
 	var memBefore, memAfter runtime.MemStats
-	
+
 	// Force GC and measure memory before operation
 	runtime.GC()
 	runtime.ReadMemStats(&memBefore)
-	
+
 	// Measure operation time
 	startTime := time.Now()
 	success := operation()
 	duration := time.Since(startTime)
-	
+
 	// Force GC and measure memory after operation
 	runtime.GC()
 	runtime.ReadMemStats(&memAfter)
-	
+
 	// Calculate memory usage
 	memoryUsed := memAfter.TotalAlloc - memBefore.TotalAlloc
 	if memAfter.Sys > memBefore.Sys {
 		memoryUsed = memAfter.Sys - memBefore.Sys
 	}
-	
+
 	return PerformanceMetrics{
 		Duration:           duration,
 		MemoryBefore:       memBefore,
@@ -373,23 +373,23 @@ func testMemoryLeakDetection(t *testing.T, basicLogger *logger.Logger, auditLogg
 		// Create and cleanup Cleanup orchestrator
 		cleanupOrch, err := sandbox.NewCleanupOrchestrator(auditLogger)
 		require.NoError(t, err)
-		
+
 		// Add and execute some cleanup tasks
 		tempDir, err := os.MkdirTemp("", "leak-test-*")
 		require.NoError(t, err)
-		
+
 		cleanupTask := sandbox.CleanupTask{
 			ResourceType: sandbox.ResourceTypeTempDir,
 			ResourceID:   "leak-test",
 			Path:         tempDir,
 			Priority:     sandbox.PriorityHigh,
 		}
-		
+
 		cleanupOrch.AddCleanupTask(cleanupTask)
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		_ = cleanupOrch.ExecuteCleanup(ctx)
 		cancel()
-		
+
 		// Force garbage collection between iterations
 		runtime.GC()
 	}
@@ -405,19 +405,19 @@ func testMemoryLeakDetection(t *testing.T, basicLogger *logger.Logger, auditLogg
 
 	// Log memory leak detection results
 	auditLogger.LogSecurityEvent(logger.SystemCleanup, map[string]interface{}{
-		"operation":           "memory_leak_detection",
-		"iterations":          numIterations,
-		"initial_memory_sys":  initialMem.Sys,
-		"final_memory_sys":    finalMem.Sys,
-		"memory_growth_sys":   memoryGrowth,
-		"alloc_growth":        allocGrowth,
+		"operation":          "memory_leak_detection",
+		"iterations":         numIterations,
+		"initial_memory_sys": initialMem.Sys,
+		"final_memory_sys":   finalMem.Sys,
+		"memory_growth_sys":  memoryGrowth,
+		"alloc_growth":       allocGrowth,
 		"gc_cycles":          finalMem.NumGC - initialMem.NumGC,
 	})
 
 	// Memory leak assertions
 	// Allow for some memory growth, but it should be reasonable
 	maxAllowedGrowth := uint64(50 * 1024 * 1024) // 50MB
-	assert.Less(t, memoryGrowth, maxAllowedGrowth, 
+	assert.Less(t, memoryGrowth, maxAllowedGrowth,
 		"Memory growth should be less than %d bytes over %d iterations", maxAllowedGrowth, numIterations)
 
 	t.Logf("Memory leak detection completed - Growth: %d bytes over %d iterations", memoryGrowth, numIterations)
@@ -447,10 +447,10 @@ func testFileHandleLeakDetection(t *testing.T, basicLogger *logger.Logger, audit
 
 	// Log file handle leak detection results
 	auditLogger.LogSecurityEvent(logger.SystemCleanup, map[string]interface{}{
-		"operation":   "file_handle_leak_detection",
-		"iterations":  numIterations,
+		"operation":           "file_handle_leak_detection",
+		"iterations":          numIterations,
 		"files_per_iteration": 5,
-		"message":     "File handle leak detection completed - no obvious leaks detected",
+		"message":             "File handle leak detection completed - no obvious leaks detected",
 	})
 
 	t.Log("File handle leak detection completed - no obvious leaks detected")

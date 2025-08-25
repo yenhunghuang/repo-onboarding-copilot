@@ -13,18 +13,18 @@ import (
 // AuditLogger provides security-focused logging with enhanced capabilities
 type AuditLogger struct {
 	*Logger
-	logRotation    LogRotationConfig
-	sensitiveKeys  []string
-	auditFile      *os.File
-	enableFileLog  bool
+	logRotation   LogRotationConfig
+	sensitiveKeys []string
+	auditFile     *os.File
+	enableFileLog bool
 }
 
 // LogRotationConfig represents log rotation configuration
 type LogRotationConfig struct {
-	MaxFileSize   int64         // Maximum file size in bytes before rotation
-	MaxFiles      int           // Maximum number of log files to keep
-	RotateDaily   bool          // Whether to rotate logs daily
-	LogDirectory  string        // Directory to store audit logs
+	MaxFileSize  int64  // Maximum file size in bytes before rotation
+	MaxFiles     int    // Maximum number of log files to keep
+	RotateDaily  bool   // Whether to rotate logs daily
+	LogDirectory string // Directory to store audit logs
 }
 
 // SecurityEvent represents different types of security events
@@ -33,31 +33,31 @@ type SecurityEvent string
 const (
 	// Git operations
 	GitCloneStart   SecurityEvent = "git_clone_start"
-	GitCloneSuccess SecurityEvent = "git_clone_success" 
+	GitCloneSuccess SecurityEvent = "git_clone_success"
 	GitCloneFailure SecurityEvent = "git_clone_failure"
-	
+
 	// Container operations
 	ContainerCreate SecurityEvent = "container_create"
 	ContainerStart  SecurityEvent = "container_start"
 	ContainerStop   SecurityEvent = "container_stop"
 	ContainerExec   SecurityEvent = "container_exec"
 	ContainerFail   SecurityEvent = "container_fail"
-	
+
 	// Security events
 	SecurityScan    SecurityEvent = "security_scan"
 	AccessViolation SecurityEvent = "access_violation"
 	AuthFailure     SecurityEvent = "auth_failure"
-	
+
 	// System events
-	SystemCleanup   SecurityEvent = "system_cleanup"
-	ResourceLimit   SecurityEvent = "resource_limit"
-	ValidationFail  SecurityEvent = "validation_fail"
+	SystemCleanup  SecurityEvent = "system_cleanup"
+	ResourceLimit  SecurityEvent = "resource_limit"
+	ValidationFail SecurityEvent = "validation_fail"
 )
 
 // NewAuditLogger creates a new audit logger with enhanced security features
 func NewAuditLogger() (*AuditLogger, error) {
 	baseLogger := New()
-	
+
 	// Default log rotation configuration
 	rotationConfig := LogRotationConfig{
 		MaxFileSize:  100 * 1024 * 1024, // 100MB
@@ -65,20 +65,20 @@ func NewAuditLogger() (*AuditLogger, error) {
 		RotateDaily:  true,
 		LogDirectory: "logs/audit",
 	}
-	
+
 	// Sensitive keys that should be redacted in logs
 	sensitiveKeys := []string{
 		"password", "token", "key", "secret", "credential",
 		"auth", "bearer", "api_key", "access_token", "refresh_token",
 	}
-	
+
 	auditLogger := &AuditLogger{
-		Logger:         baseLogger,
-		logRotation:    rotationConfig,
-		sensitiveKeys:  sensitiveKeys,
-		enableFileLog:  false,
+		Logger:        baseLogger,
+		logRotation:   rotationConfig,
+		sensitiveKeys: sensitiveKeys,
+		enableFileLog: false,
 	}
-	
+
 	return auditLogger, nil
 }
 
@@ -88,15 +88,15 @@ func NewAuditLoggerWithFile(logDir string) (*AuditLogger, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Update log directory
 	auditLogger.logRotation.LogDirectory = logDir
-	
+
 	// Enable file logging
 	if err := auditLogger.enableFileLogging(); err != nil {
 		return nil, fmt.Errorf("failed to enable file logging: %w", err)
 	}
-	
+
 	return auditLogger, nil
 }
 
@@ -106,22 +106,22 @@ func (al *AuditLogger) enableFileLogging() error {
 	if err := os.MkdirAll(al.logRotation.LogDirectory, 0750); err != nil {
 		return fmt.Errorf("failed to create log directory: %w", err)
 	}
-	
+
 	// Create audit log file
-	logPath := filepath.Join(al.logRotation.LogDirectory, 
+	logPath := filepath.Join(al.logRotation.LogDirectory,
 		fmt.Sprintf("audit-%s.log", time.Now().Format("2006-01-02")))
-	
+
 	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0640)
 	if err != nil {
 		return fmt.Errorf("failed to open audit log file: %w", err)
 	}
-	
+
 	al.auditFile = file
 	al.enableFileLog = true
-	
+
 	// Set logger to write to both stdout and file
 	al.Logger.SetOutput(file)
-	
+
 	return nil
 }
 
@@ -129,7 +129,7 @@ func (al *AuditLogger) enableFileLogging() error {
 func (al *AuditLogger) LogSecurityEvent(event SecurityEvent, fields map[string]interface{}) {
 	// Sanitize sensitive information
 	sanitizedFields := al.sanitizeFields(fields)
-	
+
 	// Add standard audit fields
 	auditFields := map[string]interface{}{
 		"audit_event": string(event),
@@ -137,12 +137,12 @@ func (al *AuditLogger) LogSecurityEvent(event SecurityEvent, fields map[string]i
 		"source":      "repo-onboarding-copilot",
 		"version":     "1.0.0",
 	}
-	
+
 	// Merge with provided fields
 	for k, v := range sanitizedFields {
 		auditFields[k] = v
 	}
-	
+
 	// Log based on event severity
 	switch event {
 	case GitCloneFailure, ContainerFail, AccessViolation, AuthFailure, ValidationFail:
@@ -152,7 +152,7 @@ func (al *AuditLogger) LogSecurityEvent(event SecurityEvent, fields map[string]i
 	default:
 		al.WithFields(auditFields).Info("Security event occurred")
 	}
-	
+
 	// Check for log rotation if file logging is enabled
 	if al.enableFileLog {
 		al.checkLogRotation()
@@ -162,13 +162,13 @@ func (al *AuditLogger) LogSecurityEvent(event SecurityEvent, fields map[string]i
 // LogAccessPattern logs repository access patterns for security monitoring
 func (al *AuditLogger) LogAccessPattern(repoURL string, accessType string, userAgent string, success bool) {
 	fields := map[string]interface{}{
-		"repo_url":     al.sanitizeURL(repoURL),
-		"access_type":  accessType,
-		"user_agent":   userAgent,
-		"success":      success,
-		"client_ip":    "localhost", // Could be enhanced to capture real IP
+		"repo_url":    al.sanitizeURL(repoURL),
+		"access_type": accessType,
+		"user_agent":  userAgent,
+		"success":     success,
+		"client_ip":   "localhost", // Could be enhanced to capture real IP
 	}
-	
+
 	if success {
 		al.LogSecurityEvent(GitCloneSuccess, fields)
 	} else {
@@ -183,12 +183,12 @@ func (al *AuditLogger) LogContainerActivity(containerID string, action string, r
 		"action":       action,
 		"result":       result,
 	}
-	
+
 	// Add metadata if provided
 	for k, v := range metadata {
 		fields[k] = v
 	}
-	
+
 	var event SecurityEvent
 	switch action {
 	case "create":
@@ -202,7 +202,7 @@ func (al *AuditLogger) LogContainerActivity(containerID string, action string, r
 	default:
 		event = ContainerFail
 	}
-	
+
 	al.LogSecurityEvent(event, fields)
 }
 
@@ -213,22 +213,22 @@ func (al *AuditLogger) LogCleanupActivity(resourceType string, resourceID string
 		"resource_id":   resourceID,
 		"success":       success,
 	}
-	
+
 	// Add additional details
 	for k, v := range details {
 		fields[k] = v
 	}
-	
+
 	al.LogSecurityEvent(SystemCleanup, fields)
 }
 
 // sanitizeFields removes or redacts sensitive information from log fields
 func (al *AuditLogger) sanitizeFields(fields map[string]interface{}) map[string]interface{} {
 	sanitized := make(map[string]interface{})
-	
+
 	for key, value := range fields {
 		keyLower := strings.ToLower(key)
-		
+
 		// Check if key contains sensitive information
 		isSensitive := false
 		for _, sensitiveKey := range al.sensitiveKeys {
@@ -237,7 +237,7 @@ func (al *AuditLogger) sanitizeFields(fields map[string]interface{}) map[string]
 				break
 			}
 		}
-		
+
 		if isSensitive {
 			sanitized[key] = "[REDACTED]"
 		} else {
@@ -249,21 +249,21 @@ func (al *AuditLogger) sanitizeFields(fields map[string]interface{}) map[string]
 			}
 		}
 	}
-	
+
 	return sanitized
 }
 
 // sanitizeStringValue sanitizes string values to remove sensitive information
 func (al *AuditLogger) sanitizeStringValue(value string) string {
 	valueLower := strings.ToLower(value)
-	
+
 	// Check for common sensitive patterns
 	for _, sensitiveKey := range al.sensitiveKeys {
 		if strings.Contains(valueLower, sensitiveKey) {
 			return "[REDACTED SENSITIVE CONTENT]"
 		}
 	}
-	
+
 	return value
 }
 
@@ -287,7 +287,7 @@ func (al *AuditLogger) checkLogRotation() {
 	if !al.enableFileLog || al.auditFile == nil {
 		return
 	}
-	
+
 	// Get current file info
 	fileInfo, err := al.auditFile.Stat()
 	if err != nil {
@@ -296,12 +296,12 @@ func (al *AuditLogger) checkLogRotation() {
 		}).Error("Failed to get audit log file info")
 		return
 	}
-	
+
 	// Check if rotation is needed based on file size
 	if fileInfo.Size() >= al.logRotation.MaxFileSize {
 		al.rotateLogFile()
 	}
-	
+
 	// Check if daily rotation is needed
 	if al.logRotation.RotateDaily {
 		today := time.Now().Format("2006-01-02")
@@ -316,20 +316,20 @@ func (al *AuditLogger) rotateLogFile() {
 	if al.auditFile != nil {
 		al.auditFile.Close()
 	}
-	
+
 	// Create new log file with current timestamp
 	logPath := filepath.Join(al.logRotation.LogDirectory,
 		fmt.Sprintf("audit-%s.log", time.Now().Format("2006-01-02-150405")))
-	
+
 	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0640)
 	if err != nil {
 		al.Error("Failed to create new audit log file: " + err.Error())
 		return
 	}
-	
+
 	al.auditFile = file
 	al.Logger.SetOutput(file)
-	
+
 	// Clean up old log files
 	al.cleanupOldLogFiles()
 }
@@ -341,7 +341,7 @@ func (al *AuditLogger) cleanupOldLogFiles() {
 		al.Error("Failed to list audit log files: " + err.Error())
 		return
 	}
-	
+
 	// If we have more files than MaxFiles, remove the oldest
 	if len(files) > al.logRotation.MaxFiles {
 		// Sort files by modification time (oldest first)

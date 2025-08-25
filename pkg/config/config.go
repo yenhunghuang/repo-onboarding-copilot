@@ -28,9 +28,9 @@ type Config struct {
 
 	// Security settings
 	Security struct {
-		MaxURLLength    int      `yaml:"max_url_length"`
-		AllowedSchemes  []string `yaml:"allowed_schemes"`
-		EnableSanitization bool  `yaml:"enable_sanitization"`
+		MaxURLLength       int      `yaml:"max_url_length"`
+		AllowedSchemes     []string `yaml:"allowed_schemes"`
+		EnableSanitization bool     `yaml:"enable_sanitization"`
 	} `yaml:"security"`
 }
 
@@ -71,10 +71,10 @@ func (c *Config) setDefaults() {
 	c.App.Name = "repo-onboarding-copilot"
 	c.App.Version = "1.0.0"
 	c.App.Debug = false
-	
+
 	c.Logging.Level = "info"
 	c.Logging.Format = "json"
-	
+
 	c.Security.MaxURLLength = 2048
 	c.Security.AllowedSchemes = []string{"http", "https", "git", "ssh"}
 	c.Security.EnableSanitization = true
@@ -85,19 +85,19 @@ func (c *Config) Validate() error {
 	if c.App.Name == "" {
 		return fmt.Errorf("app.name cannot be empty")
 	}
-	
+
 	if c.Security.MaxURLLength <= 0 {
 		return fmt.Errorf("security.max_url_length must be positive")
 	}
-	
+
 	if len(c.Security.AllowedSchemes) == 0 {
 		return fmt.Errorf("security.allowed_schemes cannot be empty")
 	}
-	
+
 	validLevels := map[string]bool{"debug": true, "info": true, "warn": true, "error": true}
 	if !validLevels[c.Logging.Level] {
 		return fmt.Errorf("invalid logging level: %s", c.Logging.Level)
 	}
-	
+
 	return nil
 }

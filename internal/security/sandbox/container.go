@@ -17,19 +17,26 @@ type ContainerConfig struct {
 	// Resource limits
 	MemoryLimitGB int    // Memory limit in GB (default: 2)
 	CPULimit      string // CPU limit (default: "4.0")
-	
+
 	// Security settings
-	NetworkMode   string // Network mode (default: "none" for isolation)
-	ReadOnly      bool   // Read-only filesystem (default: true)
-	NoNewPrivs    bool   // Disable privilege escalation (default: true)
-	
+	NetworkMode string // Network mode (default: "none" for isolation)
+	ReadOnly    bool   // Read-only filesystem (default: true)
+	NoNewPrivs  bool   // Disable privilege escalation (default: true)
+
+	// Enhanced security settings
+	UserNSMode      string // User namespace mode for isolation
+	SeccompProfile  string // Seccomp profile path for syscall filtering
+	ApparmorProfile string // AppArmor profile name for additional restrictions
+	BaseImageType   string // Base image type: "distroless", "scratch", "alpine"
+
 	// Container settings
-	Image         string        // Base image (default: "alpine:latest")
-	WorkDir       string        // Working directory inside container
-	Timeout       time.Duration // Container execution timeout
-	
+	Image   string        // Base image (default: "gcr.io/distroless/static-debian12")
+	WorkDir string        // Working directory inside container
+	Timeout time.Duration // Container execution timeout
+
 	// User settings
-	User          string        // Non-root user (default: "1000:1000")
+	User   string // Non-root user (default: "65534:65534" - nobody user)
+	UserNS bool   // Enable user namespace isolation
 }
 
 // ContainerOrchestrator manages secure Docker container operations
@@ -60,10 +67,19 @@ func NewContainerOrchestrator(auditLogger *logger.Logger) (*ContainerOrchestrato
 		NetworkMode:   "none", // Complete network isolation
 		ReadOnly:      true,
 		NoNewPrivs:    true,
-		Image:         "alpine:latest",
-		WorkDir:       "/workspace",
-		Timeout:       1 * time.Hour, // 1-hour execution limit
-		User:          "1000:1000",   // Non-root user
+
+		// Enhanced security settings
+		UserNSMode:      "host",           // Will be updated to isolated mode when supported
+		SeccompProfile:  "default",        // Use Docker's default seccomp profile
+		ApparmorProfile: "docker-default", // Use Docker's default AppArmor profile
+		BaseImageType:   "distroless",
+
+		// Distroless static image for minimal attack surface
+		Image:   "gcr.io/distroless/static-debian12",
+		WorkDir: "/workspace",
+		Timeout: 1 * time.Hour, // 1-hour execution limit
+		User:    "65534:65534", // nobody user for enhanced security
+		UserNS:  true,          // Enable user namespace isolation
 	}
 
 	return &ContainerOrchestrator{
@@ -110,20 +126,20 @@ func (co *ContainerOrchestrator) CreateSecureContainer(ctx context.Context, volu
 	// Execute docker run command
 	cmd := exec.CommandContext(ctx, "docker", args...)
 	output, err := cmd.CombinedOutput()
-	
+
 	if err != nil {
 		co.auditLogger.WithFields(map[string]interface{}{
-			"operation":        "container_creation_failure",
-			"error":           err.Error(),
-			"docker_output":   sanitizeDockerOutput(string(output)),
-			"execution_time":  time.Since(startTime).Seconds(),
-			"timestamp":       time.Now().Unix(),
+			"operation":      "container_creation_failure",
+			"error":          err.Error(),
+			"docker_output":  sanitizeDockerOutput(string(output)),
+			"execution_time": time.Since(startTime).Seconds(),
+			"timestamp":      time.Now().Unix(),
 		}).Error("Failed to create secure container")
 		return "", fmt.Errorf("failed to create container: %w, output: %s", err, string(output))
 	}
 
 	containerID := strings.TrimSpace(string(output))
-	
+
 	co.auditLogger.WithFields(map[string]interface{}{
 		"operation":      "container_creation_success",
 		"container_id":   containerID,
@@ -137,9 +153,9 @@ func (co *ContainerOrchestrator) CreateSecureContainer(ctx context.Context, volu
 // buildDockerArgs constructs Docker command arguments with security controls
 func (co *ContainerOrchestrator) buildDockerArgs(volumeMounts map[string]string) []string {
 	args := []string{
-		"run", 
-		"--detach",                                    // Run in background
-		"--rm",                                        // Auto-remove when stopped
+		"run",
+		"--detach", // Run in background
+		"--rm",     // Auto-remove when stopped
 		fmt.Sprintf("--memory=%dg", co.config.MemoryLimitGB), // Memory limit
 		fmt.Sprintf("--cpus=%s", co.config.CPULimit),         // CPU limit
 		fmt.Sprintf("--network=%s", co.config.NetworkMode),   // Network isolation
@@ -159,15 +175,32 @@ func (co *ContainerOrchestrator) buildDockerArgs(volumeMounts map[string]string)
 		args = append(args, "--security-opt", "no-new-privileges:true")
 	}
 
-	// Add additional security options
+	// Add enhanced security options
 	args = append(args,
-		"--security-opt", "apparmor:unconfined",           // Disable AppArmor for now
-		"--security-opt", "seccomp:unconfined",            // Disable seccomp for now
-		"--cap-drop", "ALL",                               // Drop all capabilities
-		"--cap-add", "DAC_OVERRIDE",                       // Allow file access override
-		"--pids-limit", "100",                             // Limit number of processes
-		"--ulimit", "nofile=1024:1024",                    // Limit file descriptors
+		"--cap-drop", "ALL", // Drop all capabilities
+		"--cap-add", "DAC_OVERRIDE", // Allow file access override
+		"--pids-limit", "100", // Limit number of processes
+		"--ulimit", "nofile=1024:1024", // Limit file descriptors
 	)
+
+	// Add seccomp profile
+	if co.config.SeccompProfile != "unconfined" {
+		if co.config.SeccompProfile == "default" {
+			args = append(args, "--security-opt", "seccomp=default")
+		} else {
+			args = append(args, "--security-opt", fmt.Sprintf("seccomp=%s", co.config.SeccompProfile))
+		}
+	}
+
+	// Add AppArmor profile
+	if co.config.ApparmorProfile != "unconfined" {
+		args = append(args, "--security-opt", fmt.Sprintf("apparmor=%s", co.config.ApparmorProfile))
+	}
+
+	// Add user namespace isolation if enabled
+	if co.config.UserNS && co.config.UserNSMode != "host" {
+		args = append(args, "--userns", co.config.UserNSMode)
+	}
 
 	// Add volume mounts
 	for hostPath, containerPath := range volumeMounts {
@@ -184,7 +217,7 @@ func (co *ContainerOrchestrator) buildDockerArgs(volumeMounts map[string]string)
 // ExecuteInContainer executes a command inside a running container
 func (co *ContainerOrchestrator) ExecuteInContainer(ctx context.Context, containerID, command string) (*ContainerResult, error) {
 	startTime := time.Now()
-	
+
 	co.auditLogger.WithFields(map[string]interface{}{
 		"operation":    "container_execution_start",
 		"container_id": containerID,
@@ -244,7 +277,7 @@ func (co *ContainerOrchestrator) ExecuteInContainer(ctx context.Context, contain
 // StopContainer stops and removes a running container
 func (co *ContainerOrchestrator) StopContainer(ctx context.Context, containerID string) error {
 	startTime := time.Now()
-	
+
 	co.auditLogger.WithFields(map[string]interface{}{
 		"operation":    "container_stop_start",
 		"container_id": containerID,
@@ -257,7 +290,7 @@ func (co *ContainerOrchestrator) StopContainer(ctx context.Context, containerID 
 
 	cmd := exec.CommandContext(stopCtx, "docker", "stop", containerID)
 	output, err := cmd.CombinedOutput()
-	
+
 	if err != nil {
 		co.auditLogger.WithFields(map[string]interface{}{
 			"operation":      "container_stop_failure",
@@ -282,9 +315,9 @@ func (co *ContainerOrchestrator) StopContainer(ctx context.Context, containerID 
 
 // GetContainerResourceUsage retrieves resource usage statistics for a container
 func (co *ContainerOrchestrator) GetContainerResourceUsage(ctx context.Context, containerID string) (map[string]interface{}, error) {
-	cmd := exec.CommandContext(ctx, "docker", "stats", "--no-stream", "--format", 
+	cmd := exec.CommandContext(ctx, "docker", "stats", "--no-stream", "--format",
 		"table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}", containerID)
-	
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get container stats: %w", err)
@@ -303,18 +336,18 @@ func sanitizeDockerOutput(output string) string {
 	// Remove potential sensitive information from Docker output
 	lines := strings.Split(output, "\n")
 	var sanitized []string
-	
+
 	for _, line := range lines {
 		lineLower := strings.ToLower(line)
 		// Skip lines that might contain sensitive paths or credentials
 		if strings.Contains(lineLower, "password") || strings.Contains(lineLower, "token") ||
-		   strings.Contains(lineLower, "secret") || strings.Contains(lineLower, "key") {
+			strings.Contains(lineLower, "secret") || strings.Contains(lineLower, "key") {
 			sanitized = append(sanitized, "[REDACTED SENSITIVE LINE]")
 		} else {
 			sanitized = append(sanitized, line)
 		}
 	}
-	
+
 	return strings.Join(sanitized, "\n")
 }
 
@@ -323,7 +356,7 @@ func sanitizeCommand(command string) string {
 	// Basic command sanitization - remove potential credentials
 	commandLower := strings.ToLower(command)
 	if strings.Contains(commandLower, "password") || strings.Contains(commandLower, "token") ||
-	   strings.Contains(commandLower, "secret") || strings.Contains(commandLower, "key") {
+		strings.Contains(commandLower, "secret") || strings.Contains(commandLower, "key") {
 		return "[REDACTED SENSITIVE COMMAND]"
 	}
 	return command
@@ -337,4 +370,79 @@ func (co *ContainerOrchestrator) SetConfig(config *ContainerConfig) {
 // GetConfig returns current container configuration
 func (co *ContainerOrchestrator) GetConfig() *ContainerConfig {
 	return co.config
+}
+
+// SetBaseImage configures the appropriate base image based on security requirements
+func (co *ContainerOrchestrator) SetBaseImage(imageType string) error {
+	switch imageType {
+	case "distroless":
+		co.config.Image = "gcr.io/distroless/static-debian12"
+		co.config.BaseImageType = "distroless"
+	case "scratch":
+		co.config.Image = "scratch"
+		co.config.BaseImageType = "scratch"
+	case "alpine":
+		co.config.Image = "alpine:3.19"
+		co.config.BaseImageType = "alpine"
+	default:
+		return fmt.Errorf("unsupported base image type: %s", imageType)
+	}
+
+	co.auditLogger.WithFields(map[string]interface{}{
+		"operation":  "base_image_configuration",
+		"image_type": imageType,
+		"image":      co.config.Image,
+		"timestamp":  time.Now().Unix(),
+	}).Info("Base image configured")
+
+	return nil
+}
+
+// ValidateSecurityConfiguration validates the current security configuration
+func (co *ContainerOrchestrator) ValidateSecurityConfiguration() error {
+	issues := make([]string, 0)
+
+	// Validate base image security
+	if co.config.BaseImageType == "alpine" {
+		co.auditLogger.WithFields(map[string]interface{}{
+			"operation": "security_validation_warning",
+			"issue":     "alpine_base_image_not_minimal",
+			"timestamp": time.Now().Unix(),
+		}).Warn("Using Alpine base image - consider distroless for enhanced security")
+	}
+
+	// Validate user configuration
+	if co.config.User == "root" || co.config.User == "0:0" {
+		issues = append(issues, "running as root user poses security risk")
+	}
+
+	// Validate security options
+	if co.config.SeccompProfile == "unconfined" {
+		issues = append(issues, "seccomp disabled - syscall filtering not active")
+	}
+
+	if co.config.ApparmorProfile == "unconfined" {
+		issues = append(issues, "apparmor disabled - mandatory access controls not active")
+	}
+
+	if len(issues) > 0 {
+		co.auditLogger.WithFields(map[string]interface{}{
+			"operation":       "security_validation_issues",
+			"security_issues": issues,
+			"timestamp":       time.Now().Unix(),
+		}).Error("Security configuration validation failed")
+
+		return fmt.Errorf("security configuration issues found: %v", issues)
+	}
+
+	co.auditLogger.WithFields(map[string]interface{}{
+		"operation":        "security_validation_success",
+		"base_image_type":  co.config.BaseImageType,
+		"seccomp_profile":  co.config.SeccompProfile,
+		"apparmor_profile": co.config.ApparmorProfile,
+		"user_namespace":   co.config.UserNS,
+		"timestamp":        time.Now().Unix(),
+	}).Info("Security configuration validation passed")
+
+	return nil
 }

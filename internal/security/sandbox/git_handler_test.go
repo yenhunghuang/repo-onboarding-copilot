@@ -35,7 +35,7 @@ func TestNewGitHandler(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gh, err := NewGitHandler(tt.auditLogger)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
@@ -47,13 +47,13 @@ func TestNewGitHandler(t *testing.T) {
 				assert.Equal(t, 30*time.Minute, gh.CloneTimeout)
 				assert.Equal(t, int64(10*1024*1024*1024), gh.MaxRepoSize)
 				assert.True(t, gh.tempDirCreated)
-				
+
 				// Verify temp directory exists and has correct permissions
 				stat, err := os.Stat(gh.TempDir)
 				assert.NoError(t, err)
 				assert.True(t, stat.IsDir())
 				assert.Equal(t, os.FileMode(0700), stat.Mode().Perm())
-				
+
 				// Cleanup
 				err = gh.Cleanup()
 				assert.NoError(t, err)
@@ -129,9 +129,9 @@ func TestCalculateDirectorySize(t *testing.T) {
 	// Create test files with known sizes
 	file1 := filepath.Join(tempDir, "file1.txt")
 	file2 := filepath.Join(tempDir, "subdir", "file2.txt")
-	
+
 	require.NoError(t, os.MkdirAll(filepath.Dir(file2), 0755))
-	require.NoError(t, os.WriteFile(file1, []byte("hello"), 0644)) // 5 bytes
+	require.NoError(t, os.WriteFile(file1, []byte("hello"), 0644))  // 5 bytes
 	require.NoError(t, os.WriteFile(file2, []byte("world!"), 0644)) // 6 bytes
 
 	size, err := calculateDirectorySize(tempDir)
@@ -151,7 +151,7 @@ func TestGitHandlerCleanup(t *testing.T) {
 	require.NoError(t, err)
 
 	tempDir := gh.TempDir
-	
+
 	// Verify directory exists
 	_, err = os.Stat(tempDir)
 	assert.NoError(t, err)
@@ -202,7 +202,7 @@ func TestCloneRepositoryValidation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := gh.CloneRepository(ctx, tt.repoURL)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				if tt.errMsg != "" {
@@ -226,7 +226,7 @@ func TestCloneRepositoryTimeout(t *testing.T) {
 
 	ctx := context.Background()
 	result, err := gh.CloneRepository(ctx, "https://github.com/octocat/Hello-World.git")
-	
+
 	assert.Error(t, err)
 	assert.NotNil(t, result)
 	assert.False(t, result.Success)
@@ -241,7 +241,7 @@ func TestGetRepositoryInfo(t *testing.T) {
 	// Create test directory structure
 	testDir := filepath.Join(gh.TempDir, "test-repo")
 	require.NoError(t, os.MkdirAll(testDir, 0755))
-	
+
 	// Create a test file
 	testFile := filepath.Join(testDir, "test.txt")
 	require.NoError(t, os.WriteFile(testFile, []byte("test content"), 0644))

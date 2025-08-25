@@ -29,12 +29,12 @@ func New() *URLValidator {
 func (v *URLValidator) ValidateRepositoryURL(rawURL string) (*types.RepositoryURL, error) {
 	// Input sanitization
 	sanitizedURL := v.sanitizeInput(rawURL)
-	
+
 	// Length check
 	if len(sanitizedURL) > v.maxLength {
 		return nil, fmt.Errorf("URL exceeds maximum length of %d characters", v.maxLength)
 	}
-	
+
 	// Malicious input detection
 	if err := v.detectMaliciousInput(sanitizedURL); err != nil {
 		return nil, err
@@ -78,10 +78,10 @@ func (v *URLValidator) ValidateRepositoryURL(rawURL string) (*types.RepositoryUR
 func (v *URLValidator) sanitizeInput(input string) string {
 	// Remove leading/trailing whitespace
 	cleaned := strings.TrimSpace(input)
-	
+
 	// Remove null bytes and control characters
 	cleaned = regexp.MustCompile(`[\x00-\x1f\x7f]`).ReplaceAllString(cleaned, "")
-	
+
 	return cleaned
 }
 
@@ -99,14 +99,14 @@ func (v *URLValidator) detectMaliciousInput(input string) error {
 		`${`,
 		`$(`,
 	}
-	
+
 	lowerInput := strings.ToLower(input)
 	for _, pattern := range maliciousPatterns {
 		if strings.Contains(lowerInput, pattern) {
 			return fmt.Errorf("potentially malicious input detected")
 		}
 	}
-	
+
 	return nil
 }
 
@@ -122,12 +122,12 @@ func (v *URLValidator) parseSSHURL(urlStr string) (*types.RepositoryURL, error) 
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("invalid SSH URL format")
 	}
-	
+
 	hostPath := strings.SplitN(parts[1], ":", 2)
 	if len(hostPath) != 2 {
 		return nil, fmt.Errorf("invalid SSH URL format")
 	}
-	
+
 	return &types.RepositoryURL{
 		Raw:    urlStr,
 		Scheme: "ssh",
@@ -151,26 +151,26 @@ func (v *URLValidator) validateGitPath(path string) error {
 	if path == "" {
 		return fmt.Errorf("repository path cannot be empty")
 	}
-	
+
 	// Check for common Git repository patterns
 	gitPatterns := []string{
 		`.git$`,
 		`.git/$`,
 		`^/[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+`,
 	}
-	
+
 	for _, pattern := range gitPatterns {
 		matched, _ := regexp.MatchString(pattern, path)
 		if matched {
 			return nil
 		}
 	}
-	
+
 	// Allow paths that look like repository paths (owner/repo format)
 	repoPattern := regexp.MustCompile(`^/?[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+/?`)
 	if repoPattern.MatchString(path) {
 		return nil
 	}
-	
+
 	return fmt.Errorf("path does not appear to be a Git repository")
 }

@@ -335,18 +335,18 @@ func TestContainerVulnerabilityScanning(t *testing.T) {
 		// - Clair
 		// - Anchore
 		// - Docker Security Scanning
-		
+
 		t.Log("Performing basic vulnerability check")
-		
+
 		// For now, we'll just verify that our base image choice is documented
 		// and that we have a process for vulnerability scanning
-		
+
 		auditLogger.LogSecurityEvent(logger.SecurityScan, map[string]interface{}{
 			"operation": "vulnerability_scan_check",
 			"message":   "Container vulnerability scanning process verified",
 			"note":      "Integration with vulnerability scanning tools should be implemented",
 		})
-		
+
 		t.Log("Vulnerability scanning check completed - process verified")
 	})
 }

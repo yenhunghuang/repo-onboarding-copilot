@@ -17,20 +17,20 @@ import (
 
 // GitHandler manages secure Git repository operations with sandboxing
 type GitHandler struct {
-	CloneTimeout    time.Duration
-	MaxRepoSize     int64 // in bytes
-	TempDir         string
-	AuditLogger     *logger.Logger
-	tempDirCreated  bool
+	CloneTimeout   time.Duration
+	MaxRepoSize    int64 // in bytes
+	TempDir        string
+	AuditLogger    *logger.Logger
+	tempDirCreated bool
 }
 
 // GitCloneResult represents the result of a Git clone operation
 type GitCloneResult struct {
-	LocalPath    string
-	RepoSize     int64
+	LocalPath     string
+	RepoSize      int64
 	CloneDuration time.Duration
-	Success      bool
-	Error        error
+	Success       bool
+	Error         error
 }
 
 // NewGitHandler creates a new GitHandler with secure defaults
@@ -46,7 +46,7 @@ func NewGitHandler(auditLogger *logger.Logger) (*GitHandler, error) {
 	}
 
 	return &GitHandler{
-		CloneTimeout:   30 * time.Minute, // Default 30 minute timeout
+		CloneTimeout:   30 * time.Minute,        // Default 30 minute timeout
 		MaxRepoSize:    10 * 1024 * 1024 * 1024, // 10GB limit
 		TempDir:        tempDir,
 		AuditLogger:    auditLogger,
@@ -73,7 +73,7 @@ func createSecureTempDir() (string, error) {
 // CloneRepository clones a repository with security controls and validation
 func (gh *GitHandler) CloneRepository(ctx context.Context, repoURL string) (*GitCloneResult, error) {
 	startTime := time.Now()
-	
+
 	// Log the clone attempt
 	gh.AuditLogger.WithFields(map[string]interface{}{
 		"operation": "git_clone_start",
@@ -133,11 +133,11 @@ func (gh *GitHandler) CloneRepository(ctx context.Context, repoURL string) (*Git
 // performClone executes the actual Git clone operation
 func (gh *GitHandler) performClone(ctx context.Context, repoURL, cloneDir string) (*GitCloneResult, error) {
 	// Use git clone with specific options for security
-	cmd := exec.CommandContext(ctx, "git", "clone", 
-		"--depth=1",           // Shallow clone to reduce size
-		"--single-branch",     // Only clone the default branch
-		"--no-hardlinks",      // Prevent hardlink issues
-		repoURL, 
+	cmd := exec.CommandContext(ctx, "git", "clone",
+		"--depth=1",       // Shallow clone to reduce size
+		"--single-branch", // Only clone the default branch
+		"--no-hardlinks",  // Prevent hardlink issues
+		repoURL,
 		cloneDir)
 
 	// Set environment variables to prevent credential prompting
@@ -190,11 +190,11 @@ func calculateDirectorySize(dirPath string) (int64, error) {
 // logCloneFailure logs clone failure with security-conscious information
 func (gh *GitHandler) logCloneFailure(repoURL string, startTime time.Time, err error) {
 	gh.AuditLogger.WithFields(map[string]interface{}{
-		"operation":      "git_clone_failure",
-		"repo_url":       sanitizeURL(repoURL),
-		"error":          err.Error(),
+		"operation":        "git_clone_failure",
+		"repo_url":         sanitizeURL(repoURL),
+		"error":            err.Error(),
 		"failure_duration": time.Since(startTime).Seconds(),
-		"timestamp":      time.Now().Unix(),
+		"timestamp":        time.Now().Unix(),
 	}).Error("Repository clone failed")
 }
 
@@ -254,7 +254,7 @@ func (gh *GitHandler) GetRepositoryInfo(repoPath string) (map[string]interface{}
 	gitDir := filepath.Join(repoPath, ".git")
 	if _, err := os.Stat(gitDir); err == nil {
 		info["is_git_repo"] = true
-		
+
 		// Get commit count (if possible)
 		cmd := exec.Command("git", "-C", repoPath, "rev-list", "--count", "HEAD")
 		if output, err := cmd.Output(); err == nil {

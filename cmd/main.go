@@ -41,7 +41,7 @@ Examples:
 
 		// Initialize logger
 		log := logger.New()
-		
+
 		// Validate repository URL
 		validator := validator.New()
 		validatedURL, err := validator.ValidateRepositoryURL(args[0])
@@ -53,7 +53,7 @@ Examples:
 		log.Info(fmt.Sprintf("Starting analysis of repository: %s", validatedURL.Raw))
 		fmt.Printf("✓ Repository URL validated successfully\n")
 		fmt.Printf("✓ Scheme: %s, Host: %s\n", validatedURL.Scheme, validatedURL.Host)
-		
+
 		// TODO: Implement repository analysis workflow
 		fmt.Printf("Repository analysis workflow will be implemented in future stories.\n")
 	},
@@ -62,7 +62,7 @@ Examples:
 func init() {
 	rootCmd.PersistentFlags().BoolP("version", "v", false, "Show version information")
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "Show help information")
-	
+
 	// Version command
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "version",

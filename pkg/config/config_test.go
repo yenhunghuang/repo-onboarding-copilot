@@ -67,7 +67,7 @@ app:
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var configFile string
-			
+
 			if tt.configData != "" {
 				// Create temporary config file
 				tmpDir := t.TempDir()
@@ -99,8 +99,8 @@ func TestConfig_Validate(t *testing.T) {
 		expectError bool
 	}{
 		{
-			name: "valid config",
-			config: &Config{},
+			name:        "valid config",
+			config:      &Config{},
 			expectError: false,
 		},
 		{

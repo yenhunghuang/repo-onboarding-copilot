@@ -19,12 +19,12 @@ import (
 // SecureIngestionIntegrationTestSuite provides integration testing for secure repository ingestion
 type SecureIngestionIntegrationTestSuite struct {
 	suite.Suite
-	tempDir         string
-	auditLogger     *logger.AuditLogger
-	basicLogger     *logger.Logger
-	gitHandler      *sandbox.GitHandler
-	containerOrch   *sandbox.ContainerOrchestrator
-	cleanupOrch     *sandbox.CleanupOrchestrator
+	tempDir       string
+	auditLogger   *logger.AuditLogger
+	basicLogger   *logger.Logger
+	gitHandler    *sandbox.GitHandler
+	containerOrch *sandbox.ContainerOrchestrator
+	cleanupOrch   *sandbox.CleanupOrchestrator
 }
 
 // SetupSuite initializes the test suite
@@ -73,10 +73,10 @@ func (suite *SecureIngestionIntegrationTestSuite) TestCompleteSecureIngestionWor
 
 	// Step 1: Secure Git Clone
 	t.Log("Step 1: Testing secure git repository cloning")
-	
+
 	// Use a small, fast repository for testing
 	testRepoURL := "https://github.com/octocat/Hello-World.git"
-	
+
 	cloneResult, err := suite.gitHandler.CloneRepository(ctx, testRepoURL)
 	if err != nil {
 		// If we can't clone (network issues, etc.), create a mock repository
@@ -84,11 +84,11 @@ func (suite *SecureIngestionIntegrationTestSuite) TestCompleteSecureIngestionWor
 		mockRepoPath := filepath.Join(suite.tempDir, "mock-repo")
 		err = os.MkdirAll(mockRepoPath, 0755)
 		require.NoError(t, err)
-		
+
 		// Create a simple mock git repository structure
 		err = os.WriteFile(filepath.Join(mockRepoPath, "README.md"), []byte("# Test Repository"), 0644)
 		require.NoError(t, err)
-		
+
 		cloneResult = &sandbox.GitCloneResult{
 			LocalPath:     mockRepoPath,
 			RepoSize:      100,
@@ -108,11 +108,11 @@ func (suite *SecureIngestionIntegrationTestSuite) TestCompleteSecureIngestionWor
 
 	// Step 2: Container Security Infrastructure
 	t.Log("Step 2: Testing container security infrastructure")
-	
+
 	volumeMounts := map[string]string{
 		cloneResult.LocalPath: "/workspace",
 	}
-	
+
 	containerID, err := suite.containerOrch.CreateSecureContainer(ctx, volumeMounts)
 	if err != nil {
 		t.Logf("Could not create container (Docker not available?): %v", err)
@@ -120,13 +120,13 @@ func (suite *SecureIngestionIntegrationTestSuite) TestCompleteSecureIngestionWor
 	} else {
 		assert.NotEmpty(t, containerID)
 		t.Logf("Successfully created secure container: %s", containerID)
-		
+
 		// Verify container was created successfully
 		assert.NotEmpty(t, containerID)
-		
+
 		// Test resource limits enforcement
 		t.Log("Testing resource limit enforcement")
-		
+
 		// Get container resource usage to verify resource limits
 		usage, err := suite.containerOrch.GetContainerResourceUsage(ctx, containerID)
 		if err == nil {
@@ -138,7 +138,7 @@ func (suite *SecureIngestionIntegrationTestSuite) TestCompleteSecureIngestionWor
 
 	// Step 3: Cleanup Orchestration and Verification
 	t.Log("Step 3: Testing cleanup orchestration")
-	
+
 	// Add cleanup tasks
 	if cloneResult.LocalPath != "" {
 		cleanupTask := sandbox.CleanupTask{
@@ -149,7 +149,7 @@ func (suite *SecureIngestionIntegrationTestSuite) TestCompleteSecureIngestionWor
 		}
 		suite.cleanupOrch.AddCleanupTask(cleanupTask)
 	}
-	
+
 	if containerID != "" {
 		cleanupTask := sandbox.CleanupTask{
 			ResourceType: sandbox.ResourceTypeContainer,
@@ -159,16 +159,16 @@ func (suite *SecureIngestionIntegrationTestSuite) TestCompleteSecureIngestionWor
 		}
 		suite.cleanupOrch.AddCleanupTask(cleanupTask)
 	}
-	
+
 	// Verify tasks were added
 	pendingTasks := suite.cleanupOrch.GetPendingTasks()
 	assert.Greater(t, len(pendingTasks), 0)
 	t.Logf("Added %d cleanup tasks", len(pendingTasks))
-	
+
 	// Execute cleanup
 	err = suite.cleanupOrch.ExecuteCleanup(ctx)
 	assert.NoError(t, err)
-	
+
 	// Verify cleanup completed
 	remainingTasks := suite.cleanupOrch.GetPendingTasks()
 	assert.Equal(t, 0, len(remainingTasks))
@@ -176,14 +176,14 @@ func (suite *SecureIngestionIntegrationTestSuite) TestCompleteSecureIngestionWor
 
 	// Step 4: Audit Logging Verification
 	t.Log("Step 4: Verifying audit logging completeness")
-	
+
 	// The audit logging verification happens implicitly through the operations above
 	// Each component logs security events, and we can verify the logger is working
 	suite.auditLogger.LogSecurityEvent(logger.SystemCleanup, map[string]interface{}{
 		"operation": "integration_test_complete",
 		"message":   "Secure ingestion workflow integration test completed successfully",
 	})
-	
+
 	t.Log("Integration test workflow completed successfully")
 }
 
@@ -278,7 +278,7 @@ func (suite *SecureIngestionIntegrationTestSuite) TestAuditLoggingCompleteness()
 
 	// Test various security events
 	testEvents := []struct {
-		event logger.SecurityEvent
+		event       logger.SecurityEvent
 		description string
 	}{
 		{logger.ContainerCreate, "Container creation event"},
@@ -292,8 +292,8 @@ func (suite *SecureIngestionIntegrationTestSuite) TestAuditLoggingCompleteness()
 	for _, testEvent := range testEvents {
 		suite.auditLogger.LogSecurityEvent(testEvent.event, map[string]interface{}{
 			"test_operation": "audit_completeness_test",
-			"description": testEvent.description,
-			"timestamp": time.Now().Unix(),
+			"description":    testEvent.description,
+			"timestamp":      time.Now().Unix(),
 		})
 	}
 
@@ -419,7 +419,7 @@ func containsSensitiveInfo(data string) bool {
 		"password", "secret", "token", "key", "credential",
 		"auth", "login", "pass", "pwd", "private",
 	}
-	
+
 	lowerData := strings.ToLower(data)
 	for _, pattern := range sensitivePatterns {
 		if strings.Contains(lowerData, pattern) {
@@ -435,6 +435,6 @@ func TestSecureIngestionIntegrationSuite(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration tests in short mode")
 	}
-	
+
 	suite.Run(t, new(SecureIngestionIntegrationTestSuite))
 }

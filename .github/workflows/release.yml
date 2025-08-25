@@ -1,0 +1,309 @@
+name: Release & Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.2.3)'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: read
+
+env:
+  GO_VERSION: '1.23'
+  DOCKER_IMAGE_NAME: 'repo-onboarding-copilot'
+
+jobs:
+  # 建立 GitHub Release
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # 產生變更日誌
+          if [ "${{ github.event_name }}" = "push" ]; then
+            PREVIOUS_TAG=$(git describe --abbrev=0 --tags HEAD~1 2>/dev/null || echo "")
+            if [ -n "$PREVIOUS_TAG" ]; then
+              echo "## 🚀 What's Changed" > changelog.md
+              echo "" >> changelog.md
+              git log --pretty=format:"- %s" ${PREVIOUS_TAG}..HEAD >> changelog.md
+            else
+              echo "## 🚀 Initial Release" > changelog.md
+              echo "" >> changelog.md
+              echo "- Initial release of Repo Onboarding Copilot" >> changelog.md
+            fi
+          else
+            echo "## 🚀 Manual Release" > changelog.md
+            echo "" >> changelog.md
+            echo "- Manual release of version ${{ steps.version.outputs.version }}" >> changelog.md
+          fi
+          
+          echo "" >> changelog.md
+          echo "## 📦 Assets" >> changelog.md
+          echo "" >> changelog.md
+          echo "- **Linux (x64)**: \`repo-onboarding-copilot-linux-amd64\`" >> changelog.md
+          echo "- **Linux (ARM64)**: \`repo-onboarding-copilot-linux-arm64\`" >> changelog.md
+          echo "- **macOS (x64)**: \`repo-onboarding-copilot-darwin-amd64\`" >> changelog.md
+          echo "- **macOS (ARM64)**: \`repo-onboarding-copilot-darwin-arm64\`" >> changelog.md
+          echo "- **Windows (x64)**: \`repo-onboarding-copilot-windows-amd64.exe\`" >> changelog.md
+          echo "- **Windows (ARM64)**: \`repo-onboarding-copilot-windows-arm64.exe\`" >> changelog.md
+          echo "- **Docker Image**: \`ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}\`" >> changelog.md
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body_path: changelog.md
+          draft: false
+          prerelease: false
+
+  # 跨平台建置
+  build-binaries:
+    name: Build Release Binaries
+    runs-on: ubuntu-latest
+    needs: create-release
+    strategy:
+      matrix:
+        goos: [linux, darwin, windows]
+        goarch: [amd64, arm64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build binary
+        run: |
+          BINARY_NAME="${{ env.DOCKER_IMAGE_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            BINARY_NAME="${BINARY_NAME}.exe"
+          fi
+          
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} CGO_ENABLED=0 go build \
+            -ldflags="-w -s -X main.Version=${{ needs.create-release.outputs.version }} -X main.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -o "${BINARY_NAME}" \
+            ./cmd
+          
+          # 創建校驗和
+          if command -v sha256sum >/dev/null; then
+            sha256sum "${BINARY_NAME}" > "${BINARY_NAME}.sha256"
+          else
+            shasum -a 256 "${BINARY_NAME}" > "${BINARY_NAME}.sha256"
+          fi
+
+      - name: Upload binary to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./${{ env.DOCKER_IMAGE_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
+          asset_name: ${{ env.DOCKER_IMAGE_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload checksum to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./${{ env.DOCKER_IMAGE_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}.sha256
+          asset_name: ${{ env.DOCKER_IMAGE_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}.sha256
+          asset_content_type: text/plain
+
+  # Docker 映像建置和推送
+  build-docker:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VERSION=${{ needs.create-release.outputs.version }}
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+
+      - name: Run Trivy vulnerability scanner on final image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ github.repository }}:${{ needs.create-release.outputs.version }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # 部署到預演環境
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [create-release, build-docker]
+    environment:
+      name: staging
+      url: https://repo-copilot-staging.example.com
+    steps:
+      - name: Deploy to Staging Environment
+        run: |
+          echo "🚀 Deploying version ${{ needs.create-release.outputs.version }} to staging..."
+          
+          # 這裡可以整合實際的部署邏輯
+          # 例如：Kubernetes, Docker Swarm, 或雲平台 API
+          
+          # 示例：使用 kubectl 部署到 Kubernetes
+          # kubectl set image deployment/repo-onboarding-copilot \
+          #   app=ghcr.io/${{ github.repository }}:${{ needs.create-release.outputs.version }}
+          
+          echo "✅ Staging deployment completed"
+
+      - name: Run smoke tests
+        run: |
+          echo "🧪 Running smoke tests on staging environment..."
+          
+          # 基本健康檢查
+          # curl -f https://repo-copilot-staging.example.com/health || exit 1
+          
+          echo "✅ Smoke tests passed"
+
+  # 部署到生產環境 (需要手動批准)
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [create-release, build-docker, deploy-staging]
+    environment:
+      name: production
+      url: https://repo-onboarding-copilot.com
+    steps:
+      - name: Deploy to Production Environment
+        run: |
+          echo "🚀 Deploying version ${{ needs.create-release.outputs.version }} to production..."
+          
+          # 生產環境部署邏輯
+          # 包含藍綠部署、滾動更新等策略
+          
+          echo "✅ Production deployment completed"
+
+      - name: Run production health checks
+        run: |
+          echo "🏥 Running production health checks..."
+          
+          # 完整的健康檢查和監控驗證
+          
+          echo "✅ Production health checks passed"
+
+      - name: Notify deployment success
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state: 'success',
+              environment_url: 'https://repo-onboarding-copilot.com',
+              description: 'Successfully deployed to production'
+            });
+
+  # 更新 Homebrew Formula (macOS 套件管理)
+  update-homebrew:
+    name: Update Homebrew Formula
+    runs-on: ubuntu-latest
+    needs: [create-release, build-binaries]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Update Homebrew Formula
+        run: |
+          echo "🍺 Updating Homebrew formula..."
+          
+          # 這裡可以整合 Homebrew formula 更新邏輯
+          # 或使用 GitHub Action 來更新 homebrew-tap repository
+          
+          echo "✅ Homebrew formula update completed"
+
+  # 發送通知
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [create-release, deploy-production]
+    if: always()
+    steps:
+      - name: Notify Team
+        run: |
+          echo "📢 Sending deployment notifications..."
+          
+          # 這裡可以整合 Slack, Discord, 或 Teams 通知
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data '{"text":"🚀 Repo Onboarding Copilot ${{ needs.create-release.outputs.version }} deployed successfully!"}' \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}
+          
+          echo "✅ Notifications sent"

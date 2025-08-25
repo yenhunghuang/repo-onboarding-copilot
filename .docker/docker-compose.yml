@@ -1,0 +1,177 @@
+version: '3.8'
+
+services:
+  # 主應用程式 - 生產環境
+  app:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+    container_name: repo-onboarding-copilot
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      # 掛載配置文件
+      - ../configs:/app/configs:ro
+      # 掛載分析緩存目錄
+      - analysis_cache:/tmp/analysis
+      # 掛載日誌目錄
+      - app_logs:/app/logs
+    environment:
+      - ENV=production
+      - LOG_LEVEL=info
+      - ANALYSIS_CACHE_DIR=/tmp/analysis
+      - LOG_FILE_PATH=/app/logs/app.log
+    networks:
+      - app_network
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:../configs/security/seccomp-analysis.json
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+    healthcheck:
+      test: ["/app/repo-onboarding-copilot", "version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 開發環境
+  dev:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile.dev
+    container_name: repo-onboarding-copilot-dev
+    ports:
+      - "8080:8080"
+      - "2345:2345"  # Delve debugger port
+    volumes:
+      # 掛載整個專案目錄以支援熱重載
+      - ..:/workspace:cached
+      # 掛載 Go 模組緩存
+      - go_modules:/go/pkg/mod
+      # 掛載 Docker socket 以支援容器分析
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - ENV=development
+      - LOG_LEVEL=debug
+      - HOT_RELOAD=true
+    networks:
+      - app_network
+    working_dir: /workspace
+    command: ["air", "-c", ".air.toml"]
+    profiles:
+      - dev
+
+  # Redis 緩存服務 (未來擴展用)
+  redis:
+    image: redis:7-alpine
+    container_name: repo-copilot-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-defaultpassword}
+    networks:
+      - app_network
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=50m
+    profiles:
+      - cache
+
+  # PostgreSQL 數據庫 (未來擴展用)
+  postgres:
+    image: postgres:15-alpine
+    container_name: repo-copilot-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../scripts/db:/docker-entrypoint-initdb.d:ro
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-repo_copilot}
+      - POSTGRES_USER=${POSTGRES_USER:-copilot}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secure_password}
+    networks:
+      - app_network
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-copilot}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    profiles:
+      - database
+
+  # Prometheus 監控 (未來擴展用)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: repo-copilot-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../configs/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - app_network
+    profiles:
+      - monitoring
+
+  # Grafana 儀表板 (未來擴展用)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: repo-copilot-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ../configs/monitoring/grafana:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - app_network
+    profiles:
+      - monitoring
+
+volumes:
+  analysis_cache:
+    driver: local
+  app_logs:
+    driver: local
+  go_modules:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  app_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

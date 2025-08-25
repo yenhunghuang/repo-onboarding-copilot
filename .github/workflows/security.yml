@@ -1,0 +1,455 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # 每日午夜執行安全掃描
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  # Go 語言安全掃描
+  gosec:
+    name: Go Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Run Gosec Security Scanner
+        uses: securecodewarrior/github-action-gosec@master
+        with:
+          args: '-fmt sarif -out gosec-results.sarif ./...'
+          
+      - name: Upload Gosec results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'gosec-results.sarif'
+
+      - name: Generate Security Report
+        if: always()
+        run: |
+          gosec -fmt json -out gosec-report.json ./...
+          
+          # 產生可讀報告
+          cat > security-summary.md << 'EOF'
+          # 🛡️ Security Scan Report
+          
+          ## Gosec Analysis Results
+          
+          EOF
+          
+          # 解析 JSON 結果並生成摘要
+          if [ -f gosec-report.json ]; then
+            ISSUES=$(jq '.Stats.found' gosec-report.json 2>/dev/null || echo "0")
+            SEVERITY_HIGH=$(jq '.Issues[] | select(.severity=="HIGH") | length' gosec-report.json 2>/dev/null | wc -l)
+            SEVERITY_MEDIUM=$(jq '.Issues[] | select(.severity=="MEDIUM") | length' gosec-report.json 2>/dev/null | wc -l)
+            SEVERITY_LOW=$(jq '.Issues[] | select(.severity=="LOW") | length' gosec-report.json 2>/dev/null | wc -l)
+            
+            echo "- **Total Issues**: $ISSUES" >> security-summary.md
+            echo "- **High Severity**: $SEVERITY_HIGH" >> security-summary.md
+            echo "- **Medium Severity**: $SEVERITY_MEDIUM" >> security-summary.md  
+            echo "- **Low Severity**: $SEVERITY_LOW" >> security-summary.md
+            echo "" >> security-summary.md
+            
+            if [ "$ISSUES" -gt "0" ]; then
+              echo "⚠️ **Security issues detected!** Please review and address them." >> security-summary.md
+            else
+              echo "✅ **No security issues found!**" >> security-summary.md
+            fi
+          fi
+
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report
+          path: |
+            gosec-report.json
+            security-summary.md
+
+  # 依賴漏洞掃描
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run Go Vulnerability Check
+        run: |
+          govulncheck -json ./... > vulnerability-report.json || true
+          govulncheck ./... > vulnerability-summary.txt || true
+
+      - name: Parse Vulnerability Results
+        run: |
+          # 產生漏洞摘要報告
+          cat > dependency-security.md << 'EOF'
+          # 📦 Dependency Security Report
+          
+          ## Go Module Vulnerability Scan
+          
+          EOF
+          
+          if [ -s vulnerability-summary.txt ]; then
+            if grep -q "No vulnerabilities found" vulnerability-summary.txt; then
+              echo "✅ **No known vulnerabilities found in dependencies!**" >> dependency-security.md
+            else
+              echo "⚠️ **Vulnerabilities detected in dependencies:**" >> dependency-security.md
+              echo "" >> dependency-security.md
+              echo '```' >> dependency-security.md
+              cat vulnerability-summary.txt >> dependency-security.md
+              echo '```' >> dependency-security.md
+            fi
+          else
+            echo "✅ **Vulnerability scan completed successfully**" >> dependency-security.md
+          fi
+          
+          echo "" >> dependency-security.md
+          echo "📅 **Scan Date**: $(date)" >> dependency-security.md
+
+      - name: Upload Vulnerability Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vulnerability-report
+          path: |
+            vulnerability-report.json
+            vulnerability-summary.txt
+            dependency-security.md
+
+  # Trivy 多維度安全掃描
+  trivy-scan:
+    name: Trivy Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-fs-results.sarif'
+
+      - name: Run Trivy config scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif' 
+          output: 'trivy-config-results.sarif'
+
+      - name: Upload Trivy filesystem results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-fs-results.sarif'
+
+      - name: Upload Trivy config results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-config-results.sarif'
+
+      - name: Generate Trivy Report
+        run: |
+          # 產生詳細的 Trivy 報告
+          trivy fs --format json --output trivy-detailed.json .
+          trivy config --format json --output trivy-config.json .
+          
+          # 產生摘要報告
+          cat > trivy-summary.md << 'EOF'
+          # 🔍 Trivy Security Analysis
+          
+          ## Multi-dimensional Security Scan Results
+          
+          EOF
+          
+          echo "### 📁 Filesystem Scan" >> trivy-summary.md
+          if [ -f trivy-detailed.json ]; then
+            TOTAL_VULNS=$(jq '[.Results[]?.Vulnerabilities[]?] | length' trivy-detailed.json 2>/dev/null || echo "0")
+            CRITICAL_VULNS=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' trivy-detailed.json 2>/dev/null || echo "0")
+            HIGH_VULNS=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' trivy-detailed.json 2>/dev/null || echo "0")
+            
+            echo "- **Total Vulnerabilities**: $TOTAL_VULNS" >> trivy-summary.md
+            echo "- **Critical**: $CRITICAL_VULNS" >> trivy-summary.md
+            echo "- **High**: $HIGH_VULNS" >> trivy-summary.md
+            echo "" >> trivy-summary.md
+          fi
+          
+          echo "### ⚙️ Configuration Scan" >> trivy-summary.md
+          if [ -f trivy-config.json ]; then
+            CONFIG_ISSUES=$(jq '[.Results[]?.Misconfigurations[]?] | length' trivy-config.json 2>/dev/null || echo "0")
+            echo "- **Configuration Issues**: $CONFIG_ISSUES" >> trivy-summary.md
+            echo "" >> trivy-summary.md
+          fi
+          
+          echo "📅 **Scan Completed**: $(date)" >> trivy-summary.md
+
+      - name: Upload Trivy Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-reports
+          path: |
+            trivy-detailed.json
+            trivy-config.json
+            trivy-summary.md
+
+  # Docker 映像安全掃描 (如果有 Dockerfile)
+  docker-security:
+    name: Docker Image Security
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for Dockerfile
+        id: dockerfile-check
+        run: |
+          if [ -f ".docker/Dockerfile" ] || [ -f "Dockerfile" ]; then
+            echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Docker Buildx
+        if: steps.dockerfile-check.outputs.dockerfile_exists == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image for scanning
+        if: steps.dockerfile-check.outputs.dockerfile_exists == 'true'
+        run: |
+          DOCKERFILE_PATH=".docker/Dockerfile"
+          if [ ! -f "$DOCKERFILE_PATH" ]; then
+            DOCKERFILE_PATH="Dockerfile"
+          fi
+          
+          docker buildx build \
+            --file "$DOCKERFILE_PATH" \
+            --tag repo-onboarding-copilot:scan \
+            --load .
+
+      - name: Run Trivy on Docker image
+        if: steps.dockerfile-check.outputs.dockerfile_exists == 'true'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'repo-onboarding-copilot:scan'
+          format: 'sarif'
+          output: 'trivy-image-results.sarif'
+
+      - name: Upload Docker image scan results
+        if: steps.dockerfile-check.outputs.dockerfile_exists == 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-image-results.sarif'
+
+      - name: Generate Docker Security Report
+        if: steps.dockerfile-check.outputs.dockerfile_exists == 'true'
+        run: |
+          trivy image --format json --output docker-security.json repo-onboarding-copilot:scan
+          
+          cat > docker-security-summary.md << 'EOF'
+          # 🐳 Docker Image Security Report
+          
+          ## Container Security Analysis
+          
+          EOF
+          
+          if [ -f docker-security.json ]; then
+            TOTAL_VULNS=$(jq '[.Results[]?.Vulnerabilities[]?] | length' docker-security.json 2>/dev/null || echo "0")
+            CRITICAL_VULNS=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' docker-security.json 2>/dev/null || echo "0")
+            HIGH_VULNS=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' docker-security.json 2>/dev/null || echo "0")
+            
+            echo "- **Total Image Vulnerabilities**: $TOTAL_VULNS" >> docker-security-summary.md
+            echo "- **Critical**: $CRITICAL_VULNS" >> docker-security-summary.md
+            echo "- **High**: $HIGH_VULNS" >> docker-security-summary.md
+            echo "" >> docker-security-summary.md
+            
+            if [ "$CRITICAL_VULNS" -gt "0" ] || [ "$HIGH_VULNS" -gt "5" ]; then
+              echo "❌ **Docker image has security concerns!**" >> docker-security-summary.md
+              echo "" >> docker-security-summary.md
+              echo "**Recommendations**:" >> docker-security-summary.md
+              echo "- Update base image to latest version" >> docker-security-summary.md
+              echo "- Remove unnecessary packages" >> docker-security-summary.md
+              echo "- Use distroless or minimal images" >> docker-security-summary.md
+            else
+              echo "✅ **Docker image security looks good!**" >> docker-security-summary.md
+            fi
+          fi
+          
+          echo "" >> docker-security-summary.md
+          echo "📅 **Scan Date**: $(date)" >> docker-security-summary.md
+
+      - name: Upload Docker Security Report
+        if: steps.dockerfile-check.outputs.dockerfile_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-security-report
+          path: |
+            docker-security.json
+            docker-security-summary.md
+
+  # 安全掃描結果彙總
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [gosec, dependency-scan, trivy-scan, docker-security]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all security reports
+        uses: actions/download-artifact@v4
+        with:
+          path: security-reports
+
+      - name: Generate Overall Security Summary
+        run: |
+          cat > overall-security-summary.md << 'EOF'
+          # 🛡️ Complete Security Analysis Report
+          
+          ## 📊 Security Scan Overview
+          
+          This report consolidates results from multiple security scanning tools:
+          
+          EOF
+          
+          echo "| Tool | Status | Critical | High | Medium | Low |" >> overall-security-summary.md
+          echo "|------|--------|----------|------|--------|-----|" >> overall-security-summary.md
+          
+          # Gosec 結果
+          if [ -f security-reports/security-report/gosec-report.json ]; then
+            GOSEC_ISSUES=$(jq '.Stats.found' security-reports/security-report/gosec-report.json 2>/dev/null || echo "0")
+            if [ "$GOSEC_ISSUES" -eq "0" ]; then
+              echo "| Gosec | ✅ Pass | 0 | 0 | 0 | 0 |" >> overall-security-summary.md
+            else
+              echo "| Gosec | ⚠️ Issues | - | - | - | $GOSEC_ISSUES |" >> overall-security-summary.md
+            fi
+          else
+            echo "| Gosec | ❓ N/A | - | - | - | - |" >> overall-security-summary.md
+          fi
+          
+          # 依賴漏洞結果
+          if [ -f security-reports/vulnerability-report/vulnerability-summary.txt ]; then
+            if grep -q "No vulnerabilities found" security-reports/vulnerability-report/vulnerability-summary.txt; then
+              echo "| Go Vuln | ✅ Pass | 0 | 0 | 0 | 0 |" >> overall-security-summary.md
+            else
+              echo "| Go Vuln | ⚠️ Issues | - | - | - | - |" >> overall-security-summary.md
+            fi
+          else
+            echo "| Go Vuln | ❓ N/A | - | - | - | - |" >> overall-security-summary.md
+          fi
+          
+          # Trivy 結果
+          if [ -f security-reports/trivy-reports/trivy-detailed.json ]; then
+            TRIVY_CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' security-reports/trivy-reports/trivy-detailed.json 2>/dev/null || echo "0")
+            TRIVY_HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' security-reports/trivy-reports/trivy-detailed.json 2>/dev/null || echo "0")
+            TRIVY_TOTAL=$(jq '[.Results[]?.Vulnerabilities[]?] | length' security-reports/trivy-reports/trivy-detailed.json 2>/dev/null || echo "0")
+            
+            if [ "$TRIVY_TOTAL" -eq "0" ]; then
+              echo "| Trivy FS | ✅ Pass | 0 | 0 | 0 | 0 |" >> overall-security-summary.md
+            else
+              echo "| Trivy FS | ⚠️ Issues | $TRIVY_CRITICAL | $TRIVY_HIGH | - | - |" >> overall-security-summary.md
+            fi
+          else
+            echo "| Trivy FS | ❓ N/A | - | - | - | - |" >> overall-security-summary.md
+          fi
+          
+          echo "" >> overall-security-summary.md
+          echo "## 🎯 Action Items" >> overall-security-summary.md
+          echo "" >> overall-security-summary.md
+          
+          # 判斷是否有嚴重問題
+          HAS_CRITICAL=false
+          if [ -f security-reports/trivy-reports/trivy-detailed.json ]; then
+            TRIVY_CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' security-reports/trivy-reports/trivy-detailed.json 2>/dev/null || echo "0")
+            if [ "$TRIVY_CRITICAL" -gt "0" ]; then
+              HAS_CRITICAL=true
+            fi
+          fi
+          
+          if [ "$HAS_CRITICAL" = true ]; then
+            echo "🚨 **Critical vulnerabilities found!** Immediate action required:" >> overall-security-summary.md
+            echo "- Review and patch critical vulnerabilities" >> overall-security-summary.md
+            echo "- Update dependencies to latest secure versions" >> overall-security-summary.md
+            echo "- Consider blocking deployment until fixed" >> overall-security-summary.md
+          else
+            echo "✅ **No critical vulnerabilities detected**" >> overall-security-summary.md
+            echo "- Continue with regular security maintenance" >> overall-security-summary.md
+            echo "- Schedule periodic security reviews" >> overall-security-summary.md
+          fi
+          
+          echo "" >> overall-security-summary.md
+          echo "---" >> overall-security-summary.md
+          echo "📅 **Report Generated**: $(date)" >> overall-security-summary.md
+          echo "🤖 **Automated Security Pipeline** | [View Details](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> overall-security-summary.md
+
+      - name: Comment Security Summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('overall-security-summary.md', 'utf8');
+            
+            // 查找現有的安全摘要評論
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.user.login === 'github-actions[bot]' && 
+              comment.body.includes('Complete Security Analysis Report')
+            );
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: summary
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: summary
+              });
+            }
+
+      - name: Upload Complete Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-security-analysis
+          path: overall-security-summary.md

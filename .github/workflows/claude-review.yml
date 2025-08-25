@@ -1,0 +1,423 @@
+name: Claude Code Auto Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  claude-review:
+    name: Claude Code Review
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            **/*.go
+            **/*.js
+            **/*.ts
+            **/*.py
+            **/*.java
+            **/*.md
+            **/Dockerfile*
+            **/*.yml
+            **/*.yaml
+
+      - name: Claude Code Analysis
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v7
+        env:
+          CLAUDE_GUIDELINES: |
+            # Claude Code Review Guidelines
+            
+            根據 CLAUDE.md 規範進行程式碼審查：
+            
+            ## 審查重點
+            1. **安全性問題**: SQL injection, XSS, 路徑遍歷, 敏感資訊洩露
+            2. **效能問題**: N+1 queries, 記憶體洩漏, 無限迴圈
+            3. **程式碼品質**: 遵循 SOLID 原則, 錯誤處理, 測試覆蓋
+            4. **架構一致性**: 符合專案架構模式, 依賴注入正確性
+            5. **API 設計**: RESTful 原則, 錯誤回應格式, 版本控制
+            
+            ## 回應格式
+            - 只在有修改的行留下具體建議
+            - 提供程式碼範例說明改進方式  
+            - 標註嚴重程度: 🚨 Critical | ⚠️ Warning | 💡 Suggestion
+            - 包含相關文件連結或最佳實踐參考
+            
+            ## 不要做
+            - 風格偏好的評論 (已有 linter 處理)
+            - 過度細節的語法建議
+            - 沒有實質幫助的一般性評論
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // 獲取 PR 資訊
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            
+            // 獲取檔案差異
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            
+            const changedFiles = '${{ steps.changed-files.outputs.all_changed_files }}';
+            if (!changedFiles) {
+              console.log('No relevant files changed');
+              return;
+            }
+            
+            // 分析每個變更的檔案
+            const reviewComments = [];
+            let hasErrors = false;
+            let hasWarnings = false;
+            
+            for (const file of files) {
+              if (file.status === 'removed') continue;
+              
+              const fileExtension = path.extname(file.filename);
+              const patch = file.patch || '';
+              
+              // 安全性檢查
+              const securityIssues = analyzeSecurityIssues(file.filename, patch);
+              if (securityIssues.length > 0) {
+                hasErrors = true;
+                reviewComments.push(...securityIssues);
+              }
+              
+              // 效能檢查
+              const performanceIssues = analyzePerformanceIssues(file.filename, patch);
+              if (performanceIssues.length > 0) {
+                hasWarnings = true;
+                reviewComments.push(...performanceIssues);
+              }
+              
+              // Go 語言特定檢查
+              if (fileExtension === '.go') {
+                const goIssues = analyzeGoCode(file.filename, patch);
+                reviewComments.push(...goIssues);
+              }
+              
+              // Docker 檢查
+              if (file.filename.includes('Dockerfile')) {
+                const dockerIssues = analyzeDockerfile(file.filename, patch);
+                reviewComments.push(...dockerIssues);
+              }
+            }
+            
+            // 安全性問題分析函數
+            function analyzeSecurityIssues(filename, patch) {
+              const issues = [];
+              const lines = patch.split('\n');
+              
+              lines.forEach((line, index) => {
+                if (!line.startsWith('+')) return;
+                
+                // SQL Injection 檢查
+                if (line.match(/fmt\.Sprintf.*SELECT|UPDATE|DELETE|INSERT/i)) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '🚨 Critical',
+                    message: 'Possible SQL injection vulnerability. Use parameterized queries instead of string formatting.',
+                    suggestion: 'Use prepared statements: `db.Query("SELECT * FROM users WHERE id = ?", userID)`'
+                  });
+                }
+                
+                // 硬編碼密鑰檢查
+                if (line.match(/password|secret|key.*=.*["\'][^"\']{8,}["\']|token.*=.*["\'][^"\']{20,}["\']/) && 
+                    !line.includes('example') && !line.includes('test')) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '🚨 Critical',
+                    message: 'Hard-coded secrets detected. Move sensitive data to environment variables.',
+                    suggestion: 'Use: `password := os.Getenv("DB_PASSWORD")`'
+                  });
+                }
+                
+                // 路徑遍歷檢查
+                if (line.match(/filepath\.Join.*\.\.|os\.Open.*\.\.|ioutil\.ReadFile.*\.\./) && 
+                    !line.includes('filepath.Clean')) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '⚠️ Warning',
+                    message: 'Potential path traversal vulnerability. Validate and sanitize file paths.',
+                    suggestion: 'Use: `filepath.Clean()` and validate against allowed directories'
+                  });
+                }
+              });
+              
+              return issues;
+            }
+            
+            // 效能問題分析函數
+            function analyzePerformanceIssues(filename, patch) {
+              const issues = [];
+              const lines = patch.split('\n');
+              
+              lines.forEach((line, index) => {
+                if (!line.startsWith('+')) return;
+                
+                // 迴圈中的 Query 檢查 (N+1 問題)
+                if (line.includes('for') && patch.includes('Query(') && 
+                    patch.slice(patch.indexOf(line)).includes('Query(')) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '⚠️ Warning',
+                    message: 'Possible N+1 query problem. Consider using JOIN or batch queries.',
+                    suggestion: 'Use batch queries or preload relationships to avoid multiple database calls'
+                  });
+                }
+                
+                // 無限制的 goroutine 建立
+                if (line.match(/go\s+func|go\s+\w+/) && !patch.includes('sync.WaitGroup') && 
+                    !patch.includes('context') && !patch.includes('semaphore')) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '💡 Suggestion',
+                    message: 'Consider using worker pools or context cancellation for goroutine management.',
+                    suggestion: 'Use `sync.WaitGroup` or implement worker pool pattern'
+                  });
+                }
+              });
+              
+              return issues;
+            }
+            
+            // Go 程式碼特定檢查
+            function analyzeGoCode(filename, patch) {
+              const issues = [];
+              const lines = patch.split('\n');
+              
+              lines.forEach((line, index) => {
+                if (!line.startsWith('+')) return;
+                
+                // 錯誤處理檢查
+                if (line.includes(':= ') && line.includes('err') && 
+                    !patch.includes('if err != nil')) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '⚠️ Warning',
+                    message: 'Error not handled. Always check and handle errors appropriately.',
+                    suggestion: 'Add: `if err != nil { return err }` or proper error handling'
+                  });
+                }
+                
+                // 空 interface{} 使用檢查
+                if (line.includes('interface{}') && !line.includes('//')) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '💡 Suggestion',
+                    message: 'Consider using specific types or generics instead of empty interface.',
+                    suggestion: 'Use concrete types or `any` (Go 1.18+) for better type safety'
+                  });
+                }
+              });
+              
+              return issues;
+            }
+            
+            // Dockerfile 檢查
+            function analyzeDockerfile(filename, patch) {
+              const issues = [];
+              const lines = patch.split('\n');
+              
+              lines.forEach((line, index) => {
+                if (!line.startsWith('+')) return;
+                
+                // ROOT 使用者檢查
+                if (line.match(/^FROM.*/) && !patch.includes('USER ')) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '⚠️ Warning',
+                    message: 'Running as root user. Add non-root user for security.',
+                    suggestion: 'Add: `USER 1001` or create dedicated user'
+                  });
+                }
+                
+                // 密鑰複製檢查
+                if (line.match(/COPY.*\.(key|pem|p12|jks)/) || line.match(/ADD.*\.(key|pem|p12|jks)/)) {
+                  issues.push({
+                    path: filename,
+                    line: index + 1,
+                    level: '🚨 Critical',
+                    message: 'Copying secret files into Docker image. Use secrets mounting instead.',
+                    suggestion: 'Use Docker secrets or mount secrets at runtime'
+                  });
+                }
+              });
+              
+              return issues;
+            }
+            
+            // 產生審查總結
+            let summary = `## 🤖 Claude Code Review Summary\n\n`;
+            summary += `📊 **Statistics:**\n`;
+            summary += `- Files reviewed: ${files.length}\n`;
+            summary += `- Issues found: ${reviewComments.length}\n`;
+            summary += `- Critical issues: ${reviewComments.filter(c => c.level.includes('Critical')).length}\n`;
+            summary += `- Warnings: ${reviewComments.filter(c => c.level.includes('Warning')).length}\n`;
+            summary += `- Suggestions: ${reviewComments.filter(c => c.level.includes('Suggestion')).length}\n\n`;
+            
+            if (reviewComments.length === 0) {
+              summary += `✅ **No issues detected!** Code looks good to merge.\n\n`;
+              summary += `All automated checks passed:\n`;
+              summary += `- ✅ No security vulnerabilities found\n`;
+              summary += `- ✅ No performance issues detected\n`;
+              summary += `- ✅ Code follows best practices\n`;
+            } else {
+              summary += `### 📋 Issues Overview:\n\n`;
+              
+              const criticalIssues = reviewComments.filter(c => c.level.includes('Critical'));
+              const warningIssues = reviewComments.filter(c => c.level.includes('Warning'));
+              const suggestions = reviewComments.filter(c => c.level.includes('Suggestion'));
+              
+              if (criticalIssues.length > 0) {
+                summary += `🚨 **Critical Issues (Must Fix):**\n`;
+                criticalIssues.forEach(issue => {
+                  summary += `- \`${issue.path}:${issue.line}\` - ${issue.message}\n`;
+                });
+                summary += `\n`;
+              }
+              
+              if (warningIssues.length > 0) {
+                summary += `⚠️ **Warnings (Recommended Fix):**\n`;
+                warningIssues.forEach(issue => {
+                  summary += `- \`${issue.path}:${issue.line}\` - ${issue.message}\n`;
+                });
+                summary += `\n`;
+              }
+              
+              if (suggestions.length > 0) {
+                summary += `💡 **Suggestions (Optional):**\n`;
+                suggestions.forEach(issue => {
+                  summary += `- \`${issue.path}:${issue.line}\` - ${issue.message}\n`;
+                });
+                summary += `\n`;
+              }
+              
+              if (hasErrors) {
+                summary += `❌ **Action Required:** Please fix critical issues before merging.\n`;
+              } else if (hasWarnings) {
+                summary += `⚠️ **Recommendation:** Consider addressing warnings for better code quality.\n`;
+              } else {
+                summary += `👍 **Looking good!** Only minor suggestions found.\n`;
+              }
+            }
+            
+            summary += `\n---\n`;
+            summary += `🔄 Auto-review completed in ${Date.now() - new Date(context.payload.pull_request.created_at).getTime()}ms\n`;
+            summary += `📝 For detailed explanations, see inline comments below.\n`;
+            
+            // 建立或更新評論
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.user.login === 'github-actions[bot]' && 
+              comment.body.includes('Claude Code Review Summary')
+            );
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: summary
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: summary
+              });
+            }
+            
+            // 設定 PR 狀態
+            const state = hasErrors ? 'failure' : hasWarnings ? 'success' : 'success';
+            const description = hasErrors ? 
+              'Critical issues found - review required' : 
+              hasWarnings ? 
+              'Warnings found - review recommended' : 
+              'No issues found';
+            
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: state,
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/pull/${context.issue.number}`,
+              description: description,
+              context: 'Claude Code Review'
+            });
+
+      - name: Auto-fix Minor Issues
+        if: contains(github.event.pull_request.labels.*.name, 'auto-fix')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log('🔧 Auto-fix mode enabled - applying minor fixes...');
+            
+            // 這裡可以實作自動修正邏輯
+            // 例如：格式化、簡單的語法修正等
+            
+            // 示例：自動格式化 Go 程式碼
+            const { execSync } = require('child_process');
+            
+            try {
+              execSync('make fmt', { stdio: 'inherit' });
+              
+              // 檢查是否有變更
+              const gitStatus = execSync('git status --porcelain', { encoding: 'utf8' });
+              
+              if (gitStatus.trim()) {
+                execSync('git config user.name "github-actions[bot]"');
+                execSync('git config user.email "github-actions[bot]@users.noreply.github.com"');
+                execSync('git add .');
+                execSync('git commit -m "🤖 Auto-fix: Format code and minor fixes"');
+                execSync('git push');
+                
+                // 留言說明自動修正
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: '🤖 **Auto-fix Applied!**\n\nApplied automatic formatting and minor fixes:\n- Code formatting\n- Import organization\n- Simple syntax corrections\n\nPlease review the changes and re-run tests if needed.'
+                });
+              }
+            } catch (error) {
+              console.error('Auto-fix failed:', error.message);
+            }

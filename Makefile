@@ -92,7 +92,7 @@ vet: ## Run go vet
 # Security checks
 .PHONY: security
 security: ## Run security checks
-	@which gosec > /dev/null || (echo "Installing gosec..." && go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest)
+	@which gosec > /dev/null || (echo "Installing gosec..." && go install github.com/securego/gosec/v2/cmd/gosec@latest)
 	@export PATH="$(shell go env GOPATH)/bin:$$PATH"; gosec ./...
 
 # Full quality check

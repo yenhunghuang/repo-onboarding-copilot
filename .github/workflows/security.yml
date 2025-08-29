@@ -30,9 +30,9 @@ jobs:
           go-version: '1.23'
 
       - name: Run Gosec Security Scanner
-        uses: securecodewarrior/github-action-gosec@master
-        with:
-          args: '-fmt sarif -out gosec-results.sarif ./...'
+        run: |
+          go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
+          gosec -fmt sarif -out gosec-results.sarif ./...
           
       - name: Upload Gosec results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
@@ -56,9 +56,9 @@ jobs:
           # 解析 JSON 結果並生成摘要
           if [ -f gosec-report.json ]; then
             ISSUES=$(jq '.Stats.found' gosec-report.json 2>/dev/null || echo "0")
-            SEVERITY_HIGH=$(jq '.Issues[] | select(.severity=="HIGH") | length' gosec-report.json 2>/dev/null | wc -l)
-            SEVERITY_MEDIUM=$(jq '.Issues[] | select(.severity=="MEDIUM") | length' gosec-report.json 2>/dev/null | wc -l)
-            SEVERITY_LOW=$(jq '.Issues[] | select(.severity=="LOW") | length' gosec-report.json 2>/dev/null | wc -l)
+            SEVERITY_HIGH=$(jq '[.Issues[] | select(.severity=="HIGH")] | length' gosec-report.json 2>/dev/null || echo "0")
+            SEVERITY_MEDIUM=$(jq '[.Issues[] | select(.severity=="MEDIUM")] | length' gosec-report.json 2>/dev/null || echo "0")
+            SEVERITY_LOW=$(jq '[.Issues[] | select(.severity=="LOW")] | length' gosec-report.json 2>/dev/null || echo "0")
             
             echo "- **Total Issues**: $ISSUES" >> security-summary.md
             echo "- **High Severity**: $SEVERITY_HIGH" >> security-summary.md

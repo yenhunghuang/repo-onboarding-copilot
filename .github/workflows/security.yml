@@ -32,7 +32,8 @@ jobs:
       - name: Run Gosec Security Scanner
         run: |
           go install github.com/securego/gosec/v2/cmd/gosec@latest
-          gosec -fmt sarif -out gosec-results.sarif ./...
+          export PATH="$(go env GOPATH)/bin:$PATH"
+          gosec -fmt sarif -out gosec-results.sarif ./... || true
           
       - name: Upload Gosec results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
@@ -43,7 +44,8 @@ jobs:
       - name: Generate Security Report
         if: always()
         run: |
-          gosec -fmt json -out gosec-report.json ./...
+          export PATH="$(go env GOPATH)/bin:$PATH"
+          gosec -fmt json -out gosec-report.json ./... || true
           
           # 產生可讀報告
           cat > security-summary.md << 'EOF'

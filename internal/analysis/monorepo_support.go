@@ -12,44 +12,44 @@ import (
 
 // WorkspaceConfig represents workspace configuration
 type WorkspaceConfig struct {
-	Packages   []string          `json:"packages"`   // workspace package patterns
-	NohoisT    []string          `json:"nohoist"`    // packages that shouldn't be hoisted
-	Metadata   map[string]interface{} `json:"metadata"`
+	Packages []string               `json:"packages"` // workspace package patterns
+	NohoisT  []string               `json:"nohoist"`  // packages that shouldn't be hoisted
+	Metadata map[string]interface{} `json:"metadata"`
 }
 
 // WorkspacePackage represents a package within a workspace
 type WorkspacePackage struct {
-	Name         string                 `json:"name"`
-	Version      string                 `json:"version"`
-	Path         string                 `json:"path"`         // relative path from workspace root
-	AbsolutePath string                 `json:"absolute_path"`
-	Manifest     *PackageManifest       `json:"manifest"`
-	Dependencies map[string]string      `json:"dependencies"` // all dependencies combined
-	WorkspaceDeps map[string]string     `json:"workspace_deps"` // dependencies within workspace
-	ExternalDeps  map[string]string     `json:"external_deps"`  // external dependencies
-	IsPrivate    bool                   `json:"is_private"`
+	Name          string            `json:"name"`
+	Version       string            `json:"version"`
+	Path          string            `json:"path"` // relative path from workspace root
+	AbsolutePath  string            `json:"absolute_path"`
+	Manifest      *PackageManifest  `json:"manifest"`
+	Dependencies  map[string]string `json:"dependencies"`   // all dependencies combined
+	WorkspaceDeps map[string]string `json:"workspace_deps"` // dependencies within workspace
+	ExternalDeps  map[string]string `json:"external_deps"`  // external dependencies
+	IsPrivate     bool              `json:"is_private"`
 }
 
 // MonorepoStructure represents the complete monorepo structure
 type MonorepoStructure struct {
-	RootPath        string                       `json:"root_path"`
-	RootManifest    *PackageManifest            `json:"root_manifest"`
-	WorkspaceConfig *WorkspaceConfig            `json:"workspace_config"`
-	Packages        map[string]*WorkspacePackage `json:"packages"` // keyed by package name
-	PackagePaths    []string                    `json:"package_paths"` // all discovered package paths
-	LernaConfig     *LernaConfig                `json:"lerna_config,omitempty"`
-	Type            string                      `json:"type"` // npm-workspaces, yarn-workspaces, lerna
-	CrossPackageDeps map[string][]string        `json:"cross_package_deps"` // cross-workspace dependencies
+	RootPath         string                       `json:"root_path"`
+	RootManifest     *PackageManifest             `json:"root_manifest"`
+	WorkspaceConfig  *WorkspaceConfig             `json:"workspace_config"`
+	Packages         map[string]*WorkspacePackage `json:"packages"`      // keyed by package name
+	PackagePaths     []string                     `json:"package_paths"` // all discovered package paths
+	LernaConfig      *LernaConfig                 `json:"lerna_config,omitempty"`
+	Type             string                       `json:"type"`               // npm-workspaces, yarn-workspaces, lerna
+	CrossPackageDeps map[string][]string          `json:"cross_package_deps"` // cross-workspace dependencies
 }
 
 // LernaConfig represents lerna.json configuration
 type LernaConfig struct {
-	Version    string   `json:"version"`
-	Packages   []string `json:"packages"`
-	Command    map[string]interface{} `json:"command"`
-	NPMClient  string   `json:"npmClient"`
-	UseWorkspaces bool  `json:"useWorkspaces"`
-	Metadata   map[string]interface{} `json:"metadata"`
+	Version       string                 `json:"version"`
+	Packages      []string               `json:"packages"`
+	Command       map[string]interface{} `json:"command"`
+	NPMClient     string                 `json:"npmClient"`
+	UseWorkspaces bool                   `json:"useWorkspaces"`
+	Metadata      map[string]interface{} `json:"metadata"`
 }
 
 // detectMonorepoStructure detects if the project is a monorepo and analyzes its structure
@@ -65,12 +65,12 @@ func (da *DependencyAnalyzer) detectMonorepoStructure() (*MonorepoStructure, err
 	rootPackagePath := filepath.Join(da.projectRoot, "package.json")
 	if manifest, err := da.parsePackageJSON(rootPackagePath); err == nil {
 		structure.RootManifest = manifest
-		
+
 		// Check for workspace configuration
 		if workspaceConfig, err := da.parseWorkspaceConfig(manifest); err == nil {
 			structure.WorkspaceConfig = workspaceConfig
 			structure.Type = "npm-workspaces"
-			
+
 			// Detect if it's actually Yarn workspaces
 			if _, err := os.Stat(filepath.Join(da.projectRoot, "yarn.lock")); err == nil {
 				structure.Type = "yarn-workspaces"
@@ -81,7 +81,7 @@ func (da *DependencyAnalyzer) detectMonorepoStructure() (*MonorepoStructure, err
 	// Check for lerna.json
 	if lernaConfig, err := da.parseLernaConfig(); err == nil {
 		structure.LernaConfig = lernaConfig
-		
+
 		// If lerna uses workspaces and we have workspace config, it's lerna-workspaces
 		if lernaConfig.UseWorkspaces && structure.WorkspaceConfig != nil {
 			structure.Type = "lerna-workspaces"
@@ -158,7 +158,7 @@ func (da *DependencyAnalyzer) parseWorkspaceConfig(manifest *PackageManifest) (*
 // parseLernaConfig parses lerna.json configuration
 func (da *DependencyAnalyzer) parseLernaConfig() (*LernaConfig, error) {
 	lernaPath := filepath.Join(da.projectRoot, "lerna.json")
-	
+
 	content, err := os.ReadFile(lernaPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read lerna.json: %w", err)
@@ -244,7 +244,7 @@ func (da *DependencyAnalyzer) discoverWorkspacePackages(structure *MonorepoStruc
 func (da *DependencyAnalyzer) discoverPackagesByPattern(structure *MonorepoStructure, pattern string) error {
 	// Convert workspace pattern to file glob
 	searchPath := filepath.Join(da.projectRoot, pattern)
-	
+
 	// Handle different pattern types
 	if strings.Contains(pattern, "*") {
 		// Glob pattern - find directories that match
@@ -298,15 +298,15 @@ func (da *DependencyAnalyzer) processPackageDirectory(structure *MonorepoStructu
 
 	// Create workspace package
 	workspacePackage := &WorkspacePackage{
-		Name:         manifest.Name,
-		Version:      manifest.Version,
-		Path:         relPath,
-		AbsolutePath: dirPath,
-		Manifest:     manifest,
-		Dependencies: make(map[string]string),
+		Name:          manifest.Name,
+		Version:       manifest.Version,
+		Path:          relPath,
+		AbsolutePath:  dirPath,
+		Manifest:      manifest,
+		Dependencies:  make(map[string]string),
 		WorkspaceDeps: make(map[string]string),
 		ExternalDeps:  make(map[string]string),
-		IsPrivate:    manifest.Private,
+		IsPrivate:     manifest.Private,
 	}
 
 	// Combine all dependencies
@@ -341,7 +341,7 @@ func (da *DependencyAnalyzer) analyzeCrossPackageDependencies(structure *Monorep
 	// Analyze each package's dependencies
 	for packageName, pkg := range structure.Packages {
 		crossDeps := []string{}
-		
+
 		for depName, depVersion := range pkg.Dependencies {
 			if packageNames[depName] {
 				// This is a workspace dependency
@@ -365,7 +365,7 @@ func (da *DependencyAnalyzer) integrateMonorepoWithDependencyTree(ctx context.Co
 	if tree.Statistics.TypeDistribution == nil {
 		tree.Statistics.TypeDistribution = make(map[string]int)
 	}
-	
+
 	// Add workspace packages as special dependency nodes
 	for _, pkg := range monorepo.Packages {
 		// Create a workspace dependency node

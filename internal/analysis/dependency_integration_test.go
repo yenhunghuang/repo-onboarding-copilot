@@ -134,12 +134,12 @@ func TestAnalyzeDependenciesForProject(t *testing.T) {
 
 	// Verify statistics
 	stats := tree.Statistics
-	// t.Logf("Statistics: Total=%d, Direct=%d, Transitive=%d, Dev=%d", 
+	// t.Logf("Statistics: Total=%d, Direct=%d, Transitive=%d, Dev=%d",
 	//	stats.TotalDependencies, stats.DirectDependencies, stats.TransitiveDependencies, stats.DevDependencies)
-	assert.Equal(t, 6, stats.TotalDependencies)    // express, lodash, jest, webpack, accepts, cookie
-	assert.Equal(t, 4, stats.DirectDependencies)   // express, lodash, jest, webpack
+	assert.Equal(t, 6, stats.TotalDependencies)      // express, lodash, jest, webpack, accepts, cookie
+	assert.Equal(t, 4, stats.DirectDependencies)     // express, lodash, jest, webpack
 	assert.Equal(t, 2, stats.TransitiveDependencies) // accepts, cookie
-	assert.Equal(t, 2, stats.DevDependencies)      // jest, webpack
+	assert.Equal(t, 2, stats.DevDependencies)        // jest, webpack
 	assert.True(t, stats.MaxDepth >= 1)
 
 	// Verify dependency graph
@@ -236,9 +236,9 @@ func TestGetDependencyMetrics(t *testing.T) {
 			ProprietaryPackages: []string{"proprietary"},
 		},
 		UpdateReport: &UpdateReport{
-			OutdatedPackages:    5,
-			SecurityUpdates:     1,
-			BreakingUpdates:     2,
+			OutdatedPackages: 5,
+			SecurityUpdates:  1,
+			BreakingUpdates:  2,
 		},
 		BundleAnalysis: &BundleAnalysis{
 			LoadTimeEstimate: map[string]float64{

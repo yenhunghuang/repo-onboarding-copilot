@@ -14,52 +14,52 @@ import (
 
 // DependencyAnalyzer analyzes project dependencies from package management files
 type DependencyAnalyzer struct {
-	projectRoot       string
-	config            DependencyAnalyzerConfig
-	vulnerabilityDB   *VulnerabilityDatabase
-	licenseChecker    *LicenseChecker
-	updateChecker     *UpdateChecker
+	projectRoot         string
+	config              DependencyAnalyzerConfig
+	vulnerabilityDB     *VulnerabilityDatabase
+	licenseChecker      *LicenseChecker
+	updateChecker       *UpdateChecker
 	performanceAnalyzer *PerformanceAnalyzer
-	bundleAnalyzer    *BundleAnalyzer
+	bundleAnalyzer      *BundleAnalyzer
 }
 
 // DependencyAnalyzerConfig configures dependency analysis behavior
 type DependencyAnalyzerConfig struct {
-	ProjectRoot            string   `json:"project_root"`
-	IncludePackageFiles    []string `json:"include_package_files"`    // package.json, package-lock.json, yarn.lock
-	EnableVulnScanning     bool     `json:"enable_vuln_scanning"`
-	EnableLicenseChecking  bool     `json:"enable_license_checking"`
-	EnableUpdateChecking   bool     `json:"enable_update_checking"`
-	EnablePerformanceAnalysis bool  `json:"enable_performance_analysis"`
-	EnableBundleAnalysis   bool     `json:"enable_bundle_analysis"`
-	MaxDependencyDepth     int      `json:"max_dependency_depth"`     // limit transitive dependency resolution
-	BundleSizeThreshold    int64    `json:"bundle_size_threshold"`    // bytes
-	PerformanceThreshold   int      `json:"performance_threshold"`   // ms
-	CriticalVulnThreshold  float64  `json:"critical_vuln_threshold"` // CVSS score
+	ProjectRoot               string   `json:"project_root"`
+	IncludePackageFiles       []string `json:"include_package_files"` // package.json, package-lock.json, yarn.lock
+	EnableVulnScanning        bool     `json:"enable_vuln_scanning"`
+	EnableLicenseChecking     bool     `json:"enable_license_checking"`
+	EnableUpdateChecking      bool     `json:"enable_update_checking"`
+	EnablePerformanceAnalysis bool     `json:"enable_performance_analysis"`
+	EnableBundleAnalysis      bool     `json:"enable_bundle_analysis"`
+	MaxDependencyDepth        int      `json:"max_dependency_depth"`    // limit transitive dependency resolution
+	BundleSizeThreshold       int64    `json:"bundle_size_threshold"`   // bytes
+	PerformanceThreshold      int      `json:"performance_threshold"`   // ms
+	CriticalVulnThreshold     float64  `json:"critical_vuln_threshold"` // CVSS score
 }
 
 // PackageManifest represents parsed package.json data
 type PackageManifest struct {
-	Name            string                 `json:"name"`
-	Version         string                 `json:"version"`
-	Description     string                 `json:"description"`
-	Main            string                 `json:"main"`
-	Scripts         map[string]string      `json:"scripts"`
-	Dependencies    map[string]string      `json:"dependencies"`
-	DevDependencies map[string]string      `json:"devDependencies"`
-	PeerDependencies map[string]string     `json:"peerDependencies"`
-	OptionalDependencies map[string]string `json:"optionalDependencies"`
-	BundledDependencies []string           `json:"bundledDependencies"`
-	Engines         map[string]string      `json:"engines"`
-	Repository      interface{}            `json:"repository"`
-	Author          interface{}            `json:"author"`
-	License         interface{}            `json:"license"`
-	Keywords        []string               `json:"keywords"`
-	Homepage        string                 `json:"homepage"`
-	Bugs            interface{}            `json:"bugs"`
-	Private         bool                   `json:"private"`
-	Workspaces      interface{}            `json:"workspaces"`
-	Metadata        map[string]interface{} `json:"-"` // store additional fields
+	Name                 string                 `json:"name"`
+	Version              string                 `json:"version"`
+	Description          string                 `json:"description"`
+	Main                 string                 `json:"main"`
+	Scripts              map[string]string      `json:"scripts"`
+	Dependencies         map[string]string      `json:"dependencies"`
+	DevDependencies      map[string]string      `json:"devDependencies"`
+	PeerDependencies     map[string]string      `json:"peerDependencies"`
+	OptionalDependencies map[string]string      `json:"optionalDependencies"`
+	BundledDependencies  []string               `json:"bundledDependencies"`
+	Engines              map[string]string      `json:"engines"`
+	Repository           interface{}            `json:"repository"`
+	Author               interface{}            `json:"author"`
+	License              interface{}            `json:"license"`
+	Keywords             []string               `json:"keywords"`
+	Homepage             string                 `json:"homepage"`
+	Bugs                 interface{}            `json:"bugs"`
+	Private              bool                   `json:"private"`
+	Workspaces           interface{}            `json:"workspaces"`
+	Metadata             map[string]interface{} `json:"-"` // store additional fields
 }
 
 // LockFile represents parsed lock file data (npm/yarn)
@@ -101,49 +101,49 @@ type DependencyNode struct {
 
 // PackageInfo contains metadata about a package
 type PackageInfo struct {
-	Description    string            `json:"description"`
-	Homepage       string            `json:"homepage"`
-	Repository     string            `json:"repository"`
-	Author         string            `json:"author"`
-	Keywords       []string          `json:"keywords"`
-	EstimatedSize  int64             `json:"estimated_size"`  // bytes
-	DownloadCount  int               `json:"download_count"`  // weekly downloads
-	LastModified   time.Time         `json:"last_modified"`
-	Deprecated     bool              `json:"deprecated"`
-	MaintenanceScore float64         `json:"maintenance_score"` // 0-1 scale
-	Metadata       map[string]string `json:"metadata"`
+	Description      string            `json:"description"`
+	Homepage         string            `json:"homepage"`
+	Repository       string            `json:"repository"`
+	Author           string            `json:"author"`
+	Keywords         []string          `json:"keywords"`
+	EstimatedSize    int64             `json:"estimated_size"` // bytes
+	DownloadCount    int               `json:"download_count"` // weekly downloads
+	LastModified     time.Time         `json:"last_modified"`
+	Deprecated       bool              `json:"deprecated"`
+	MaintenanceScore float64           `json:"maintenance_score"` // 0-1 scale
+	Metadata         map[string]string `json:"metadata"`
 }
 
 // DependencyTree represents the complete dependency hierarchy
 type DependencyTree struct {
-	RootPackage       *PackageManifest            `json:"root_package"`
-	DirectDeps        map[string]*DependencyNode  `json:"direct_dependencies"`
-	AllDependencies   map[string]*DependencyNode  `json:"all_dependencies"`      // flattened view
-	LockData          *LockFile                   `json:"lock_data"`
-	Statistics        DependencyStats             `json:"statistics"`
-	Graph             *DependencyGraph            `json:"graph"`                 // graph representation
-	BundleAnalysis    *BundleAnalysis             `json:"bundle_analysis"`
-	SecurityReport    *SecurityReport             `json:"security_report"`
-	LicenseReport     *LicenseReport              `json:"license_report"`
-	UpdateReport      *UpdateReport               `json:"update_report"`
-	PerformanceReport *PerformanceReport          `json:"performance_report"`
-	BundleResult      *BundleAnalysisResult       `json:"bundle_result"`
+	RootPackage       *PackageManifest           `json:"root_package"`
+	DirectDeps        map[string]*DependencyNode `json:"direct_dependencies"`
+	AllDependencies   map[string]*DependencyNode `json:"all_dependencies"` // flattened view
+	LockData          *LockFile                  `json:"lock_data"`
+	Statistics        DependencyStats            `json:"statistics"`
+	Graph             *DependencyGraph           `json:"graph"` // graph representation
+	BundleAnalysis    *BundleAnalysis            `json:"bundle_analysis"`
+	SecurityReport    *SecurityReport            `json:"security_report"`
+	LicenseReport     *LicenseReport             `json:"license_report"`
+	UpdateReport      *UpdateReport              `json:"update_report"`
+	PerformanceReport *PerformanceReport         `json:"performance_report"`
+	BundleResult      *BundleAnalysisResult      `json:"bundle_result"`
 }
 
 // DependencyStats contains dependency tree statistics
 type DependencyStats struct {
-	TotalDependencies   int               `json:"total_dependencies"`
-	DirectDependencies  int               `json:"direct_dependencies"`
-	DevDependencies     int               `json:"dev_dependencies"`
+	TotalDependencies      int            `json:"total_dependencies"`
+	DirectDependencies     int            `json:"direct_dependencies"`
+	DevDependencies        int            `json:"dev_dependencies"`
 	TransitiveDependencies int            `json:"transitive_dependencies"`
-	MaxDepth            int               `json:"max_depth"`
-	DuplicatePackages   int               `json:"duplicate_packages"`
-	OutdatedPackages    int               `json:"outdated_packages"`
-	VulnerablePackages  int               `json:"vulnerable_packages"`
-	DeprecatedPackages  int               `json:"deprecated_packages"`
-	TotalSize           int64             `json:"total_size"`         // estimated bytes
-	TypeDistribution    map[string]int    `json:"type_distribution"`  // production, development, etc.
-	LicenseDistribution map[string]int    `json:"license_distribution"`
+	MaxDepth               int            `json:"max_depth"`
+	DuplicatePackages      int            `json:"duplicate_packages"`
+	OutdatedPackages       int            `json:"outdated_packages"`
+	VulnerablePackages     int            `json:"vulnerable_packages"`
+	DeprecatedPackages     int            `json:"deprecated_packages"`
+	TotalSize              int64          `json:"total_size"`        // estimated bytes
+	TypeDistribution       map[string]int `json:"type_distribution"` // production, development, etc.
+	LicenseDistribution    map[string]int `json:"license_distribution"`
 }
 
 // NewDependencyAnalyzer creates a new dependency analyzer
@@ -604,12 +604,12 @@ func (da *DependencyAnalyzer) enrichDependencyTree(ctx context.Context, tree *De
 	}
 
 	tree.LicenseReport = &LicenseReport{
-		LicenseDistribution:  make(map[string]int),
-		CompatibilityIssues:  []LicenseConflict{},
-		UnknownLicenses:      []string{},
-		ProprietaryPackages:  []string{},
-		CopyleftPackages:     []string{},
-		Recommendations:      []string{},
+		LicenseDistribution: make(map[string]int),
+		CompatibilityIssues: []LicenseConflict{},
+		UnknownLicenses:     []string{},
+		ProprietaryPackages: []string{},
+		CopyleftPackages:    []string{},
+		Recommendations:     []string{},
 	}
 
 	tree.UpdateReport = &UpdateReport{
@@ -621,10 +621,10 @@ func (da *DependencyAnalyzer) enrichDependencyTree(ctx context.Context, tree *De
 
 	// Initialize performance analysis results
 	tree.PerformanceReport = &PerformanceReport{
-		Packages:          []PerformanceImpact{},
-		AverageLoadTime:   make(map[string]float64),
-		TotalImpact:       0.0,
-		Recommendations:   []PerformanceRecommendation{},
+		Packages:        []PerformanceImpact{},
+		AverageLoadTime: make(map[string]float64),
+		TotalImpact:     0.0,
+		Recommendations: []PerformanceRecommendation{},
 	}
 
 	tree.BundleResult = &BundleAnalysisResult{
@@ -691,22 +691,22 @@ func (da *DependencyAnalyzer) enrichDependencyTree(ctx context.Context, tree *De
 func (da *DependencyAnalyzer) createDependencyGraph(tree *DependencyTree) *DependencyGraph {
 	// Create packages list from dependency tree
 	packages := make([]*GraphPackageInfo, 0, len(tree.AllDependencies))
-	
+
 	for name, node := range tree.AllDependencies {
 		// Convert DependencyNode to GraphPackageInfo format
 		pkg := &GraphPackageInfo{
-			Name:         name,
-			Version:      node.Version,
-			DependencyType: node.Type,
-			Dependencies: make(map[string]string),
-			DevDependencies: make(map[string]string),
+			Name:             name,
+			Version:          node.Version,
+			DependencyType:   node.Type,
+			Dependencies:     make(map[string]string),
+			DevDependencies:  make(map[string]string),
 			PeerDependencies: make(map[string]string),
-			Description:  getNodeDescription(node),
-			Homepage:     getNodeHomepage(node),
-			Repository:   getNodeRepository(node),
-			RegistryURL:  fmt.Sprintf("https://registry.npmjs.org/%s", name),
+			Description:      getNodeDescription(node),
+			Homepage:         getNodeHomepage(node),
+			Repository:       getNodeRepository(node),
+			RegistryURL:      fmt.Sprintf("https://registry.npmjs.org/%s", name),
 		}
-		
+
 		// Add dependencies based on type
 		for childName, childNode := range node.Children {
 			switch node.Type {
@@ -718,10 +718,10 @@ func (da *DependencyAnalyzer) createDependencyGraph(tree *DependencyTree) *Depen
 				pkg.Dependencies[childName] = childNode.RequestedVersion
 			}
 		}
-		
+
 		packages = append(packages, pkg)
 	}
-	
+
 	// Use GraphBuilder to create advanced graph
 	builder := NewGraphBuilder("npm") // Default to npm for now
 	err := builder.BuildFromPackageList(packages)
@@ -729,12 +729,12 @@ func (da *DependencyAnalyzer) createDependencyGraph(tree *DependencyTree) *Depen
 		// Fallback to basic graph on error
 		return da.createBasicGraph(tree)
 	}
-	
+
 	graph := builder.GetGraph()
-	
+
 	// Enrich graph with analysis results from tree
 	da.enrichGraphWithAnalysisData(graph, tree)
-	
+
 	return graph
 }
 
@@ -742,28 +742,28 @@ func (da *DependencyAnalyzer) createDependencyGraph(tree *DependencyTree) *Depen
 func (da *DependencyAnalyzer) createBasicGraph(tree *DependencyTree) *DependencyGraph {
 	builder := NewGraphBuilder("npm") // Default to npm
 	graph := builder.GetGraph()
-	
+
 	// Add basic nodes
 	for name, node := range tree.AllDependencies {
 		nodeID := fmt.Sprintf("%s@%s", name, node.Version)
 		graphNode := &GraphNode{
-			ID:          nodeID,
-			Name:        name,
-			Version:     node.Version,
-			PackageType: node.Type,
-			Size:        0,
-			Weight:      1.0,
-			Depth:       node.Depth,
-			Metadata:    make(map[string]string),
+			ID:                 nodeID,
+			Name:               name,
+			Version:            node.Version,
+			PackageType:        node.Type,
+			Size:               0,
+			Weight:             1.0,
+			Depth:              node.Depth,
+			Metadata:           make(map[string]string),
 			VulnerabilityCount: len(node.Vulnerabilities),
-			LicenseInfo: node.License.SPDX,
-			UpdatesAvailable: 0,
-			RiskScore: 0.0,
+			LicenseInfo:        node.License.SPDX,
+			UpdatesAvailable:   0,
+			RiskScore:          0.0,
 		}
-		
+
 		graph.Nodes[nodeID] = graphNode
 	}
-	
+
 	return graph
 }
 
@@ -774,7 +774,7 @@ func (da *DependencyAnalyzer) enrichGraphWithAnalysisData(graph *DependencyGraph
 		if depNode, exists := tree.AllDependencies[graphNode.Name]; exists {
 			graphNode.VulnerabilityCount = len(depNode.Vulnerabilities)
 			graphNode.LicenseInfo = depNode.License.SPDX
-			
+
 			// Calculate risk score based on vulnerabilities and license issues
 			riskScore := 0.0
 			if len(depNode.Vulnerabilities) > 0 {
@@ -792,13 +792,13 @@ func (da *DependencyAnalyzer) enrichGraphWithAnalysisData(graph *DependencyGraph
 					}
 				}
 			}
-			
+
 			// Add license risk - basic check for now
 			// TODO: Implement license risk assessment based on license compatibility analysis
 			if depNode.License.SPDX == "" {
 				riskScore += 0.5 // Unknown license adds some risk
 			}
-			
+
 			graphNode.RiskScore = math.Min(riskScore, 10.0) // Cap at 10
 		}
 	}
@@ -859,7 +859,7 @@ func (da *DependencyAnalyzer) runVulnerabilityAnalysis(ctx context.Context, tree
 	for _, vuln := range vulnerabilities {
 		// Count by severity
 		report.SeverityDistribution[vuln.Severity]++
-		
+
 		switch vuln.Severity {
 		case "critical":
 			report.CriticalCount++
@@ -945,16 +945,16 @@ func (da *DependencyAnalyzer) runLicenseAnalysis(ctx context.Context, tree *Depe
 	for packageName, node := range tree.AllDependencies {
 		if licenseInfo, err := da.licenseChecker.analyzeLicense(ctx, packageName, node.Version); err == nil {
 			node.License = LicenseInfo{
-				SPDX:         licenseInfo.SPDXIdentifier,
-				Name:         licenseInfo.DeclaredLicense,
-				Type:         licenseInfo.LicenseType,
-				URL:          licenseInfo.LicenseURL,
+				SPDX:          licenseInfo.SPDXIdentifier,
+				Name:          licenseInfo.DeclaredLicense,
+				Type:          licenseInfo.LicenseType,
+				URL:           licenseInfo.LicenseURL,
 				Compatibility: fmt.Sprintf("%t", licenseInfo.Compatibility.Compatible),
-				Risk:         licenseInfo.RiskLevel,
-				Metadata:     map[string]string{
+				Risk:          licenseInfo.RiskLevel,
+				Metadata: map[string]string{
 					"declared_license": licenseInfo.DeclaredLicense,
-					"spdx_id":         licenseInfo.SPDXIdentifier,
-					"license_type":    licenseInfo.LicenseType,
+					"spdx_id":          licenseInfo.SPDXIdentifier,
+					"license_type":     licenseInfo.LicenseType,
 				},
 			}
 		}
@@ -1037,11 +1037,11 @@ func (da *DependencyAnalyzer) runPerformanceAnalysis(ctx context.Context, tree *
 
 		// Create GraphPackageInfo for the performance analyzer
 		pkg := &GraphPackageInfo{
-			Name:    name,
-			Version: node.Version,
+			Name:           name,
+			Version:        node.Version,
 			DependencyType: node.Type,
 		}
-		
+
 		impact, err := da.performanceAnalyzer.AnalyzePackagePerformance(ctx, pkg)
 		if err != nil {
 			// Log error but continue with other packages
@@ -1196,7 +1196,7 @@ func (da *DependencyAnalyzer) generatePerformanceRecommendations(impacts []Perfo
 func (da *DependencyAnalyzer) estimateLoadTime(sizeBytes int64, networkType string) float64 {
 	// Basic load time calculation based on size and network
 	sizeMB := float64(sizeBytes) / 1048576.0 // Convert to MB
-	
+
 	switch networkType {
 	case "3G":
 		return sizeMB * 8.0 // ~8 seconds per MB on 3G

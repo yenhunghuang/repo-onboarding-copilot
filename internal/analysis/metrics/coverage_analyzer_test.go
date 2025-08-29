@@ -11,7 +11,7 @@ import (
 
 func TestNewCoverageAnalyzer(t *testing.T) {
 	analyzer := NewCoverageAnalyzer()
-	
+
 	assert.NotNil(t, analyzer)
 	assert.Equal(t, 5, analyzer.config.LowComplexityThreshold)
 	assert.Equal(t, 15, analyzer.config.HighComplexityThreshold)
@@ -32,9 +32,9 @@ func TestNewCoverageAnalyzerWithConfig(t *testing.T) {
 		SizeWeight:              0.10,
 		PatternWeight:           0.00,
 	}
-	
+
 	analyzer := NewCoverageAnalyzerWithConfig(config)
-	
+
 	assert.NotNil(t, analyzer)
 	assert.Equal(t, 3, analyzer.config.LowComplexityThreshold)
 	assert.Equal(t, 10, analyzer.config.HighComplexityThreshold)
@@ -43,9 +43,9 @@ func TestNewCoverageAnalyzerWithConfig(t *testing.T) {
 
 func TestAnalyzeCoverage_EmptyInput(t *testing.T) {
 	analyzer := NewCoverageAnalyzer()
-	
+
 	metrics, err := analyzer.AnalyzeCoverage(context.Background(), []*ast.ParseResult{}, nil)
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, metrics)
 	assert.Equal(t, "pass", metrics.Summary.QualityGate)
@@ -56,27 +56,27 @@ func TestAnalyzeCoverage_EmptyInput(t *testing.T) {
 
 func TestAnalyzeCoverage_ValidInput(t *testing.T) {
 	analyzer := NewCoverageAnalyzer()
-	
+
 	parseResults := createMockParseResults()
 	complexityMetrics := createMockComplexityMetricsForCoverage()
-	
+
 	metrics, err := analyzer.AnalyzeCoverage(context.Background(), parseResults, complexityMetrics)
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, metrics)
-	
+
 	// Verify function analysis
 	assert.Greater(t, len(metrics.FunctionAnalysis), 0)
-	
+
 	// Verify file analysis
 	assert.Greater(t, len(metrics.FileAnalysis), 0)
-	
+
 	// Verify overall metrics
 	assert.GreaterOrEqual(t, metrics.OverallScore, 0.0)
 	assert.LessOrEqual(t, metrics.OverallScore, 100.0)
 	assert.GreaterOrEqual(t, metrics.TestabilityScore, 0.0)
 	assert.LessOrEqual(t, metrics.TestabilityScore, 100.0)
-	
+
 	// Verify summary
 	assert.NotEmpty(t, metrics.Summary.QualityGate)
 	assert.GreaterOrEqual(t, metrics.Summary.TotalFunctions, 0)
@@ -85,32 +85,32 @@ func TestAnalyzeCoverage_ValidInput(t *testing.T) {
 
 func TestCoverageAnalysisIntegration(t *testing.T) {
 	analyzer := NewCoverageAnalyzer()
-	
+
 	parseResults := createComplexMockParseResults()
 	complexityMetrics := createMockComplexityMetricsForCoverage()
-	
+
 	metrics, err := analyzer.AnalyzeCoverage(context.Background(), parseResults, complexityMetrics)
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, metrics)
-	
+
 	// Verify comprehensive analysis
 	assert.Greater(t, len(metrics.FunctionAnalysis), 0, "Should analyze functions")
 	assert.Greater(t, len(metrics.UntestedPaths), 0, "Should identify untested paths")
 	assert.Greater(t, len(metrics.TestingRecommendations), 0, "Should generate recommendations")
-	
+
 	// Verify priority matrix
-	totalItems := len(metrics.PriorityMatrix.CriticalPriority) + 
-		len(metrics.PriorityMatrix.HighPriority) + 
-		len(metrics.PriorityMatrix.MediumPriority) + 
+	totalItems := len(metrics.PriorityMatrix.CriticalPriority) +
+		len(metrics.PriorityMatrix.HighPriority) +
+		len(metrics.PriorityMatrix.MediumPriority) +
 		len(metrics.PriorityMatrix.LowPriority)
 	assert.Equal(t, len(metrics.FunctionAnalysis), totalItems, "All functions should be prioritized")
-	
+
 	// Verify testing strategy
 	assert.NotEmpty(t, metrics.TestingStrategy.OverallApproach)
 	assert.NotEmpty(t, metrics.TestingStrategy.RecommendedFramework)
 	assert.Greater(t, len(metrics.TestingStrategy.PhaseRecommendations), 0)
-	
+
 	// Verify realistic metrics
 	assert.GreaterOrEqual(t, metrics.TestingStrategy.TimelineEstimate.TotalWeeks, 3, "Should have realistic timeline")
 	assert.Greater(t, metrics.TestingStrategy.ResourceRequirements.DeveloperHours, 0)
@@ -124,42 +124,42 @@ func TestCoverageConfigValidation(t *testing.T) {
 		{
 			name: "default_config",
 			config: CoverageConfig{
-				LowComplexityThreshold:    5,
-				HighComplexityThreshold:   15,
-				ComplexityWeight:          0.30,
-				CouplingWeight:            0.25,
-				DependencyWeight:          0.20,
-				SizeWeight:                0.15,
-				PatternWeight:             0.10,
+				LowComplexityThreshold:  5,
+				HighComplexityThreshold: 15,
+				ComplexityWeight:        0.30,
+				CouplingWeight:          0.25,
+				DependencyWeight:        0.20,
+				SizeWeight:              0.15,
+				PatternWeight:           0.10,
 			},
 		},
 		{
 			name: "high_complexity_focus",
 			config: CoverageConfig{
-				LowComplexityThreshold:    3,
-				HighComplexityThreshold:   8,
-				ComplexityWeight:          0.50,
-				CouplingWeight:            0.20,
-				DependencyWeight:          0.15,
-				SizeWeight:                0.10,
-				PatternWeight:             0.05,
+				LowComplexityThreshold:  3,
+				HighComplexityThreshold: 8,
+				ComplexityWeight:        0.50,
+				CouplingWeight:          0.20,
+				DependencyWeight:        0.15,
+				SizeWeight:              0.10,
+				PatternWeight:           0.05,
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			analyzer := NewCoverageAnalyzerWithConfig(tt.config)
-			
+
 			// Verify weights sum to 1.0 (approximately)
-			totalWeight := tt.config.ComplexityWeight + tt.config.CouplingWeight + 
+			totalWeight := tt.config.ComplexityWeight + tt.config.CouplingWeight +
 				tt.config.DependencyWeight + tt.config.SizeWeight + tt.config.PatternWeight
 			assert.InDelta(t, 1.0, totalWeight, 0.01, "Weights should sum to approximately 1.0")
-			
+
 			// Test with sample data
 			parseResults := createMockParseResults()
 			complexityMetrics := createMockComplexityMetricsForCoverage()
-			
+
 			metrics, err := analyzer.AnalyzeCoverage(context.Background(), parseResults, complexityMetrics)
 			require.NoError(t, err)
 			assert.NotNil(t, metrics)
@@ -185,7 +185,7 @@ func createMockParseResults() []*ast.ParseResult {
 					EndLine:    5,
 				},
 				{
-					Name:       "complexFunction",
+					Name: "complexFunction",
 					Parameters: []ast.ParameterInfo{
 						{Name: "param1", Type: "object"},
 						{Name: "param2", Type: "string", IsOptional: true},
@@ -238,7 +238,7 @@ func createComplexMockParseResults() []*ast.ParseResult {
 		},
 		{
 			FilePath: "simple.js",
-			Language: "javascript", 
+			Language: "javascript",
 			Functions: []ast.FunctionInfo{
 				{
 					Name:       "easyFunction",

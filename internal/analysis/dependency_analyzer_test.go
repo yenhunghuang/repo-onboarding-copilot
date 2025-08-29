@@ -213,10 +213,10 @@ func TestParsePackageJSONErrors(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := []struct {
-		name     string
-		content  string
-		wantErr  bool
-		errMsg   string
+		name    string
+		content string
+		wantErr bool
+		errMsg  string
 	}{
 		{
 			name:    "invalid JSON",

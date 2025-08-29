@@ -11,11 +11,11 @@ import (
 
 // LicenseChecker analyzes package licenses and compatibility
 type LicenseChecker struct {
-	client             *http.Client
-	licenseMatrix      *CompatibilityMatrix
-	spdxDatabase       *SPDXDatabase
-	customPolicies     []LicensePolicy
-	cache             LicenseCache
+	client         *http.Client
+	licenseMatrix  *CompatibilityMatrix
+	spdxDatabase   *SPDXDatabase
+	customPolicies []LicensePolicy
+	cache          LicenseCache
 }
 
 // LicenseCache provides caching for license data
@@ -27,18 +27,18 @@ type LicenseCache interface {
 
 // PackageLicenseInfo represents comprehensive license information for a package
 type PackageLicenseInfo struct {
-	PackageName       string                 `json:"package_name"`
-	Version           string                 `json:"version"`
-	DeclaredLicense   string                 `json:"declared_license"`   // from package.json
-	DetectedLicenses  []DetectedLicense      `json:"detected_licenses"`  // from file analysis
-	SPDXIdentifier    string                 `json:"spdx_identifier"`
-	LicenseType       string                 `json:"license_type"`       // permissive, copyleft, proprietary
-	LicenseText       string                 `json:"license_text"`
-	LicenseURL        string                 `json:"license_url"`
-	Compatibility     LicenseCompatibility   `json:"compatibility"`
-	RiskLevel         string                 `json:"risk_level"`         // low, medium, high, critical
-	PolicyViolations  []PolicyViolation      `json:"policy_violations"`
-	LastAnalyzed      time.Time              `json:"last_analyzed"`
+	PackageName      string               `json:"package_name"`
+	Version          string               `json:"version"`
+	DeclaredLicense  string               `json:"declared_license"`  // from package.json
+	DetectedLicenses []DetectedLicense    `json:"detected_licenses"` // from file analysis
+	SPDXIdentifier   string               `json:"spdx_identifier"`
+	LicenseType      string               `json:"license_type"` // permissive, copyleft, proprietary
+	LicenseText      string               `json:"license_text"`
+	LicenseURL       string               `json:"license_url"`
+	Compatibility    LicenseCompatibility `json:"compatibility"`
+	RiskLevel        string               `json:"risk_level"` // low, medium, high, critical
+	PolicyViolations []PolicyViolation    `json:"policy_violations"`
+	LastAnalyzed     time.Time            `json:"last_analyzed"`
 }
 
 // DetectedLicense represents a license detected from file analysis
@@ -52,36 +52,36 @@ type DetectedLicense struct {
 
 // LicenseCompatibility represents compatibility assessment
 type LicenseCompatibility struct {
-	Compatible     bool                    `json:"compatible"`
-	Conflicts      []LicenseConflict       `json:"conflicts"`
-	Restrictions   []LicenseRestriction    `json:"restrictions"`
-	Requirements   []LicenseRequirement    `json:"requirements"`
-	RiskScore      float64                 `json:"risk_score"` // 0-1 scale
+	Compatible   bool                 `json:"compatible"`
+	Conflicts    []LicenseConflict    `json:"conflicts"`
+	Restrictions []LicenseRestriction `json:"restrictions"`
+	Requirements []LicenseRequirement `json:"requirements"`
+	RiskScore    float64              `json:"risk_score"` // 0-1 scale
 }
 
 // LicenseRestriction represents license-imposed restrictions
 type LicenseRestriction struct {
-	Type        string `json:"type"`        // distribution, modification, commercial-use
+	Type        string `json:"type"` // distribution, modification, commercial-use
 	Description string `json:"description"`
-	Severity    string `json:"severity"`    // low, medium, high
+	Severity    string `json:"severity"` // low, medium, high
 	Mitigation  string `json:"mitigation"`
 }
 
 // LicenseRequirement represents license-imposed requirements
 type LicenseRequirement struct {
-	Type        string `json:"type"`        // attribution, source-disclosure, same-license
+	Type        string `json:"type"` // attribution, source-disclosure, same-license
 	Description string `json:"description"`
 	Mandatory   bool   `json:"mandatory"`
-	Scope       string `json:"scope"`       // package, derivative-works, distribution
+	Scope       string `json:"scope"` // package, derivative-works, distribution
 }
 
 // PolicyViolation represents a license policy violation
 type PolicyViolation struct {
-	PolicyName  string `json:"policy_name"`
+	PolicyName    string `json:"policy_name"`
 	ViolationType string `json:"violation_type"` // forbidden, restricted, requires-approval
-	Description string `json:"description"`
-	Severity    string `json:"severity"`
-	Resolution  string `json:"resolution"`
+	Description   string `json:"description"`
+	Severity      string `json:"severity"`
+	Resolution    string `json:"resolution"`
 }
 
 // LicensePolicy represents custom license policies
@@ -97,23 +97,23 @@ type LicensePolicy struct {
 
 // CompatibilityMatrix defines license compatibility rules
 type CompatibilityMatrix struct {
-	Rules          map[string]map[string]CompatibilityRule `json:"rules"`
-	LicenseTypes   map[string]LicenseTypeInfo              `json:"license_types"`
-	DefaultPolicy  string                                  `json:"default_policy"`
+	Rules         map[string]map[string]CompatibilityRule `json:"rules"`
+	LicenseTypes  map[string]LicenseTypeInfo              `json:"license_types"`
+	DefaultPolicy string                                  `json:"default_policy"`
 }
 
 // CompatibilityRule defines compatibility between two licenses
 type CompatibilityRule struct {
-	Compatible    bool     `json:"compatible"`
-	Conditions    []string `json:"conditions"`
-	Warnings      []string `json:"warnings"`
-	Requirements  []string `json:"requirements"`
-	RiskLevel     string   `json:"risk_level"`
+	Compatible   bool     `json:"compatible"`
+	Conditions   []string `json:"conditions"`
+	Warnings     []string `json:"warnings"`
+	Requirements []string `json:"requirements"`
+	RiskLevel    string   `json:"risk_level"`
 }
 
 // LicenseTypeInfo provides information about license categories
 type LicenseTypeInfo struct {
-	Category      string   `json:"category"`     // permissive, weak-copyleft, strong-copyleft, proprietary
+	Category      string   `json:"category"` // permissive, weak-copyleft, strong-copyleft, proprietary
 	Description   string   `json:"description"`
 	Restrictions  []string `json:"restrictions"`
 	Requirements  []string `json:"requirements"`
@@ -157,7 +157,7 @@ func NewLicenseChecker() (*LicenseChecker, error) {
 
 	// Initialize compatibility matrix with common licenses
 	matrix := initializeCompatibilityMatrix()
-	
+
 	// Initialize SPDX database
 	spdxDB := initializeSPDXDatabase()
 
@@ -179,12 +179,12 @@ func NewLicenseChecker() (*LicenseChecker, error) {
 // CheckLicenses analyzes license compatibility for packages
 func (lc *LicenseChecker) CheckLicenses(ctx context.Context, packages []string) (*LicenseReport, error) {
 	report := &LicenseReport{
-		LicenseDistribution:  make(map[string]int),
-		CompatibilityIssues:  []LicenseConflict{},
-		UnknownLicenses:      []string{},
-		ProprietaryPackages:  []string{},
-		CopyleftPackages:     []string{},
-		Recommendations:      []string{},
+		LicenseDistribution: make(map[string]int),
+		CompatibilityIssues: []LicenseConflict{},
+		UnknownLicenses:     []string{},
+		ProprietaryPackages: []string{},
+		CopyleftPackages:    []string{},
+		Recommendations:     []string{},
 	}
 
 	var packageLicenses []*PackageLicenseInfo
@@ -288,19 +288,19 @@ func (lc *LicenseChecker) analyzeLicense(ctx context.Context, packageName, versi
 func (lc *LicenseChecker) extractDeclaredLicense(ctx context.Context, packageName, version string) string {
 	// This would integrate with npm registry to get package.json license field
 	// For now, return mock data based on common patterns
-	
+
 	// Common licenses for popular packages
 	commonLicenses := map[string]string{
-		"react":     "MIT",
-		"vue":       "MIT",
-		"angular":   "MIT",
-		"lodash":    "MIT",
-		"express":   "MIT",
+		"react":      "MIT",
+		"vue":        "MIT",
+		"angular":    "MIT",
+		"lodash":     "MIT",
+		"express":    "MIT",
 		"typescript": "Apache-2.0",
-		"webpack":   "MIT",
-		"babel":     "MIT",
-		"eslint":    "MIT",
-		"jest":      "MIT",
+		"webpack":    "MIT",
+		"babel":      "MIT",
+		"eslint":     "MIT",
+		"jest":       "MIT",
 	}
 
 	if license, exists := commonLicenses[packageName]; exists {
@@ -319,31 +319,31 @@ func (lc *LicenseChecker) normalizeToSPDX(licenseString string) string {
 
 	// Common license mappings to SPDX
 	mappings := map[string]string{
-		"MIT":                    "MIT",
-		"Apache-2.0":            "Apache-2.0",
-		"Apache 2.0":            "Apache-2.0",
-		"GPL-2.0":               "GPL-2.0-only",
-		"GPL-3.0":               "GPL-3.0-only",
-		"LGPL-2.1":              "LGPL-2.1-only",
-		"LGPL-3.0":              "LGPL-3.0-only",
-		"BSD-2-Clause":          "BSD-2-Clause",
-		"BSD-3-Clause":          "BSD-3-Clause",
-		"ISC":                   "ISC",
-		"Unlicense":             "Unlicense",
-		"CC0-1.0":               "CC0-1.0",
-		"WTFPL":                 "WTFPL",
-		"Artistic-2.0":          "Artistic-2.0",
-		"EPL-1.0":               "EPL-1.0",
-		"EPL-2.0":               "EPL-2.0",
-		"MPL-2.0":               "MPL-2.0",
-		"CDDL-1.0":              "CDDL-1.0",
-		"Public Domain":         "CC0-1.0",
-		"UNKNOWN":               "",
+		"MIT":           "MIT",
+		"Apache-2.0":    "Apache-2.0",
+		"Apache 2.0":    "Apache-2.0",
+		"GPL-2.0":       "GPL-2.0-only",
+		"GPL-3.0":       "GPL-3.0-only",
+		"LGPL-2.1":      "LGPL-2.1-only",
+		"LGPL-3.0":      "LGPL-3.0-only",
+		"BSD-2-Clause":  "BSD-2-Clause",
+		"BSD-3-Clause":  "BSD-3-Clause",
+		"ISC":           "ISC",
+		"Unlicense":     "Unlicense",
+		"CC0-1.0":       "CC0-1.0",
+		"WTFPL":         "WTFPL",
+		"Artistic-2.0":  "Artistic-2.0",
+		"EPL-1.0":       "EPL-1.0",
+		"EPL-2.0":       "EPL-2.0",
+		"MPL-2.0":       "MPL-2.0",
+		"CDDL-1.0":      "CDDL-1.0",
+		"Public Domain": "CC0-1.0",
+		"UNKNOWN":       "",
 	}
 
 	// Normalize case and spaces
 	normalized := strings.ToUpper(strings.TrimSpace(licenseString))
-	
+
 	// Try exact matches first
 	for key, spdx := range mappings {
 		if strings.ToUpper(key) == normalized {

@@ -558,9 +558,9 @@ func TestValidateContainerID(t *testing.T) {
 
 func TestLifecycleConfig_String(t *testing.T) {
 	config := &LifecycleConfig{
-		GracefulStopTimeout: 30 * time.Second,
-		ForceKillTimeout:    10 * time.Second,
-		HealthCheckInterval: 5 * time.Second,
+		GracefulStopTimeout:   30 * time.Second,
+		ForceKillTimeout:      10 * time.Second,
+		HealthCheckInterval:   5 * time.Second,
 		EnableFailureRecovery: true,
 	}
 

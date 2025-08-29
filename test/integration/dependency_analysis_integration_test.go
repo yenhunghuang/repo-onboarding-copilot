@@ -15,7 +15,7 @@ import (
 func TestDependencyAnalysisIntegration(t *testing.T) {
 	// Create test project directory
 	testDir := t.TempDir()
-	
+
 	// Create a realistic package.json
 	packageJSON := `{
   "name": "test-project",
@@ -89,16 +89,16 @@ func TestDependencyAnalysisIntegration(t *testing.T) {
 	// Initialize dependency analyzer
 	config := analysis.DependencyAnalyzerConfig{
 		ProjectRoot:               testDir,
-		IncludePackageFiles:      []string{"package.json", "package-lock.json"},
-		EnableVulnScanning:       true,
-		EnableLicenseChecking:    true,
-		EnableUpdateChecking:     true,
+		IncludePackageFiles:       []string{"package.json", "package-lock.json"},
+		EnableVulnScanning:        true,
+		EnableLicenseChecking:     true,
+		EnableUpdateChecking:      true,
 		EnablePerformanceAnalysis: true,
-		EnableBundleAnalysis:     true,
-		MaxDependencyDepth:       5,
-		BundleSizeThreshold:      1048576, // 1MB
-		PerformanceThreshold:     3000,    // 3 seconds
-		CriticalVulnThreshold:    7.0,     // CVSS >= 7.0
+		EnableBundleAnalysis:      true,
+		MaxDependencyDepth:        5,
+		BundleSizeThreshold:       1048576, // 1MB
+		PerformanceThreshold:      3000,    // 3 seconds
+		CriticalVulnThreshold:     7.0,     // CVSS >= 7.0
 	}
 
 	analyzer, err := analysis.NewDependencyAnalyzer(config)
@@ -110,7 +110,7 @@ func TestDependencyAnalysisIntegration(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	result, err := analyzer.AnalyzeProject(ctx)
+	result, err := analyzer.AnalyzeDependencies(ctx)
 	if err != nil {
 		t.Fatalf("Failed to analyze project: %v", err)
 	}
@@ -147,11 +147,23 @@ func validateDependencyAnalysisResults(t *testing.T, result *analysis.Dependency
 		t.Errorf("Expected at least 3 direct dependencies, got %d", len(result.DirectDeps))
 	}
 
-	// Check for specific dependencies
-	for _, depName := range []string{"react", "lodash", "axios"} {
+	// Check for specific dependencies using expectedDirectDeps slice
+	productionDeps := []string{"react", "lodash", "axios"}
+	for _, depName := range productionDeps {
 		if _, exists := result.DirectDeps[depName]; !exists {
 			t.Errorf("Expected direct dependency '%s' not found", depName)
 		}
+	}
+	
+	// Verify we have most of our expected dependencies
+	foundCount := 0
+	for _, expected := range expectedDirectDeps {
+		if _, exists := result.DirectDeps[expected]; exists {
+			foundCount++
+		}
+	}
+	if foundCount < len(productionDeps) {
+		t.Errorf("Expected to find at least %d of the expected dependencies, found %d", len(productionDeps), foundCount)
 	}
 
 	// Test dependency tree structure
@@ -274,14 +286,14 @@ func TestMonorepoIntegration(t *testing.T) {
 
 	// Initialize dependency analyzer with monorepo support
 	config := analysis.DependencyAnalyzerConfig{
-		ProjectRoot:            testDir,
-		IncludePackageFiles:    []string{"package.json"},
-		EnableVulnScanning:     false, // Disable for faster test
-		EnableLicenseChecking:  false,
-		EnableUpdateChecking:   false,
+		ProjectRoot:               testDir,
+		IncludePackageFiles:       []string{"package.json"},
+		EnableVulnScanning:        false, // Disable for faster test
+		EnableLicenseChecking:     false,
+		EnableUpdateChecking:      false,
 		EnablePerformanceAnalysis: false,
-		EnableBundleAnalysis:   false,
-		MaxDependencyDepth:     3,
+		EnableBundleAnalysis:      false,
+		MaxDependencyDepth:        3,
 	}
 
 	analyzer, err := analysis.NewDependencyAnalyzer(config)
@@ -293,7 +305,7 @@ func TestMonorepoIntegration(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	result, err := analyzer.AnalyzeProject(ctx)
+	result, err := analyzer.AnalyzeDependencies(ctx)
 	if err != nil {
 		t.Fatalf("Failed to analyze monorepo: %v", err)
 	}
@@ -337,15 +349,15 @@ func TestVulnerabilityIntegration(t *testing.T) {
 	}
 
 	config := analysis.DependencyAnalyzerConfig{
-		ProjectRoot:           testDir,
-		IncludePackageFiles:   []string{"package.json"},
-		EnableVulnScanning:    true,
-		EnableLicenseChecking: false,
-		EnableUpdateChecking:  false,
+		ProjectRoot:               testDir,
+		IncludePackageFiles:       []string{"package.json"},
+		EnableVulnScanning:        true,
+		EnableLicenseChecking:     false,
+		EnableUpdateChecking:      false,
 		EnablePerformanceAnalysis: false,
-		EnableBundleAnalysis:  false,
-		MaxDependencyDepth:    3,
-		CriticalVulnThreshold: 7.0,
+		EnableBundleAnalysis:      false,
+		MaxDependencyDepth:        3,
+		CriticalVulnThreshold:     7.0,
 	}
 
 	analyzer, err := analysis.NewDependencyAnalyzer(config)
@@ -356,7 +368,7 @@ func TestVulnerabilityIntegration(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second) // Longer timeout for network requests
 	defer cancel()
 
-	result, err := analyzer.AnalyzeProject(ctx)
+	result, err := analyzer.AnalyzeDependencies(ctx)
 	if err != nil {
 		t.Fatalf("Failed to analyze project: %v", err)
 	}
@@ -426,16 +438,16 @@ func TestLargeProjectPerformance(t *testing.T) {
 	}
 
 	config := analysis.DependencyAnalyzerConfig{
-		ProjectRoot:            testDir,
-		IncludePackageFiles:    []string{"package.json"},
-		EnableVulnScanning:     false, // Disable for performance test
-		EnableLicenseChecking:  false,
-		EnableUpdateChecking:   false,
+		ProjectRoot:               testDir,
+		IncludePackageFiles:       []string{"package.json"},
+		EnableVulnScanning:        false, // Disable for performance test
+		EnableLicenseChecking:     false,
+		EnableUpdateChecking:      false,
 		EnablePerformanceAnalysis: true,
-		EnableBundleAnalysis:   true,
-		MaxDependencyDepth:     10,
-		BundleSizeThreshold:    2097152, // 2MB
-		PerformanceThreshold:   5000,    // 5 seconds
+		EnableBundleAnalysis:      true,
+		MaxDependencyDepth:        10,
+		BundleSizeThreshold:       2097152, // 2MB
+		PerformanceThreshold:      5000,    // 5 seconds
 	}
 
 	analyzer, err := analysis.NewDependencyAnalyzer(config)
@@ -449,7 +461,7 @@ func TestLargeProjectPerformance(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 
-	result, err := analyzer.AnalyzeProject(ctx)
+	result, err := analyzer.AnalyzeDependencies(ctx)
 	if err != nil {
 		t.Fatalf("Failed to analyze large project: %v", err)
 	}
@@ -492,7 +504,7 @@ func TestErrorHandling(t *testing.T) {
 		}
 
 		ctx := context.Background()
-		_, err = analyzer.AnalyzeProject(ctx)
+		_, err = analyzer.AnalyzeDependencies(ctx)
 		if err == nil {
 			t.Error("Expected error for non-existent directory")
 		}
@@ -501,7 +513,7 @@ func TestErrorHandling(t *testing.T) {
 	// Test with malformed package.json
 	t.Run("MalformedPackageJSON", func(t *testing.T) {
 		testDir := t.TempDir()
-		
+
 		malformedJSON := `{
   "name": "test-project"
   "version": "1.0.0",  // Invalid JSON: missing comma
@@ -526,7 +538,7 @@ func TestErrorHandling(t *testing.T) {
 		}
 
 		ctx := context.Background()
-		_, err = analyzer.AnalyzeProject(ctx)
+		_, err = analyzer.AnalyzeDependencies(ctx)
 		if err == nil {
 			t.Error("Expected error for malformed JSON")
 		}
@@ -535,7 +547,7 @@ func TestErrorHandling(t *testing.T) {
 	// Test with empty package.json
 	t.Run("EmptyPackageJSON", func(t *testing.T) {
 		testDir := t.TempDir()
-		
+
 		emptyJSON := `{}`
 
 		err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(emptyJSON), 0644)
@@ -554,7 +566,7 @@ func TestErrorHandling(t *testing.T) {
 		}
 
 		ctx := context.Background()
-		result, err := analyzer.AnalyzeProject(ctx)
+		result, err := analyzer.AnalyzeDependencies(ctx)
 		if err != nil {
 			t.Errorf("Should handle empty package.json gracefully: %v", err)
 		}
@@ -567,7 +579,7 @@ func TestErrorHandling(t *testing.T) {
 	// Test context cancellation
 	t.Run("ContextCancellation", func(t *testing.T) {
 		testDir := t.TempDir()
-		
+
 		packageJSON := `{
   "name": "test-project",
   "version": "1.0.0",
@@ -596,7 +608,7 @@ func TestErrorHandling(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 		defer cancel()
 
-		_, err = analyzer.AnalyzeProject(ctx)
+		_, err = analyzer.AnalyzeDependencies(ctx)
 		if err == nil {
 			t.Error("Expected context cancellation error")
 		}
@@ -610,7 +622,7 @@ func TestErrorHandling(t *testing.T) {
 // TestOutputFormat tests the JSON serialization of results
 func TestOutputFormat(t *testing.T) {
 	testDir := t.TempDir()
-	
+
 	packageJSON := `{
   "name": "format-test",
   "version": "1.0.0",
@@ -635,7 +647,7 @@ func TestOutputFormat(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	result, err := analyzer.AnalyzeProject(ctx)
+	result, err := analyzer.AnalyzeDependencies(ctx)
 	if err != nil {
 		t.Fatalf("Failed to analyze project: %v", err)
 	}
@@ -672,7 +684,7 @@ func TestOutputFormat(t *testing.T) {
 // BenchmarkDependencyAnalysis benchmarks the dependency analysis performance
 func BenchmarkDependencyAnalysis(b *testing.B) {
 	testDir := b.TempDir()
-	
+
 	packageJSON := `{
   "name": "benchmark-test",
   "version": "1.0.0",
@@ -693,13 +705,13 @@ func BenchmarkDependencyAnalysis(b *testing.B) {
 	}
 
 	config := analysis.DependencyAnalyzerConfig{
-		ProjectRoot:         testDir,
-		IncludePackageFiles: []string{"package.json"},
-		EnableVulnScanning:  false, // Disable for consistent benchmarking
-		EnableLicenseChecking: false,
-		EnableUpdateChecking: false,
+		ProjectRoot:               testDir,
+		IncludePackageFiles:       []string{"package.json"},
+		EnableVulnScanning:        false, // Disable for consistent benchmarking
+		EnableLicenseChecking:     false,
+		EnableUpdateChecking:      false,
 		EnablePerformanceAnalysis: false,
-		EnableBundleAnalysis: false,
+		EnableBundleAnalysis:      false,
 	}
 
 	analyzer, err := analysis.NewDependencyAnalyzer(config)
@@ -710,7 +722,7 @@ func BenchmarkDependencyAnalysis(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		ctx := context.Background()
-		_, err := analyzer.AnalyzeProject(ctx)
+		_, err := analyzer.AnalyzeDependencies(ctx)
 		if err != nil {
 			b.Fatalf("Analysis failed: %v", err)
 		}

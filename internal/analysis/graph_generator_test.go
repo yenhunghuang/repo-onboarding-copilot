@@ -404,9 +404,9 @@ func TestGraphGenerator_NodeMetrics(t *testing.T) {
 	gg := NewGraphGenerator(ci, dfa, cd)
 
 	tests := []struct {
-		name         string
-		filePath     string
-		content      string
+		name                 string
+		filePath             string
+		content              string
 		expectHighImportance bool
 		expectHighComplexity bool
 	}{
@@ -686,33 +686,33 @@ func TestGraphGenerator_NodeStyles(t *testing.T) {
 	gg := NewGraphGenerator(ci, dfa, cd)
 
 	tests := []struct {
-		name     string
-		nodeType GraphNodeType
+		name      string
+		nodeType  GraphNodeType
 		wantColor string
 	}{
 		{
-			name:     "Component Node",
-			nodeType: ComponentNode,
+			name:      "Component Node",
+			nodeType:  ComponentNode,
 			wantColor: "#4CAF50",
 		},
 		{
-			name:     "Service Node",
-			nodeType: ServiceNode,
+			name:      "Service Node",
+			nodeType:  ServiceNode,
 			wantColor: "#2196F3",
 		},
 		{
-			name:     "Utility Node",
-			nodeType: UtilityNode,
+			name:      "Utility Node",
+			nodeType:  UtilityNode,
 			wantColor: "#FF9800",
 		},
 		{
-			name:     "Config Node",
-			nodeType: ConfigNode,
+			name:      "Config Node",
+			nodeType:  ConfigNode,
 			wantColor: "#9C27B0",
 		},
 		{
-			name:     "Test Node",
-			nodeType: TestNode,
+			name:      "Test Node",
+			nodeType:  TestNode,
 			wantColor: "#607D8B",
 		},
 	}
@@ -747,33 +747,33 @@ func TestGraphGenerator_EdgeStyles(t *testing.T) {
 	gg := NewGraphGenerator(ci, dfa, cd)
 
 	tests := []struct {
-		name     string
-		edgeType GraphEdgeType
-		weight   float64
+		name      string
+		edgeType  GraphEdgeType
+		weight    float64
 		wantColor string
 	}{
 		{
-			name:     "Import Edge",
-			edgeType: ImportEdge,
-			weight:   0.8,
+			name:      "Import Edge",
+			edgeType:  ImportEdge,
+			weight:    0.8,
 			wantColor: "#333333",
 		},
 		{
-			name:     "Component Edge",
-			edgeType: ComponentEdge,
-			weight:   0.9,
+			name:      "Component Edge",
+			edgeType:  ComponentEdge,
+			weight:    0.9,
 			wantColor: "#4CAF50",
 		},
 		{
-			name:     "Data Flow Edge",
-			edgeType: FlowEdge,
-			weight:   0.6,
+			name:      "Data Flow Edge",
+			edgeType:  FlowEdge,
+			weight:    0.6,
 			wantColor: "#2196F3",
 		},
 		{
-			name:     "API Edge",
-			edgeType: APIEdge,
-			weight:   0.5,
+			name:      "API Edge",
+			edgeType:  APIEdge,
+			weight:    0.5,
 			wantColor: "#FF9800",
 		},
 	}

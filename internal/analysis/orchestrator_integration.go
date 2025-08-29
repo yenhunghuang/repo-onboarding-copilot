@@ -28,28 +28,28 @@ func NewDependencyOrchestrationIntegrator(depAnalyzer *DependencyAnalyzer, astIn
 
 // DependencyOrchestrationPayload contains orchestration data for dependency analysis
 type DependencyOrchestrationPayload struct {
-	DependencyTree           *DependencyTree                `json:"dependency_tree"`
-	SecurityReport           *SecurityReport                `json:"security_report"`
-	PerformanceReport        *PerformanceReport             `json:"performance_report"`
-	UpdateRecommendations    *UpdateReport                  `json:"update_recommendations"`
-	LicenseAnalysis          *LicenseReport                 `json:"license_analysis"`
-	BundleAnalysis          *BundleAnalysisResult          `json:"bundle_analysis"`
-	OrchestrationMetadata   *DependencyOrchestrationMetadata `json:"orchestration_metadata"`
-	ProcessingInstructions  *DependencyProcessingInstructions `json:"processing_instructions"`
-	QualityAssurance        *DependencyQualityAssurance     `json:"quality_assurance"`
-	IntegrationPoints       []DependencyIntegrationPoint    `json:"integration_points"`
-	ExportFormats          []ExportFormatType              `json:"export_formats"`
+	DependencyTree         *DependencyTree                   `json:"dependency_tree"`
+	SecurityReport         *SecurityReport                   `json:"security_report"`
+	PerformanceReport      *PerformanceReport                `json:"performance_report"`
+	UpdateRecommendations  *UpdateReport                     `json:"update_recommendations"`
+	LicenseAnalysis        *LicenseReport                    `json:"license_analysis"`
+	BundleAnalysis         *BundleAnalysisResult             `json:"bundle_analysis"`
+	OrchestrationMetadata  *DependencyOrchestrationMetadata  `json:"orchestration_metadata"`
+	ProcessingInstructions *DependencyProcessingInstructions `json:"processing_instructions"`
+	QualityAssurance       *DependencyQualityAssurance       `json:"quality_assurance"`
+	IntegrationPoints      []DependencyIntegrationPoint      `json:"integration_points"`
+	ExportFormats          []ExportFormatType                `json:"export_formats"`
 }
 
 // DependencyOrchestrationMetadata provides metadata for dependency analysis orchestration
 type DependencyOrchestrationMetadata struct {
-	ComponentName        string                      `json:"component_name"`
-	Version             string                      `json:"version"`
+	ComponentName        string                         `json:"component_name"`
+	Version              string                         `json:"version"`
 	AnalysisCapabilities DependencyAnalysisCapabilities `json:"analysis_capabilities"`
-	ResourceRequirements ResourceRequirements        `json:"resource_requirements"`
-	PerformanceProfile  PerformanceProfile          `json:"performance_profile"`
-	IntegrationReadiness bool                       `json:"integration_readiness"`
-	GeneratedAt         time.Time                   `json:"generated_at"`
+	ResourceRequirements ResourceRequirements           `json:"resource_requirements"`
+	PerformanceProfile   PerformanceProfile             `json:"performance_profile"`
+	IntegrationReadiness bool                           `json:"integration_readiness"`
+	GeneratedAt          time.Time                      `json:"generated_at"`
 }
 
 // DependencyAnalysisCapabilities describes what dependency analysis can do
@@ -59,21 +59,21 @@ type DependencyAnalysisCapabilities struct {
 	LicenseDetection         bool     `json:"license_detection"`
 	UpdateAnalysis           bool     `json:"update_analysis"`
 	PerformanceImpact        bool     `json:"performance_impact"`
-	BundleAnalysis          bool     `json:"bundle_analysis"`
-	TreeShaking             bool     `json:"tree_shaking"`
-	ReportFormats           []string `json:"report_formats"`
-	MaxDependencies         int      `json:"max_dependencies"`
-	MaxAnalysisTime         int      `json:"max_analysis_time_seconds"`
+	BundleAnalysis           bool     `json:"bundle_analysis"`
+	TreeShaking              bool     `json:"tree_shaking"`
+	ReportFormats            []string `json:"report_formats"`
+	MaxDependencies          int      `json:"max_dependencies"`
+	MaxAnalysisTime          int      `json:"max_analysis_time_seconds"`
 }
 
 // ResourceRequirements defines resource needs for dependency analysis
 type ResourceRequirements struct {
-	MinimumMemoryMB  int   `json:"minimum_memory_mb"`
-	MaximumMemoryMB  int   `json:"maximum_memory_mb"`
-	MinimumCPUCores  int   `json:"minimum_cpu_cores"`
-	DiskSpaceMB      int   `json:"disk_space_mb"`
-	NetworkAccess    bool  `json:"network_access"`
-	DatabaseSize     int64 `json:"database_size_mb"`
+	MinimumMemoryMB int   `json:"minimum_memory_mb"`
+	MaximumMemoryMB int   `json:"maximum_memory_mb"`
+	MinimumCPUCores int   `json:"minimum_cpu_cores"`
+	DiskSpaceMB     int   `json:"disk_space_mb"`
+	NetworkAccess   bool  `json:"network_access"`
+	DatabaseSize    int64 `json:"database_size_mb"`
 }
 
 // PerformanceProfile describes performance characteristics
@@ -87,12 +87,12 @@ type PerformanceProfile struct {
 
 // DependencyProcessingInstructions provides processing guidance
 type DependencyProcessingInstructions struct {
-	RecommendedOrder         []string                   `json:"recommended_order"`
-	ParallelizationGroups   []ParallelProcessingGroup  `json:"parallelization_groups"`
-	CriticalPath            []string                   `json:"critical_path"`
-	OptimizationHints       []OptimizationHint         `json:"optimization_hints"`
-	ValidationCheckpoints   []ValidationCheckpoint     `json:"validation_checkpoints"`
-	FailureRecovery         []FailureRecoveryStrategy  `json:"failure_recovery"`
+	RecommendedOrder      []string                  `json:"recommended_order"`
+	ParallelizationGroups []ParallelProcessingGroup `json:"parallelization_groups"`
+	CriticalPath          []string                  `json:"critical_path"`
+	OptimizationHints     []OptimizationHint        `json:"optimization_hints"`
+	ValidationCheckpoints []ValidationCheckpoint    `json:"validation_checkpoints"`
+	FailureRecovery       []FailureRecoveryStrategy `json:"failure_recovery"`
 }
 
 // ParallelProcessingGroup describes tasks that can run in parallel
@@ -106,11 +106,11 @@ type ParallelProcessingGroup struct {
 
 // OptimizationHint provides performance optimization suggestions
 type OptimizationHint struct {
-	Component     string `json:"component"`
-	Optimization  string `json:"optimization"`
-	ExpectedGain  string `json:"expected_gain"`
+	Component      string `json:"component"`
+	Optimization   string `json:"optimization"`
+	ExpectedGain   string `json:"expected_gain"`
 	Implementation string `json:"implementation"`
-	Priority      string `json:"priority"`
+	Priority       string `json:"priority"`
 }
 
 // ValidationCheckpoint defines validation points
@@ -132,20 +132,20 @@ type FailureRecoveryStrategy struct {
 
 // DependencyQualityAssurance provides quality assurance data
 type DependencyQualityAssurance struct {
-	DataIntegrityChecks    []DataIntegrityCheck     `json:"data_integrity_checks"`
-	AccuracyMetrics        []AccuracyMetric         `json:"accuracy_metrics"`
-	CompletenessChecks     []CompletenessCheck      `json:"completeness_checks"`
-	VulnerabilityAccuracy  VulnerabilityAccuracy    `json:"vulnerability_accuracy"`
-	PerformanceValidation  PerformanceValidation    `json:"performance_validation"`
+	DataIntegrityChecks   []DataIntegrityCheck  `json:"data_integrity_checks"`
+	AccuracyMetrics       []AccuracyMetric      `json:"accuracy_metrics"`
+	CompletenessChecks    []CompletenessCheck   `json:"completeness_checks"`
+	VulnerabilityAccuracy VulnerabilityAccuracy `json:"vulnerability_accuracy"`
+	PerformanceValidation PerformanceValidation `json:"performance_validation"`
 }
 
 // DataIntegrityCheck validates data integrity
 type DataIntegrityCheck struct {
-	CheckName    string                 `json:"check_name"`
-	CheckType    string                 `json:"check_type"`
-	Status       string                 `json:"status"`
-	Details      map[string]interface{} `json:"details"`
-	LastChecked  time.Time              `json:"last_checked"`
+	CheckName   string                 `json:"check_name"`
+	CheckType   string                 `json:"check_type"`
+	Status      string                 `json:"status"`
+	Details     map[string]interface{} `json:"details"`
+	LastChecked time.Time              `json:"last_checked"`
 }
 
 // AccuracyMetric provides accuracy measurements
@@ -158,39 +158,39 @@ type AccuracyMetric struct {
 
 // CompletenessCheck validates analysis completeness
 type CompletenessCheck struct {
-	ComponentName     string  `json:"component_name"`
-	ExpectedItems     int     `json:"expected_items"`
-	ActualItems       int     `json:"actual_items"`
-	CompletenessRate  float64 `json:"completeness_rate"`
-	MissingItems      []string `json:"missing_items"`
+	ComponentName    string   `json:"component_name"`
+	ExpectedItems    int      `json:"expected_items"`
+	ActualItems      int      `json:"actual_items"`
+	CompletenessRate float64  `json:"completeness_rate"`
+	MissingItems     []string `json:"missing_items"`
 }
 
 // VulnerabilityAccuracy measures vulnerability detection accuracy
 type VulnerabilityAccuracy struct {
-	TruePositiveRate   float64 `json:"true_positive_rate"`
-	FalsePositiveRate  float64 `json:"false_positive_rate"`
-	TrueNegativeRate   float64 `json:"true_negative_rate"`
-	FalseNegativeRate  float64 `json:"false_negative_rate"`
-	ConfidenceScore    float64 `json:"confidence_score"`
+	TruePositiveRate  float64 `json:"true_positive_rate"`
+	FalsePositiveRate float64 `json:"false_positive_rate"`
+	TrueNegativeRate  float64 `json:"true_negative_rate"`
+	FalseNegativeRate float64 `json:"false_negative_rate"`
+	ConfidenceScore   float64 `json:"confidence_score"`
 }
 
 // PerformanceValidation validates performance metrics
 type PerformanceValidation struct {
 	ActualVsExpected   map[string]float64 `json:"actual_vs_expected"`
-	PerformanceScore   float64           `json:"performance_score"`
-	BottleneckAnalysis []string          `json:"bottleneck_analysis"`
+	PerformanceScore   float64            `json:"performance_score"`
+	BottleneckAnalysis []string           `json:"bottleneck_analysis"`
 }
 
 // DependencyIntegrationPoint describes integration capabilities
 type DependencyIntegrationPoint struct {
-	ComponentName    string                 `json:"component_name"`
-	IntegrationType  string                 `json:"integration_type"`
-	DataFormat       string                 `json:"data_format"`
-	Protocol         string                 `json:"protocol"`
-	Endpoint         string                 `json:"endpoint,omitempty"`
-	Schema           map[string]interface{} `json:"schema"`
-	RequiredFields   []string               `json:"required_fields"`
-	OptionalFields   []string               `json:"optional_fields"`
+	ComponentName   string                 `json:"component_name"`
+	IntegrationType string                 `json:"integration_type"`
+	DataFormat      string                 `json:"data_format"`
+	Protocol        string                 `json:"protocol"`
+	Endpoint        string                 `json:"endpoint,omitempty"`
+	Schema          map[string]interface{} `json:"schema"`
+	RequiredFields  []string               `json:"required_fields"`
+	OptionalFields  []string               `json:"optional_fields"`
 }
 
 // ExportFormat describes available export formats
@@ -211,17 +211,17 @@ func (doi *DependencyOrchestrationIntegrator) ProcessForOrchestration(ctx contex
 
 	// Prepare all analysis components
 	payload := &DependencyOrchestrationPayload{
-		DependencyTree:        tree,
-		SecurityReport:        tree.SecurityReport,
-		PerformanceReport:     tree.PerformanceReport,
-		UpdateRecommendations: tree.UpdateReport,
-		LicenseAnalysis:       tree.LicenseReport,
-		BundleAnalysis:       tree.BundleResult,
-		OrchestrationMetadata: doi.getOrchestrationMetadata(),
+		DependencyTree:         tree,
+		SecurityReport:         tree.SecurityReport,
+		PerformanceReport:      tree.PerformanceReport,
+		UpdateRecommendations:  tree.UpdateReport,
+		LicenseAnalysis:        tree.LicenseReport,
+		BundleAnalysis:         tree.BundleResult,
+		OrchestrationMetadata:  doi.getOrchestrationMetadata(),
 		ProcessingInstructions: doi.getProcessingInstructions(),
-		QualityAssurance:      doi.getQualityAssurance(tree),
-		IntegrationPoints:     doi.getIntegrationPoints(),
-		ExportFormats:        doi.getExportFormats(),
+		QualityAssurance:       doi.getQualityAssurance(tree),
+		IntegrationPoints:      doi.getIntegrationPoints(),
+		ExportFormats:          doi.getExportFormats(),
 	}
 
 	return payload, nil
@@ -247,10 +247,10 @@ func (doi *DependencyOrchestrationIntegrator) IntegrateWithASTPipeline(ctx conte
 
 	// Create combined payload
 	combined := &CombinedOrchestrationPayload{
-		ASTPayload:           astPayload,
-		DependencyPayload:    depPayload,
-		IntegrationMetadata:  doi.getCombinedIntegrationMetadata(),
-		ProcessingWorkflow:   doi.getCombinedProcessingWorkflow(),
+		ASTPayload:          astPayload,
+		DependencyPayload:   depPayload,
+		IntegrationMetadata: doi.getCombinedIntegrationMetadata(),
+		ProcessingWorkflow:  doi.getCombinedProcessingWorkflow(),
 		QualityValidation:   doi.getCombinedQualityValidation(),
 		GeneratedAt:         time.Now(),
 	}
@@ -260,21 +260,21 @@ func (doi *DependencyOrchestrationIntegrator) IntegrateWithASTPipeline(ctx conte
 
 // CombinedOrchestrationPayload represents integrated AST and dependency analysis
 type CombinedOrchestrationPayload struct {
-	ASTPayload          *ast.OrchestrationPayload           `json:"ast_payload"`
-	DependencyPayload   *DependencyOrchestrationPayload     `json:"dependency_payload"`
-	IntegrationMetadata *CombinedIntegrationMetadata        `json:"integration_metadata"`
-	ProcessingWorkflow  *CombinedProcessingWorkflow         `json:"processing_workflow"`
-	QualityValidation   *CombinedQualityValidation          `json:"quality_validation"`
-	GeneratedAt         time.Time                           `json:"generated_at"`
+	ASTPayload          *ast.OrchestrationPayload       `json:"ast_payload"`
+	DependencyPayload   *DependencyOrchestrationPayload `json:"dependency_payload"`
+	IntegrationMetadata *CombinedIntegrationMetadata    `json:"integration_metadata"`
+	ProcessingWorkflow  *CombinedProcessingWorkflow     `json:"processing_workflow"`
+	QualityValidation   *CombinedQualityValidation      `json:"quality_validation"`
+	GeneratedAt         time.Time                       `json:"generated_at"`
 }
 
 // CombinedIntegrationMetadata describes integrated analysis capabilities
 type CombinedIntegrationMetadata struct {
-	IntegrationLevel      string                      `json:"integration_level"`
-	CrossAnalysisFeatures []CrossAnalysisFeature      `json:"cross_analysis_features"`
-	DataConsistencyChecks []DataConsistencyCheck      `json:"data_consistency_checks"`
-	SynchronizationPoints []SynchronizationPoint      `json:"synchronization_points"`
-	Dependencies          []IntegrationDependency     `json:"dependencies"`
+	IntegrationLevel      string                  `json:"integration_level"`
+	CrossAnalysisFeatures []CrossAnalysisFeature  `json:"cross_analysis_features"`
+	DataConsistencyChecks []DataConsistencyCheck  `json:"data_consistency_checks"`
+	SynchronizationPoints []SynchronizationPoint  `json:"synchronization_points"`
+	Dependencies          []IntegrationDependency `json:"dependencies"`
 }
 
 // CrossAnalysisFeature describes features that span both AST and dependency analysis
@@ -297,30 +297,30 @@ type DataConsistencyCheck struct {
 
 // SynchronizationPoint defines points where analyses must be synchronized
 type SynchronizationPoint struct {
-	PointName       string   `json:"point_name"`
-	TriggerEvents   []string `json:"trigger_events"`
-	RequiredData    []string `json:"required_data"`
-	SyncAction      string   `json:"sync_action"`
-	TimeoutMs       int      `json:"timeout_ms"`
+	PointName     string   `json:"point_name"`
+	TriggerEvents []string `json:"trigger_events"`
+	RequiredData  []string `json:"required_data"`
+	SyncAction    string   `json:"sync_action"`
+	TimeoutMs     int      `json:"timeout_ms"`
 }
 
 // IntegrationDependency describes dependencies between analysis types
 type IntegrationDependency struct {
-	DependencyName  string   `json:"dependency_name"`
-	DependencyType  string   `json:"dependency_type"`
-	Producer        string   `json:"producer"`
-	Consumer        string   `json:"consumer"`
-	DataFlow        string   `json:"data_flow"`
-	CriticalPath    bool     `json:"critical_path"`
+	DependencyName string `json:"dependency_name"`
+	DependencyType string `json:"dependency_type"`
+	Producer       string `json:"producer"`
+	Consumer       string `json:"consumer"`
+	DataFlow       string `json:"data_flow"`
+	CriticalPath   bool   `json:"critical_path"`
 }
 
 // CombinedProcessingWorkflow describes the integrated processing workflow
 type CombinedProcessingWorkflow struct {
-	WorkflowStages      []WorkflowStage         `json:"workflow_stages"`
-	ParallelExecution   []ParallelExecution     `json:"parallel_execution"`
-	DependencyChain     []DependencyChain       `json:"dependency_chain"`
-	OptimizationRules   []OptimizationRule      `json:"optimization_rules"`
-	FailsafeActions     []FailsafeAction        `json:"failsafe_actions"`
+	WorkflowStages    []WorkflowStage     `json:"workflow_stages"`
+	ParallelExecution []ParallelExecution `json:"parallel_execution"`
+	DependencyChain   []DependencyChain   `json:"dependency_chain"`
+	OptimizationRules []OptimizationRule  `json:"optimization_rules"`
+	FailsafeActions   []FailsafeAction    `json:"failsafe_actions"`
 }
 
 // WorkflowStage defines a stage in the processing workflow
@@ -343,65 +343,65 @@ type ParallelExecution struct {
 
 // DependencyChain defines dependencies between workflow stages
 type DependencyChain struct {
-	ChainName    string   `json:"chain_name"`
-	Stages       []string `json:"stages"`
-	CriticalPath bool     `json:"critical_path"`
-	FailureImpact string  `json:"failure_impact"`
+	ChainName     string   `json:"chain_name"`
+	Stages        []string `json:"stages"`
+	CriticalPath  bool     `json:"critical_path"`
+	FailureImpact string   `json:"failure_impact"`
 }
 
 // OptimizationRule defines optimization opportunities
 type OptimizationRule struct {
-	RuleName      string  `json:"rule_name"`
-	Condition     string  `json:"condition"`
-	Action        string  `json:"action"`
-	ExpectedGain  string  `json:"expected_gain"`
-	RiskLevel     string  `json:"risk_level"`
+	RuleName     string `json:"rule_name"`
+	Condition    string `json:"condition"`
+	Action       string `json:"action"`
+	ExpectedGain string `json:"expected_gain"`
+	RiskLevel    string `json:"risk_level"`
 }
 
 // FailsafeAction defines failsafe mechanisms
 type FailsafeAction struct {
-	ActionName    string   `json:"action_name"`
-	TriggerEvent  string   `json:"trigger_event"`
-	ActionType    string   `json:"action_type"`
-	Parameters    []string `json:"parameters"`
-	RecoveryTime  int      `json:"recovery_time_ms"`
+	ActionName   string   `json:"action_name"`
+	TriggerEvent string   `json:"trigger_event"`
+	ActionType   string   `json:"action_type"`
+	Parameters   []string `json:"parameters"`
+	RecoveryTime int      `json:"recovery_time_ms"`
 }
 
 // CombinedQualityValidation provides integrated quality validation
 type CombinedQualityValidation struct {
-	OverallQualityScore   float64                      `json:"overall_quality_score"`
-	ComponentScores       map[string]float64           `json:"component_scores"`
-	CrossValidationChecks []CrossValidationCheck       `json:"cross_validation_checks"`
-	IntegrityMetrics      IntegrityMetrics            `json:"integrity_metrics"`
-	RecommendedActions    []QualityRecommendation     `json:"recommended_actions"`
+	OverallQualityScore   float64                 `json:"overall_quality_score"`
+	ComponentScores       map[string]float64      `json:"component_scores"`
+	CrossValidationChecks []CrossValidationCheck  `json:"cross_validation_checks"`
+	IntegrityMetrics      IntegrityMetrics        `json:"integrity_metrics"`
+	RecommendedActions    []QualityRecommendation `json:"recommended_actions"`
 }
 
 // CrossValidationCheck validates consistency across analysis types
 type CrossValidationCheck struct {
-	CheckName     string                 `json:"check_name"`
-	CheckType     string                 `json:"check_type"`
-	Status        string                 `json:"status"`
-	Score         float64                `json:"score"`
-	Details       map[string]interface{} `json:"details"`
-	Issues        []string               `json:"issues"`
+	CheckName string                 `json:"check_name"`
+	CheckType string                 `json:"check_type"`
+	Status    string                 `json:"status"`
+	Score     float64                `json:"score"`
+	Details   map[string]interface{} `json:"details"`
+	Issues    []string               `json:"issues"`
 }
 
 // IntegrityMetrics provides data integrity measurements
 type IntegrityMetrics struct {
-	DataConsistency    float64 `json:"data_consistency"`
-	CompletenessScore  float64 `json:"completeness_score"`
-	AccuracyScore      float64 `json:"accuracy_score"`
-	ReliabilityScore   float64 `json:"reliability_score"`
-	PerformanceScore   float64 `json:"performance_score"`
+	DataConsistency   float64 `json:"data_consistency"`
+	CompletenessScore float64 `json:"completeness_score"`
+	AccuracyScore     float64 `json:"accuracy_score"`
+	ReliabilityScore  float64 `json:"reliability_score"`
+	PerformanceScore  float64 `json:"performance_score"`
 }
 
 // QualityRecommendation provides quality improvement recommendations
 type QualityRecommendation struct {
-	RecommendationType string   `json:"recommendation_type"`
-	Priority          string   `json:"priority"`
-	Description       string   `json:"description"`
-	ActionItems       []string `json:"action_items"`
-	ExpectedImprovement string `json:"expected_improvement"`
+	RecommendationType  string   `json:"recommendation_type"`
+	Priority            string   `json:"priority"`
+	Description         string   `json:"description"`
+	ActionItems         []string `json:"action_items"`
+	ExpectedImprovement string   `json:"expected_improvement"`
 }
 
 // Helper methods for generating orchestration metadata
@@ -414,13 +414,13 @@ func (doi *DependencyOrchestrationIntegrator) getOrchestrationMetadata() *Depend
 			SupportedPackageManagers: []string{"npm", "yarn", "pnpm"},
 			VulnerabilityDatabases:   []string{"npm_audit", "github_advisory", "osv"},
 			LicenseDetection:         true,
-			UpdateAnalysis:          true,
-			PerformanceImpact:       true,
-			BundleAnalysis:          true,
-			TreeShaking:             true,
-			ReportFormats:           []string{"json", "markdown", "pdf", "html"},
-			MaxDependencies:         10000,
-			MaxAnalysisTime:         3600, // 1 hour
+			UpdateAnalysis:           true,
+			PerformanceImpact:        true,
+			BundleAnalysis:           true,
+			TreeShaking:              true,
+			ReportFormats:            []string{"json", "markdown", "pdf", "html"},
+			MaxDependencies:          10000,
+			MaxAnalysisTime:          3600, // 1 hour
 		},
 		ResourceRequirements: ResourceRequirements{
 			MinimumMemoryMB: 256,
@@ -438,7 +438,7 @@ func (doi *DependencyOrchestrationIntegrator) getOrchestrationMetadata() *Depend
 			ParallelizationFactor:  0.8,
 		},
 		IntegrationReadiness: true,
-		GeneratedAt:         time.Now(),
+		GeneratedAt:          time.Now(),
 	}
 }
 
@@ -499,8 +499,8 @@ func (doi *DependencyOrchestrationIntegrator) getProcessingInstructions() *Depen
 				ValidationType: "structural",
 				Criteria: map[string]interface{}{
 					"min_dependencies": 1,
-					"max_depth":       50,
-					"circular_deps":   false,
+					"max_depth":        50,
+					"circular_deps":    false,
 				},
 				FailureAction: "abort_analysis",
 				Required:      true,
@@ -525,9 +525,9 @@ func (doi *DependencyOrchestrationIntegrator) getQualityAssurance(tree *Dependen
 				CheckType: "consistency",
 				Status:    "passed",
 				Details: map[string]interface{}{
-					"parsed_dependencies": len(tree.AllDependencies),
+					"parsed_dependencies":   len(tree.AllDependencies),
 					"resolved_dependencies": len(tree.AllDependencies),
-					"consistency_check": "all_dependencies_resolved",
+					"consistency_check":     "all_dependencies_resolved",
 				},
 				LastChecked: time.Now(),
 			},
@@ -558,8 +558,8 @@ func (doi *DependencyOrchestrationIntegrator) getQualityAssurance(tree *Dependen
 		},
 		PerformanceValidation: PerformanceValidation{
 			ActualVsExpected: map[string]float64{
-				"analysis_time_ms":    50.0,
-				"memory_usage_mb":     256.0,
+				"analysis_time_ms":     50.0,
+				"memory_usage_mb":      256.0,
 				"vulnerability_checks": 200.0,
 			},
 			PerformanceScore:   88.5,
@@ -724,9 +724,9 @@ func (doi *DependencyOrchestrationIntegrator) getCombinedQualityValidation() *Co
 	return &CombinedQualityValidation{
 		OverallQualityScore: 92.5,
 		ComponentScores: map[string]float64{
-			"ast_analysis":         95.0,
-			"dependency_analysis":  90.0,
-			"integration_quality":  92.5,
+			"ast_analysis":        95.0,
+			"dependency_analysis": 90.0,
+			"integration_quality": 92.5,
 		},
 		CrossValidationChecks: []CrossValidationCheck{
 			{
@@ -735,9 +735,9 @@ func (doi *DependencyOrchestrationIntegrator) getCombinedQualityValidation() *Co
 				Status:    "passed",
 				Score:     95.0,
 				Details: map[string]interface{}{
-					"imports_matched":     true,
-					"dependencies_found":  true,
-					"consistency_score":   95.0,
+					"imports_matched":    true,
+					"dependencies_found": true,
+					"consistency_score":  95.0,
 				},
 				Issues: []string{},
 			},
@@ -752,9 +752,9 @@ func (doi *DependencyOrchestrationIntegrator) getCombinedQualityValidation() *Co
 		RecommendedActions: []QualityRecommendation{
 			{
 				RecommendationType:  "performance_optimization",
-				Priority:           "medium",
-				Description:        "Optimize vulnerability database queries for better performance",
-				ActionItems:        []string{"implement_query_batching", "add_result_caching"},
+				Priority:            "medium",
+				Description:         "Optimize vulnerability database queries for better performance",
+				ActionItems:         []string{"implement_query_batching", "add_result_caching"},
 				ExpectedImprovement: "20% faster vulnerability scanning",
 			},
 		},

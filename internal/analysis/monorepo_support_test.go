@@ -13,12 +13,12 @@ import (
 
 func TestDetectMonorepoStructure(t *testing.T) {
 	tests := []struct {
-		name           string
-		setupFunc      func(t *testing.T, rootDir string)
-		expectedType   string
-		expectedPkgs   int
-		shouldError    bool
-		shouldBeNil    bool
+		name         string
+		setupFunc    func(t *testing.T, rootDir string)
+		expectedType string
+		expectedPkgs int
+		shouldError  bool
+		shouldBeNil  bool
 	}{
 		{
 			name: "npm_workspaces_array_format",
@@ -173,7 +173,7 @@ package-a@1.0.0:
 				writeJSON(t, filepath.Join(rootDir, "package.json"), packageJSON)
 
 				// Create package A that depends on package B
-				createTestPackageWithDeps(t, filepath.Join(rootDir, "packages", "package-a"), "package-a", "1.0.0", 
+				createTestPackageWithDeps(t, filepath.Join(rootDir, "packages", "package-a"), "package-a", "1.0.0",
 					map[string]string{
 						"package-b": "^1.0.0",
 						"lodash":    "^4.17.21",
@@ -231,12 +231,12 @@ package-a@1.0.0:
 			if tt.name == "cross_package_dependencies" {
 				require.Contains(t, structure.CrossPackageDeps, "package-a")
 				assert.Contains(t, structure.CrossPackageDeps["package-a"], "package-b")
-				
+
 				pkgA := structure.Packages["package-a"]
 				require.NotNil(t, pkgA)
 				assert.Contains(t, pkgA.WorkspaceDeps, "package-b")
 				assert.Contains(t, pkgA.ExternalDeps, "lodash")
-				
+
 				pkgB := structure.Packages["package-b"]
 				require.NotNil(t, pkgB)
 				assert.Contains(t, pkgB.ExternalDeps, "express")
@@ -248,11 +248,11 @@ package-a@1.0.0:
 
 func TestParseWorkspaceConfig(t *testing.T) {
 	tests := []struct {
-		name         string
-		workspaces   interface{}
-		expectedPkgs []string
+		name            string
+		workspaces      interface{}
+		expectedPkgs    []string
 		expectedNoHoist []string
-		shouldError  bool
+		shouldError     bool
 	}{
 		{
 			name:         "array_format",
@@ -418,12 +418,12 @@ func TestExtendAnalysisForMonorepo(t *testing.T) {
 	writeJSON(t, filepath.Join(tempDir, "package.json"), packageJSON)
 
 	// Create packages with cross-dependencies
-	createTestPackageWithDeps(t, filepath.Join(tempDir, "packages", "core"), "core", "1.0.0", 
+	createTestPackageWithDeps(t, filepath.Join(tempDir, "packages", "core"), "core", "1.0.0",
 		map[string]string{
 			"utils":  "^1.0.0",
 			"moment": "^2.29.0",
 		})
-	
+
 	createTestPackageWithDeps(t, filepath.Join(tempDir, "packages", "utils"), "utils", "1.0.0",
 		map[string]string{
 			"ramda": "^0.28.0",

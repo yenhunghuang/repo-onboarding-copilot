@@ -20,10 +20,10 @@ func TestAST_IntegrationWithSampleRepositories(t *testing.T) {
 	tempDir := t.TempDir()
 
 	tests := []struct {
-		name           string
-		setupRepo      func(t *testing.T) string
-		expectedFiles  int
-		expectedFuncs  int
+		name            string
+		setupRepo       func(t *testing.T) string
+		expectedFiles   int
+		expectedFuncs   int
 		expectedClasses int
 		expectedImports int
 	}{
@@ -42,7 +42,7 @@ func TestAST_IntegrationWithSampleRepositories(t *testing.T) {
 			setupRepo: func(t *testing.T) string {
 				return createTypeScriptReactProject(t, tempDir)
 			},
-			expectedFiles:   3, // Adjusted based on actual parser results  
+			expectedFiles:   3, // Adjusted based on actual parser results
 			expectedFuncs:   4,
 			expectedClasses: 1, // Adjusted based on actual parser results
 			expectedImports: 4, // Adjusted based on actual parser results
@@ -62,7 +62,7 @@ func TestAST_IntegrationWithSampleRepositories(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repoPath := tt.setupRepo(t)
-			
+
 			// Create analyzer with default config
 			config := ast.AnalyzerConfig{
 				ProjectRoot:        repoPath,
@@ -113,28 +113,28 @@ func TestAST_PerformanceBenchmarkingLargeRepository(t *testing.T) {
 	tempDir := t.TempDir()
 
 	tests := []struct {
-		name         string
-		fileCount    int
-		maxDuration  time.Duration
-		maxMemoryMB  int64
+		name        string
+		fileCount   int
+		maxDuration time.Duration
+		maxMemoryMB int64
 	}{
 		{
-			name:         "Medium Repository (100 files)",
-			fileCount:    100,
-			maxDuration:  30 * time.Second,
-			maxMemoryMB:  50,
+			name:        "Medium Repository (100 files)",
+			fileCount:   100,
+			maxDuration: 30 * time.Second,
+			maxMemoryMB: 50,
 		},
 		{
-			name:         "Large Repository (1000 files)",
-			fileCount:    1000,
-			maxDuration:  5 * time.Minute,
-			maxMemoryMB:  200,
+			name:        "Large Repository (1000 files)",
+			fileCount:   1000,
+			maxDuration: 5 * time.Minute,
+			maxMemoryMB: 200,
 		},
 		{
-			name:         "Very Large Repository (5000 files)",
-			fileCount:    5000,
-			maxDuration:  15 * time.Minute,
-			maxMemoryMB:  500,
+			name:        "Very Large Repository (5000 files)",
+			fileCount:   5000,
+			maxDuration: 15 * time.Minute,
+			maxMemoryMB: 500,
 		},
 	}
 
@@ -146,10 +146,10 @@ func TestAST_PerformanceBenchmarkingLargeRepository(t *testing.T) {
 			// Create analyzer with performance optimization
 			config := ast.AnalyzerConfig{
 				ProjectRoot:                   repoPath,
-				EnableDependency:             true,
+				EnableDependency:              true,
 				EnableComponentMap:            true,
-				MaxConcurrency:               4,
-				MaxFileSize:                  10 * 1024 * 1024, // 10MB
+				MaxConcurrency:                4,
+				MaxFileSize:                   10 * 1024 * 1024, // 10MB
 				EnablePerformanceOptimization: true,
 			}
 			analyzer, err := ast.NewAnalyzer(config)
@@ -214,10 +214,10 @@ func TestAST_ErrorHandlingWithMalformedCode(t *testing.T) {
 	tempDir := t.TempDir()
 
 	tests := []struct {
-		name         string
-		createFile   func(t *testing.T) string
-		expectError  bool
-		expectPartial bool
+		name           string
+		createFile     func(t *testing.T) string
+		expectError    bool
+		expectPartial  bool
 		expectedStatus string
 	}{
 		{
@@ -312,7 +312,7 @@ func TestAST_ErrorHandlingWithMalformedCode(t *testing.T) {
 			// Verify error reporting
 			if tt.expectPartial {
 				assert.NotEmpty(t, result.Errors, "Should report parse errors")
-				
+
 				// Verify error contains useful information
 				for _, parseErr := range result.Errors {
 					assert.NotEmpty(t, parseErr.Message, "Error message should not be empty")
@@ -326,7 +326,7 @@ func TestAST_ErrorHandlingWithMalformedCode(t *testing.T) {
 				parseStatus = "partial"
 			}
 
-			t.Logf("Malformed file test '%s' - Status: %s, Errors: %d", 
+			t.Logf("Malformed file test '%s' - Status: %s, Errors: %d",
 				tt.name, parseStatus, len(result.Errors))
 		})
 	}

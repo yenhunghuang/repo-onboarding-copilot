@@ -11,12 +11,12 @@ func TestIntegrationMapper_ScanDatabaseConnections(t *testing.T) {
 	im := NewIntegrationMapper(ci, dfa)
 
 	tests := []struct {
-		name                string
-		filePath            string
-		content             string
-		expectedType        IntegrationType
-		expectedMinRisk     SecurityRiskLevel
-		expectedProtocol    string
+		name             string
+		filePath         string
+		content          string
+		expectedType     IntegrationType
+		expectedMinRisk  SecurityRiskLevel
+		expectedProtocol string
 	}{
 		{
 			name:     "MongoDB Connection with Environment Variables",
@@ -111,28 +111,28 @@ client.on('error', (err) => console.log('Redis Client Error', err));
 			for _, integration := range integrations {
 				if integration.Type == tt.expectedType && integration.FilePath == tt.filePath {
 					found = true
-					
+
 					if integration.Protocol != tt.expectedProtocol {
 						t.Errorf("Expected protocol %s, got %s", tt.expectedProtocol, integration.Protocol)
 					}
-					
+
 					// Check security risk level
 					if tt.expectedMinRisk == CriticalRisk && integration.SecurityRisk != CriticalRisk {
 						t.Errorf("Expected critical risk for hardcoded credentials")
 					}
-					
+
 					// Check that risk reasons are provided
 					if len(integration.RiskReasons) == 0 {
 						t.Error("Expected risk reasons to be provided")
 					}
-					
+
 					// Check credentials analysis
 					if tt.name == "PostgreSQL Connection with Hardcoded Credentials" {
 						if !integration.Credentials.UsesHardcoded {
 							t.Error("Expected hardcoded credentials detection")
 						}
 					}
-					
+
 					break
 				}
 			}
@@ -146,11 +146,11 @@ client.on('error', (err) => console.log('Redis Client Error', err));
 
 func TestIntegrationMapper_ScanAPIEndpoints(t *testing.T) {
 	tests := []struct {
-		name            string
-		filePath        string
-		content         string
-		expectedCount   int
-		expectedRisk    SecurityRiskLevel
+		name          string
+		filePath      string
+		content       string
+		expectedCount int
+		expectedRisk  SecurityRiskLevel
 	}{
 		{
 			name:     "HTTPS API Calls",
@@ -248,7 +248,7 @@ export default socket;
 			ci := NewComponentIdentifier()
 			dfa := NewDataFlowAnalyzer(ci)
 			im := NewIntegrationMapper(ci, dfa)
-			
+
 			err := im.scanAPIEndpoints(tt.filePath, tt.content)
 			if err != nil {
 				t.Fatalf("scanAPIEndpoints() error = %v", err)
@@ -293,11 +293,11 @@ func TestIntegrationMapper_ScanServiceIntegrations(t *testing.T) {
 	im := NewIntegrationMapper(ci, dfa)
 
 	tests := []struct {
-		name           string
-		filePath       string
-		content        string
-		expectedType   IntegrationType
-		expectedRisk   SecurityRiskLevel
+		name         string
+		filePath     string
+		content      string
+		expectedType IntegrationType
+		expectedRisk SecurityRiskLevel
 	}{
 		{
 			name:     "AWS S3 Integration",
@@ -391,16 +391,16 @@ export const trackPageView = (page) => {
 			for _, integration := range integrations {
 				if integration.FilePath == tt.filePath {
 					found = true
-					
+
 					if integration.SecurityRisk != tt.expectedRisk {
 						t.Errorf("Expected %s risk, got %s", tt.expectedRisk, integration.SecurityRisk)
 					}
-					
+
 					// Payment integrations should always be critical risk
 					if tt.expectedType == PaymentIntegration && integration.SecurityRisk != CriticalRisk {
 						t.Error("Payment integrations should always be critical risk")
 					}
-					
+
 					break
 				}
 			}
@@ -505,16 +505,16 @@ module.exports = { authenticate };
 			for _, integration := range integrations {
 				if integration.FilePath == tt.filePath {
 					found = true
-					
+
 					if integration.SecurityRisk != tt.expectedRisk {
 						t.Errorf("Expected %s risk, got %s", tt.expectedRisk, integration.SecurityRisk)
 					}
-					
+
 					// Check that authentication integrations are properly categorized
 					if !strings.Contains(integration.Name, tt.expectedAuth) {
 						t.Errorf("Expected auth type %s in name %s", tt.expectedAuth, integration.Name)
 					}
-					
+
 					break
 				}
 			}
@@ -556,7 +556,7 @@ module.exports = config;
 	for _, integration := range integrations {
 		if integration.Type == UnknownIntegration && integration.Protocol == "Environment" {
 			envVarIntegrations++
-			
+
 			if integration.SecurityRisk == HighRisk {
 				highRiskEnvVars++
 			}
@@ -628,7 +628,7 @@ func TestIntegrationMapper_SecurityAssessment(t *testing.T) {
 		if len(recList) == 0 {
 			t.Error("Expected security recommendations")
 		}
-		
+
 		// Should recommend fixing hardcoded credentials
 		hasCredentialRec := false
 		for _, rec := range recList {
@@ -653,12 +653,12 @@ func TestIntegrationMapper_GetIntegrationStats(t *testing.T) {
 		Type:         DatabaseIntegration,
 		SecurityRisk: LowRisk,
 	})
-	
+
 	im.integrations = append(im.integrations, IntegrationPoint{
 		Type:         APIIntegration,
 		SecurityRisk: HighRisk,
 	})
-	
+
 	im.integrations = append(im.integrations, IntegrationPoint{
 		Type:         PaymentIntegration,
 		SecurityRisk: CriticalRisk,
@@ -703,12 +703,12 @@ func TestIntegrationMapper_GetHighRiskIntegrations(t *testing.T) {
 		ID:           "low_risk",
 		SecurityRisk: LowRisk,
 	})
-	
+
 	im.integrations = append(im.integrations, IntegrationPoint{
 		ID:           "high_risk",
 		SecurityRisk: HighRisk,
 	})
-	
+
 	im.integrations = append(im.integrations, IntegrationPoint{
 		ID:           "critical_risk",
 		SecurityRisk: CriticalRisk,
@@ -723,7 +723,7 @@ func TestIntegrationMapper_GetHighRiskIntegrations(t *testing.T) {
 	// Verify both high and critical risk are included
 	foundHigh := false
 	foundCritical := false
-	
+
 	for _, integration := range highRisk {
 		if integration.ID == "high_risk" {
 			foundHigh = true
@@ -798,7 +798,7 @@ module.exports = { fetchExternalData, processPayment, generateToken };
 	}
 
 	integrations := im.GetIntegrationPoints()
-	
+
 	// Should detect multiple types of integrations
 	expectedTypes := []IntegrationType{
 		DatabaseIntegration,

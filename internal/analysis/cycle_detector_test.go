@@ -494,8 +494,8 @@ func TestCycleDetector_GetCyclesByType(t *testing.T) {
 		"/src/components/User.jsx":    `import Profile from './Profile.jsx';`,
 		"/src/components/Profile.jsx": `import User from './User.jsx';`,
 		// Service cycle
-		"/src/services/authService.js":    `import userService from './userService.js';`,
-		"/src/services/userService.js":    `import authService from './authService.js';`,
+		"/src/services/authService.js": `import userService from './userService.js';`,
+		"/src/services/userService.js": `import authService from './authService.js';`,
 	}
 
 	// Add all files to dependency graph
@@ -668,7 +668,7 @@ func TestCycleDetector_CycleNormalization(t *testing.T) {
 	}
 
 	cycles := cd.GetCycles()
-	
+
 	// Should detect exactly one cycle despite multiple paths
 	if len(cycles) != 1 {
 		t.Fatalf("Expected 1 normalized cycle, got %d", len(cycles))
@@ -685,27 +685,27 @@ func TestCycleDetector_ResolutionStrategies(t *testing.T) {
 
 	// Test different cycle types have appropriate resolution strategies
 	testCases := []struct {
-		name            string
-		files           map[string]string
-		expectedType    CycleType
+		name             string
+		files            map[string]string
+		expectedType     CycleType
 		mustHaveStrategy string
 	}{
 		{
 			name: "Component Cycle - Should suggest DI",
 			files: map[string]string{
-				"/src/components/UserComponent.jsx": `import Profile from './ProfileComponent.jsx';`,
+				"/src/components/UserComponent.jsx":    `import Profile from './ProfileComponent.jsx';`,
 				"/src/components/ProfileComponent.jsx": `import User from './UserComponent.jsx';`,
 			},
-			expectedType:    ComponentCycle,
+			expectedType:     ComponentCycle,
 			mustHaveStrategy: "Dependency Injection",
 		},
 		{
 			name: "Type Cycle - Should suggest abstractions",
 			files: map[string]string{
-				"/src/types/user.d.ts": `import { Profile } from './profile.d.ts';`,
+				"/src/types/user.d.ts":    `import { Profile } from './profile.d.ts';`,
 				"/src/types/profile.d.ts": `import { User } from './user.d.ts';`,
 			},
-			expectedType:    TypeCycle,
+			expectedType:     TypeCycle,
 			mustHaveStrategy: "Type Abstractions",
 		},
 		{
@@ -714,7 +714,7 @@ func TestCycleDetector_ResolutionStrategies(t *testing.T) {
 				"/src/utils/a.js": `import b from './b.js';`,
 				"/src/utils/b.js": `import a from './a.js';`,
 			},
-			expectedType:    UtilityCycle,
+			expectedType:     UtilityCycle,
 			mustHaveStrategy: "Merge Modules",
 		},
 	}

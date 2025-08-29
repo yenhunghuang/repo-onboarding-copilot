@@ -35,12 +35,12 @@ func NewMemoryCache() *MemoryCache {
 func (c *MemoryCache) Get(key string) (interface{}, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	
+
 	entry, exists := c.data[key]
 	if !exists || time.Now().After(entry.expiresAt) {
 		return nil, false
 	}
-	
+
 	return entry.value, true
 }
 
@@ -48,7 +48,7 @@ func (c *MemoryCache) Get(key string) (interface{}, bool) {
 func (c *MemoryCache) Set(key string, value interface{}, ttl time.Duration) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	c.data[key] = cacheEntry{
 		value:     value,
 		expiresAt: time.Now().Add(ttl),
@@ -65,38 +65,38 @@ type PerformanceAnalyzer struct {
 
 // BundlerConfig contains configuration for different bundlers
 type BundlerConfig struct {
-	Type                string   `json:"type"`                 // webpack, rollup, esbuild, vite
-	TreeShakingEnabled  bool     `json:"tree_shaking_enabled"` 
-	CompressionEnabled  bool     `json:"compression_enabled"`  // gzip/brotli
+	Type                string   `json:"type"` // webpack, rollup, esbuild, vite
+	TreeShakingEnabled  bool     `json:"tree_shaking_enabled"`
+	CompressionEnabled  bool     `json:"compression_enabled"` // gzip/brotli
 	MinificationEnabled bool     `json:"minification_enabled"`
 	CodeSplitting       bool     `json:"code_splitting"`
-	TreeShakingRatio    float64  `json:"tree_shaking_ratio"`   // 0.0 to 1.0, how much can be removed
-	CompressionRatio    float64  `json:"compression_ratio"`    // typical compression ratio
-	OutputFormats       []string `json:"output_formats"`       // supported output formats
+	TreeShakingRatio    float64  `json:"tree_shaking_ratio"` // 0.0 to 1.0, how much can be removed
+	CompressionRatio    float64  `json:"compression_ratio"`  // typical compression ratio
+	OutputFormats       []string `json:"output_formats"`     // supported output formats
 }
 
 // PerformanceBudgets defines performance thresholds
 type PerformanceBudgets struct {
-	MaxBundleSize        int64   `json:"max_bundle_size"`         // bytes
-	MaxInitialLoadTime   float64 `json:"max_initial_load_time"`   // milliseconds
-	MaxScriptEvalTime    float64 `json:"max_script_eval_time"`    // milliseconds
-	MaxFirstContentfulPaint float64 `json:"max_first_contentful_paint"` // milliseconds
+	MaxBundleSize             int64   `json:"max_bundle_size"`              // bytes
+	MaxInitialLoadTime        float64 `json:"max_initial_load_time"`        // milliseconds
+	MaxScriptEvalTime         float64 `json:"max_script_eval_time"`         // milliseconds
+	MaxFirstContentfulPaint   float64 `json:"max_first_contentful_paint"`   // milliseconds
 	MaxLargestContentfulPaint float64 `json:"max_largest_contentful_paint"` // milliseconds
-	MaxCumulativeLayoutShift float64 `json:"max_cumulative_layout_shift"` // CLS score
-	MaxFirstInputDelay   float64 `json:"max_first_input_delay"`   // milliseconds
+	MaxCumulativeLayoutShift  float64 `json:"max_cumulative_layout_shift"`  // CLS score
+	MaxFirstInputDelay        float64 `json:"max_first_input_delay"`        // milliseconds
 	// Additional fields for compatibility with tests
-	TotalSize            int64   `json:"total_size"`              // alias for max_bundle_size
-	InitialSize          int64   `json:"initial_size"`            // maximum initial bundle size
-	AssetSize            int64   `json:"asset_size"`              // maximum individual asset size
+	TotalSize   int64 `json:"total_size"`   // alias for max_bundle_size
+	InitialSize int64 `json:"initial_size"` // maximum initial bundle size
+	AssetSize   int64 `json:"asset_size"`   // maximum individual asset size
 }
 
 // PerformanceImpact represents the performance analysis results
 type PerformanceImpact struct {
 	PackageName        string                 `json:"package_name"`
-	EstimatedSize      int64                  `json:"estimated_size"`      // raw size in bytes
-	MinifiedSize       int64                  `json:"minified_size"`       // after minification
-	CompressedSize     int64                  `json:"compressed_size"`     // after gzip/brotli
-	TreeShakableSize   int64                  `json:"tree_shakable_size"`  // removable with tree shaking
+	EstimatedSize      int64                  `json:"estimated_size"`     // raw size in bytes
+	MinifiedSize       int64                  `json:"minified_size"`      // after minification
+	CompressedSize     int64                  `json:"compressed_size"`    // after gzip/brotli
+	TreeShakableSize   int64                  `json:"tree_shakable_size"` // removable with tree shaking
 	LoadTimeImpact     *LoadTimeAnalysis      `json:"load_time_impact"`
 	BundleContribution float64                `json:"bundle_contribution"` // percentage of total bundle
 	PerformanceScore   float64                `json:"performance_score"`   // 0-100 score
@@ -106,52 +106,52 @@ type PerformanceImpact struct {
 
 // LoadTimeAnalysis contains load time calculations for different scenarios
 type LoadTimeAnalysis struct {
-	Network3G     *NetworkImpact `json:"network_3g"`     // 3G connection
-	Network4G     *NetworkImpact `json:"network_4g"`     // 4G connection
-	NetworkWiFi   *NetworkImpact `json:"network_wifi"`   // WiFi connection
-	NetworkCable  *NetworkImpact `json:"network_cable"`  // Wired broadband
-	DeviceLowEnd  *DeviceImpact  `json:"device_low_end"` // Low-end device
-	DeviceMidEnd  *DeviceImpact  `json:"device_mid_end"` // Mid-range device
+	Network3G     *NetworkImpact `json:"network_3g"`      // 3G connection
+	Network4G     *NetworkImpact `json:"network_4g"`      // 4G connection
+	NetworkWiFi   *NetworkImpact `json:"network_wifi"`    // WiFi connection
+	NetworkCable  *NetworkImpact `json:"network_cable"`   // Wired broadband
+	DeviceLowEnd  *DeviceImpact  `json:"device_low_end"`  // Low-end device
+	DeviceMidEnd  *DeviceImpact  `json:"device_mid_end"`  // Mid-range device
 	DeviceHighEnd *DeviceImpact  `json:"device_high_end"` // High-end device
 }
 
 // NetworkImpact represents network-specific performance metrics
 type NetworkImpact struct {
-	DownloadTime     float64 `json:"download_time"`     // milliseconds
-	ParseTime        float64 `json:"parse_time"`        // milliseconds
-	ExecutionTime    float64 `json:"execution_time"`    // milliseconds
-	TotalTime        float64 `json:"total_time"`        // milliseconds
-	Bandwidth        int64   `json:"bandwidth"`         // bytes per second
-	Latency          float64 `json:"latency"`           // milliseconds
-	PacketLoss       float64 `json:"packet_loss"`       // percentage
+	DownloadTime  float64 `json:"download_time"`  // milliseconds
+	ParseTime     float64 `json:"parse_time"`     // milliseconds
+	ExecutionTime float64 `json:"execution_time"` // milliseconds
+	TotalTime     float64 `json:"total_time"`     // milliseconds
+	Bandwidth     int64   `json:"bandwidth"`      // bytes per second
+	Latency       float64 `json:"latency"`        // milliseconds
+	PacketLoss    float64 `json:"packet_loss"`    // percentage
 }
 
 // DeviceImpact represents device-specific performance metrics
 type DeviceImpact struct {
-	ParseTime       float64 `json:"parse_time"`       // milliseconds
-	CompileTime     float64 `json:"compile_time"`     // milliseconds
-	ExecutionTime   float64 `json:"execution_time"`   // milliseconds
-	MemoryUsage     int64   `json:"memory_usage"`     // bytes
-	CPUUtilization  float64 `json:"cpu_utilization"`  // percentage
-	TotalTime       float64 `json:"total_time"`       // milliseconds
-	DeviceType      string  `json:"device_type"`      // low-end, mid-end, high-end
+	ParseTime      float64 `json:"parse_time"`      // milliseconds
+	CompileTime    float64 `json:"compile_time"`    // milliseconds
+	ExecutionTime  float64 `json:"execution_time"`  // milliseconds
+	MemoryUsage    int64   `json:"memory_usage"`    // bytes
+	CPUUtilization float64 `json:"cpu_utilization"` // percentage
+	TotalTime      float64 `json:"total_time"`      // milliseconds
+	DeviceType     string  `json:"device_type"`     // low-end, mid-end, high-end
 }
 
 // BundleAnalysisResult contains overall bundle performance analysis
 type BundleAnalysisResult struct {
-	TotalSize             int64                         `json:"total_size"`
-	MinifiedSize          int64                         `json:"minified_size"`
-	CompressedSize        int64                         `json:"compressed_size"`
-	TreeShakableSize      int64                         `json:"tree_shakable_size"`
-	OptimizedSize         int64                         `json:"optimized_size"`      // after all optimizations
-	SizeAnalysis          *SizeAnalysis                 `json:"size_analysis"`
-	TreeShakingAnalysis   *TreeShakingAnalysis          `json:"tree_shaking_analysis"`
-	PackageContributions  []PackageContribution         `json:"package_contributions"`
-	BudgetAnalysis        *BudgetAnalysis               `json:"budget_analysis"`
-	LoadTimeAnalysis      *LoadTimeAnalysis             `json:"load_time_analysis"`
-	Recommendations       []PerformanceRecommendation   `json:"recommendations"`
-	SizeBreakdown         *SizeBreakdown                `json:"size_breakdown"`
-	GeneratedAt           time.Time                     `json:"generated_at"`
+	TotalSize            int64                       `json:"total_size"`
+	MinifiedSize         int64                       `json:"minified_size"`
+	CompressedSize       int64                       `json:"compressed_size"`
+	TreeShakableSize     int64                       `json:"tree_shakable_size"`
+	OptimizedSize        int64                       `json:"optimized_size"` // after all optimizations
+	SizeAnalysis         *SizeAnalysis               `json:"size_analysis"`
+	TreeShakingAnalysis  *TreeShakingAnalysis        `json:"tree_shaking_analysis"`
+	PackageContributions []PackageContribution       `json:"package_contributions"`
+	BudgetAnalysis       *BudgetAnalysis             `json:"budget_analysis"`
+	LoadTimeAnalysis     *LoadTimeAnalysis           `json:"load_time_analysis"`
+	Recommendations      []PerformanceRecommendation `json:"recommendations"`
+	SizeBreakdown        *SizeBreakdown              `json:"size_breakdown"`
+	GeneratedAt          time.Time                   `json:"generated_at"`
 }
 
 // SizeAnalysis groups size-related metrics for bundle analysis
@@ -173,38 +173,38 @@ type PackageContribution struct {
 
 // BudgetAnalysis compares actual metrics against performance budgets
 type BudgetAnalysis struct {
-	BundleSizeStatus    string  `json:"bundle_size_status"`    // pass, warn, fail
-	LoadTimeStatus      string  `json:"load_time_status"`      // pass, warn, fail
-	OverBudgetBy        int64   `json:"over_budget_by"`        // bytes over budget
-	BudgetUtilization   float64 `json:"budget_utilization"`    // percentage of budget used
-	MaxSeverity         string  `json:"max_severity"`          // highest severity of violations
-	Violations          []BudgetViolation `json:"violations"`
+	BundleSizeStatus  string            `json:"bundle_size_status"` // pass, warn, fail
+	LoadTimeStatus    string            `json:"load_time_status"`   // pass, warn, fail
+	OverBudgetBy      int64             `json:"over_budget_by"`     // bytes over budget
+	BudgetUtilization float64           `json:"budget_utilization"` // percentage of budget used
+	MaxSeverity       string            `json:"max_severity"`       // highest severity of violations
+	Violations        []BudgetViolation `json:"violations"`
 }
 
 // BudgetViolation represents a performance budget violation
 type BudgetViolation struct {
-	Metric           string  `json:"metric"`
-	BudgetType       string  `json:"budget_type"`       // type of budget violated
-	Actual           float64 `json:"actual"`
-	ActualSize       int64   `json:"actual_size"`       // actual size for size violations
-	Budget           float64 `json:"budget"`
-	BudgetSize       int64   `json:"budget_size"`       // budget size for size violations
+	Metric            string  `json:"metric"`
+	BudgetType        string  `json:"budget_type"` // type of budget violated
+	Actual            float64 `json:"actual"`
+	ActualSize        int64   `json:"actual_size"` // actual size for size violations
+	Budget            float64 `json:"budget"`
+	BudgetSize        int64   `json:"budget_size"`        // budget size for size violations
 	OveragePercentage float64 `json:"overage_percentage"` // percentage over budget
-	Severity         string  `json:"severity"`          // critical, high, medium, low
-	Impact           string  `json:"impact"`            // description of user impact
+	Severity          string  `json:"severity"`           // critical, high, medium, low
+	Impact            string  `json:"impact"`             // description of user impact
 }
 
 // Remove duplicate - using the one from dependency_stubs.go
 
 // SizeBreakdown shows bundle composition
 type SizeBreakdown struct {
-	Libraries      int64            `json:"libraries"`       // third-party packages
-	ApplicationCode int64           `json:"application_code"` // user code
-	Polyfills      int64            `json:"polyfills"`       // browser compatibility
-	Framework      int64            `json:"framework"`       // React, Vue, Angular, etc.
-	Utilities      int64            `json:"utilities"`       // lodash, moment, etc.
-	Assets         int64            `json:"assets"`          // images, fonts, etc.
-	ByCategory     map[string]int64 `json:"by_category"`     // detailed breakdown
+	Libraries       int64            `json:"libraries"`        // third-party packages
+	ApplicationCode int64            `json:"application_code"` // user code
+	Polyfills       int64            `json:"polyfills"`        // browser compatibility
+	Framework       int64            `json:"framework"`        // React, Vue, Angular, etc.
+	Utilities       int64            `json:"utilities"`        // lodash, moment, etc.
+	Assets          int64            `json:"assets"`           // images, fonts, etc.
+	ByCategory      map[string]int64 `json:"by_category"`      // detailed breakdown
 }
 
 // PackageMetrics contains size and performance metrics for a package
@@ -234,9 +234,9 @@ type NetworkProfile struct {
 
 // DeviceProfile defines device performance characteristics
 type DeviceProfile struct {
-	Name           string  `json:"name"`
-	CPUMultiplier  float64 `json:"cpu_multiplier"`  // relative to baseline
-	MemoryLimit    int64   `json:"memory_limit"`    // bytes
+	Name            string  `json:"name"`
+	CPUMultiplier   float64 `json:"cpu_multiplier"`   // relative to baseline
+	MemoryLimit     int64   `json:"memory_limit"`     // bytes
 	ParseMultiplier float64 `json:"parse_multiplier"` // JS parse time multiplier
 }
 
@@ -263,13 +263,13 @@ func NewPerformanceAnalyzer() *PerformanceAnalyzer {
 // getDefaultPerformanceBudgets returns sensible default performance budgets
 func getDefaultPerformanceBudgets() *PerformanceBudgets {
 	return &PerformanceBudgets{
-		MaxBundleSize:             500 * 1024,    // 500KB
-		MaxInitialLoadTime:        3000,          // 3 seconds
-		MaxScriptEvalTime:         1000,          // 1 second
-		MaxFirstContentfulPaint:   1500,          // 1.5 seconds
-		MaxLargestContentfulPaint: 2500,          // 2.5 seconds
-		MaxCumulativeLayoutShift:  0.1,           // CLS score
-		MaxFirstInputDelay:        100,           // 100ms
+		MaxBundleSize:             500 * 1024, // 500KB
+		MaxInitialLoadTime:        3000,       // 3 seconds
+		MaxScriptEvalTime:         1000,       // 1 second
+		MaxFirstContentfulPaint:   1500,       // 1.5 seconds
+		MaxLargestContentfulPaint: 2500,       // 2.5 seconds
+		MaxCumulativeLayoutShift:  0.1,        // CLS score
+		MaxFirstInputDelay:        100,        // 100ms
 	}
 }
 
@@ -285,7 +285,7 @@ func (pa *PerformanceAnalyzer) AnalyzePackagePerformance(ctx context.Context, pk
 	estimatedSize := pa.calculatePackageSize(metrics, pkg)
 	minifiedSize := int64(float64(estimatedSize) * 0.7) // typical 30% reduction
 	compressedSize := int64(float64(minifiedSize) * pa.bundlerConfig.CompressionRatio)
-	
+
 	var treeShakableSize int64
 	if metrics.IsTreeShakable && pa.bundlerConfig.TreeShakingEnabled {
 		treeShakableSize = int64(float64(estimatedSize) * pa.bundlerConfig.TreeShakingRatio)
@@ -311,8 +311,8 @@ func (pa *PerformanceAnalyzer) AnalyzePackagePerformance(ctx context.Context, pk
 		PerformanceScore:   performanceScore,
 		Recommendations:    recommendations,
 		Metadata: map[string]interface{}{
-			"version":         pkg.Version,
-			"dependency_type": pkg.DependencyType,
+			"version":          pkg.Version,
+			"dependency_type":  pkg.DependencyType,
 			"has_side_effects": metrics.HasSideEffects,
 			"is_tree_shakable": metrics.IsTreeShakable,
 		},
@@ -322,7 +322,7 @@ func (pa *PerformanceAnalyzer) AnalyzePackagePerformance(ctx context.Context, pk
 // getPackageMetrics retrieves or estimates package metrics
 func (pa *PerformanceAnalyzer) getPackageMetrics(ctx context.Context, name, version string) (*PackageMetrics, error) {
 	cacheKey := fmt.Sprintf("metrics:%s@%s", name, version)
-	
+
 	// Check cache first
 	if cached, exists := pa.cache.Get(cacheKey); exists {
 		if metrics, ok := cached.(*PackageMetrics); ok {
@@ -339,14 +339,14 @@ func (pa *PerformanceAnalyzer) getPackageMetrics(ctx context.Context, name, vers
 
 	// Cache the result
 	pa.cache.Set(cacheKey, metrics, time.Hour)
-	
+
 	return metrics, nil
 }
 
 // fetchPackageMetrics fetches actual metrics from npm registry
 func (pa *PerformanceAnalyzer) fetchPackageMetrics(ctx context.Context, name, version string) (*PackageMetrics, error) {
 	url := fmt.Sprintf("https://registry.npmjs.org/%s/%s", name, version)
-	
+
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -401,10 +401,10 @@ func (pa *PerformanceAnalyzer) parseNpmMetrics(data map[string]interface{}) (*Pa
 	metrics.IsTreeShakable = !metrics.HasSideEffects
 
 	// Estimate performance metrics
-	metrics.TreeShakingRatio = 0.3 // default 30%
+	metrics.TreeShakingRatio = 0.3                              // default 30%
 	metrics.ParseTime = float64(metrics.RawSize) / 1000000 * 10 // ~10ms per MB
-	metrics.ExecutionTime = metrics.ParseTime * 2 // execution typically 2x parse time
-	metrics.MemoryUsage = metrics.RawSize * 3 // rough estimate
+	metrics.ExecutionTime = metrics.ParseTime * 2               // execution typically 2x parse time
+	metrics.MemoryUsage = metrics.RawSize * 3                   // rough estimate
 
 	return metrics, nil
 }
@@ -413,7 +413,7 @@ func (pa *PerformanceAnalyzer) parseNpmMetrics(data map[string]interface{}) (*Pa
 func (pa *PerformanceAnalyzer) estimatePackageMetrics(name, version string) *PackageMetrics {
 	// Basic size estimation based on package name patterns
 	baseSize := int64(50000) // 50KB default
-	
+
 	// Adjust based on common package patterns
 	if strings.Contains(name, "react") || strings.Contains(name, "vue") || strings.Contains(name, "angular") {
 		baseSize = 150000 // Frameworks are larger
@@ -445,12 +445,12 @@ func (pa *PerformanceAnalyzer) estimatePackageMetrics(name, version string) *Pac
 // calculatePackageSize calculates the effective size of a package
 func (pa *PerformanceAnalyzer) calculatePackageSize(metrics *PackageMetrics, pkg *GraphPackageInfo) int64 {
 	size := metrics.RawSize
-	
+
 	// Adjust for development dependencies (not included in production builds)
 	if pkg.DependencyType == "devDependencies" {
 		return 0 // Dev dependencies don't contribute to bundle size
 	}
-	
+
 	return size
 }
 
@@ -458,9 +458,9 @@ func (pa *PerformanceAnalyzer) calculatePackageSize(metrics *PackageMetrics, pkg
 func (pa *PerformanceAnalyzer) calculateLoadTimeImpact(rawSize, minifiedSize, compressedSize int64) *LoadTimeAnalysis {
 	// Define network profiles
 	profiles := map[string]NetworkProfile{
-		"3g":    {Name: "3G", Bandwidth: 400 * 1024, Latency: 400, PacketLoss: 0.02},      // 400KB/s, 400ms latency
-		"4g":    {Name: "4G", Bandwidth: 1500 * 1024, Latency: 150, PacketLoss: 0.005},   // 1.5MB/s, 150ms latency
-		"wifi":  {Name: "WiFi", Bandwidth: 5000 * 1024, Latency: 50, PacketLoss: 0.001},  // 5MB/s, 50ms latency
+		"3g":    {Name: "3G", Bandwidth: 400 * 1024, Latency: 400, PacketLoss: 0.02},       // 400KB/s, 400ms latency
+		"4g":    {Name: "4G", Bandwidth: 1500 * 1024, Latency: 150, PacketLoss: 0.005},     // 1.5MB/s, 150ms latency
+		"wifi":  {Name: "WiFi", Bandwidth: 5000 * 1024, Latency: 50, PacketLoss: 0.001},    // 5MB/s, 50ms latency
 		"cable": {Name: "Cable", Bandwidth: 10000 * 1024, Latency: 20, PacketLoss: 0.0005}, // 10MB/s, 20ms latency
 	}
 
@@ -491,14 +491,14 @@ func (pa *PerformanceAnalyzer) calculateLoadTimeImpact(rawSize, minifiedSize, co
 func (pa *PerformanceAnalyzer) calculateNetworkImpact(size int64, profile NetworkProfile) *NetworkImpact {
 	// Download time = size / bandwidth + latency overhead
 	downloadTime := float64(size)/float64(profile.Bandwidth)*1000 + profile.Latency
-	
+
 	// Adjust for packet loss (retransmissions)
 	downloadTime *= (1 + profile.PacketLoss*5) // rough packet loss impact
-	
+
 	// Parse and execution are network-independent for this calculation
-	parseTime := float64(size) / 1000000 * 10  // ~10ms per MB
-	executionTime := parseTime * 2             // execution typically 2x parse
-	
+	parseTime := float64(size) / 1000000 * 10 // ~10ms per MB
+	executionTime := parseTime * 2            // execution typically 2x parse
+
 	totalTime := downloadTime + parseTime + executionTime
 
 	return &NetworkImpact{
@@ -517,19 +517,19 @@ func (pa *PerformanceAnalyzer) calculateDeviceImpact(size int64, profile DeviceP
 	// Base parse time scaled by device capability
 	baseParseTime := float64(size) / 1000000 * 10 // ~10ms per MB
 	parseTime := baseParseTime * profile.ParseMultiplier
-	
+
 	// Compile time (JIT compilation)
 	compileTime := parseTime * 0.5 * profile.CPUMultiplier
-	
+
 	// Execution time
 	executionTime := parseTime * 2 * profile.CPUMultiplier
-	
+
 	// Memory usage
 	memoryUsage := size * 3 // rough estimate: 3x file size in memory
-	
+
 	// CPU utilization estimate
 	cpuUtilization := math.Min(100, 20*profile.CPUMultiplier) // base 20% * multiplier
-	
+
 	totalTime := parseTime + compileTime + executionTime
 
 	return &DeviceImpact{
@@ -611,12 +611,12 @@ func (pa *PerformanceAnalyzer) generatePackageRecommendations(pkg *GraphPackageI
 // GetNetworkProfiles returns available network profiles for testing
 func GetNetworkProfiles() map[string]NetworkProfile {
 	return map[string]NetworkProfile{
-		"slow_3g":    {Name: "Slow 3G", Bandwidth: 50 * 1024, Latency: 2000, PacketLoss: 0.05},
-		"3g":         {Name: "3G", Bandwidth: 400 * 1024, Latency: 400, PacketLoss: 0.02},
-		"4g":         {Name: "4G", Bandwidth: 1500 * 1024, Latency: 150, PacketLoss: 0.005},
-		"wifi":       {Name: "WiFi", Bandwidth: 5000 * 1024, Latency: 50, PacketLoss: 0.001},
-		"cable":      {Name: "Cable", Bandwidth: 10000 * 1024, Latency: 20, PacketLoss: 0.0005},
-		"fiber":      {Name: "Fiber", Bandwidth: 50000 * 1024, Latency: 5, PacketLoss: 0.0001},
+		"slow_3g": {Name: "Slow 3G", Bandwidth: 50 * 1024, Latency: 2000, PacketLoss: 0.05},
+		"3g":      {Name: "3G", Bandwidth: 400 * 1024, Latency: 400, PacketLoss: 0.02},
+		"4g":      {Name: "4G", Bandwidth: 1500 * 1024, Latency: 150, PacketLoss: 0.005},
+		"wifi":    {Name: "WiFi", Bandwidth: 5000 * 1024, Latency: 50, PacketLoss: 0.001},
+		"cable":   {Name: "Cable", Bandwidth: 10000 * 1024, Latency: 20, PacketLoss: 0.0005},
+		"fiber":   {Name: "Fiber", Bandwidth: 50000 * 1024, Latency: 5, PacketLoss: 0.0001},
 	}
 }
 

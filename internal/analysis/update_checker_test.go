@@ -18,7 +18,7 @@ func TestNewUpdateChecker(t *testing.T) {
 	assert.NotNil(t, uc.cache)
 	assert.NotNil(t, uc.semverParser)
 	assert.Equal(t, "https://registry.npmjs.org", uc.registryURL)
-	
+
 	defer uc.Close()
 }
 
@@ -28,14 +28,14 @@ func TestSemanticVersionParser_Parse(t *testing.T) {
 	}
 
 	tests := []struct {
-		name            string
-		version         string
-		expectedMajor   int
-		expectedMinor   int
-		expectedPatch   int
-		expectedPrerel  string
-		expectedBuild   string
-		shouldError     bool
+		name           string
+		version        string
+		expectedMajor  int
+		expectedMinor  int
+		expectedPatch  int
+		expectedPrerel string
+		expectedBuild  string
+		shouldError    bool
 	}{
 		{
 			name:          "simple_version",
@@ -91,12 +91,12 @@ func TestSemanticVersionParser_Parse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := parser.Parse(tt.version)
-			
+
 			if tt.shouldError {
 				assert.Error(t, err)
 				return
 			}
-			
+
 			require.NoError(t, err)
 			assert.Equal(t, tt.expectedMajor, result.Major)
 			assert.Equal(t, tt.expectedMinor, result.Minor)
@@ -167,10 +167,10 @@ func TestSemanticVersionParser_Compare(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			v1, err := parser.Parse(tt.v1)
 			require.NoError(t, err)
-			
+
 			v2, err := parser.Parse(tt.v2)
 			require.NoError(t, err)
-			
+
 			result := parser.Compare(v1, v2)
 			assert.Equal(t, tt.expected, result)
 		})
@@ -218,10 +218,10 @@ func TestDetermineUpdateType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			current, err := uc.semverParser.Parse(tt.current)
 			require.NoError(t, err)
-			
+
 			target, err := uc.semverParser.Parse(tt.target)
 			require.NoError(t, err)
-			
+
 			result := uc.determineUpdateType(current, target)
 			assert.Equal(t, tt.expected, result)
 		})
@@ -326,10 +326,10 @@ func TestCalculateUpdatePriority(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := []struct {
-		name           string
-		target         string
-		compatibility  UpdateCompatibility
-		expectedPrio   string
+		name          string
+		target        string
+		compatibility UpdateCompatibility
+		expectedPrio  string
 	}{
 		{
 			name:   "safe_patch_update",
@@ -364,7 +364,7 @@ func TestCalculateUpdatePriority(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			target, err := uc.semverParser.Parse(tt.target)
 			require.NoError(t, err)
-			
+
 			priority := uc.calculateUpdatePriority("test-package", current, target, tt.compatibility)
 			assert.Equal(t, tt.expectedPrio, priority)
 		})
@@ -503,7 +503,7 @@ func TestFilterCriticalUpdates(t *testing.T) {
 
 	critical := filterCriticalUpdates(updates)
 	assert.Len(t, critical, 2)
-	
+
 	// Should include the critical priority update
 	foundCritical := false
 	foundSecurity := false

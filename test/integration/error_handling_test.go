@@ -32,9 +32,9 @@ func TestErrorHandlingValidation(t *testing.T) {
 			},
 			expectError: true,
 			errorCheck: func(err error) bool {
-				return strings.Contains(err.Error(), "package.json") || 
-				       strings.Contains(err.Error(), "not found") ||
-				       strings.Contains(err.Error(), "no such file")
+				return strings.Contains(err.Error(), "package.json") ||
+					strings.Contains(err.Error(), "not found") ||
+					strings.Contains(err.Error(), "no such file")
 			},
 		},
 		{
@@ -48,12 +48,12 @@ func TestErrorHandlingValidation(t *testing.T) {
 						"lodash": "^4.17.21"
 					}
 				}`
-				
+
 				err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(invalidJSON), 0644)
 				if err != nil {
 					t.Fatalf("Failed to write invalid JSON: %v", err)
 				}
-				
+
 				config := analysis.DependencyAnalyzerConfig{
 					ProjectRoot:         testDir,
 					IncludePackageFiles: []string{"package.json"},
@@ -63,8 +63,8 @@ func TestErrorHandlingValidation(t *testing.T) {
 			expectError: true,
 			errorCheck: func(err error) bool {
 				return strings.Contains(err.Error(), "json") ||
-				       strings.Contains(err.Error(), "parse") ||
-				       strings.Contains(err.Error(), "syntax")
+					strings.Contains(err.Error(), "parse") ||
+					strings.Contains(err.Error(), "syntax")
 			},
 		},
 		{
@@ -79,12 +79,12 @@ func TestErrorHandlingValidation(t *testing.T) {
 						"circular-test": "^1.0.0"
 					}
 				}`
-				
+
 				err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(packageJSON), 0644)
 				if err != nil {
 					t.Fatalf("Failed to write circular JSON: %v", err)
 				}
-				
+
 				config := analysis.DependencyAnalyzerConfig{
 					ProjectRoot:         testDir,
 					IncludePackageFiles: []string{"package.json"},
@@ -103,16 +103,16 @@ func TestErrorHandlingValidation(t *testing.T) {
 					"name": "permission-test",
 					"version": "1.0.0"
 				}`
-				
+
 				packageJSONPath := filepath.Join(testDir, "package.json")
 				err := os.WriteFile(packageJSONPath, []byte(packageJSON), 0644)
 				if err != nil {
 					t.Fatalf("Failed to write package.json: %v", err)
 				}
-				
+
 				// Try to make the file unreadable (may not work on all systems)
 				os.Chmod(packageJSONPath, 0000)
-				
+
 				config := analysis.DependencyAnalyzerConfig{
 					ProjectRoot:         testDir,
 					IncludePackageFiles: []string{"package.json"},
@@ -122,21 +122,21 @@ func TestErrorHandlingValidation(t *testing.T) {
 			expectError: true,
 			errorCheck: func(err error) bool {
 				return strings.Contains(err.Error(), "permission") ||
-				       strings.Contains(err.Error(), "denied") ||
-				       strings.Contains(err.Error(), "access")
+					strings.Contains(err.Error(), "denied") ||
+					strings.Contains(err.Error(), "access")
 			},
 		},
 		{
 			name: "ExtremelyLargeFile",
 			setupFunc: func(t *testing.T) (string, analysis.DependencyAnalyzerConfig) {
 				testDir := t.TempDir()
-				
+
 				// Create a large but valid package.json
 				var deps []string
 				for i := 0; i < 1000; i++ {
 					deps = append(deps, fmt.Sprintf(`"package-%d": "^1.0.0"`, i))
 				}
-				
+
 				largePackageJSON := fmt.Sprintf(`{
 					"name": "large-test",
 					"version": "1.0.0",
@@ -144,12 +144,12 @@ func TestErrorHandlingValidation(t *testing.T) {
 						%s
 					}
 				}`, strings.Join(deps, ",\n\t\t"))
-				
+
 				err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(largePackageJSON), 0644)
 				if err != nil {
 					t.Fatalf("Failed to write large JSON: %v", err)
 				}
-				
+
 				config := analysis.DependencyAnalyzerConfig{
 					ProjectRoot:         testDir,
 					IncludePackageFiles: []string{"package.json"},
@@ -164,7 +164,7 @@ func TestErrorHandlingValidation(t *testing.T) {
 			name: "MalformedLockFile",
 			setupFunc: func(t *testing.T) (string, analysis.DependencyAnalyzerConfig) {
 				testDir := t.TempDir()
-				
+
 				validPackageJSON := `{
 					"name": "malformed-lock-test",
 					"version": "1.0.0",
@@ -172,7 +172,7 @@ func TestErrorHandlingValidation(t *testing.T) {
 						"lodash": "^4.17.21"
 					}
 				}`
-				
+
 				malformedLockFile := `{
 					"name": "malformed-lock-test",
 					"version": "1.0.0"
@@ -181,17 +181,17 @@ func TestErrorHandlingValidation(t *testing.T) {
 						"": invalid-json-structure
 					}
 				}`
-				
+
 				err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(validPackageJSON), 0644)
 				if err != nil {
 					t.Fatalf("Failed to write package.json: %v", err)
 				}
-				
+
 				err = os.WriteFile(filepath.Join(testDir, "package-lock.json"), []byte(malformedLockFile), 0644)
 				if err != nil {
 					t.Fatalf("Failed to write malformed lock file: %v", err)
 				}
-				
+
 				config := analysis.DependencyAnalyzerConfig{
 					ProjectRoot:         testDir,
 					IncludePackageFiles: []string{"package.json", "package-lock.json"},
@@ -201,15 +201,15 @@ func TestErrorHandlingValidation(t *testing.T) {
 			expectError: true,
 			errorCheck: func(err error) bool {
 				return strings.Contains(err.Error(), "lock") ||
-				       strings.Contains(err.Error(), "parse") ||
-				       strings.Contains(err.Error(), "json")
+					strings.Contains(err.Error(), "parse") ||
+					strings.Contains(err.Error(), "json")
 			},
 		},
 		{
 			name: "NetworkTimeout",
 			setupFunc: func(t *testing.T) (string, analysis.DependencyAnalyzerConfig) {
 				testDir := t.TempDir()
-				
+
 				packageJSON := `{
 					"name": "network-test",
 					"version": "1.0.0",
@@ -217,12 +217,12 @@ func TestErrorHandlingValidation(t *testing.T) {
 						"lodash": "^4.17.21"
 					}
 				}`
-				
+
 				err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(packageJSON), 0644)
 				if err != nil {
 					t.Fatalf("Failed to write package.json: %v", err)
 				}
-				
+
 				config := analysis.DependencyAnalyzerConfig{
 					ProjectRoot:         testDir,
 					IncludePackageFiles: []string{"package.json"},
@@ -237,7 +237,7 @@ func TestErrorHandlingValidation(t *testing.T) {
 			name: "UnsupportedPackageFormat",
 			setupFunc: func(t *testing.T) (string, analysis.DependencyAnalyzerConfig) {
 				testDir := t.TempDir()
-				
+
 				// Create a valid JSON but with unsupported fields
 				unsupportedPackageJSON := `{
 					"name": "unsupported-test",
@@ -253,12 +253,12 @@ func TestErrorHandlingValidation(t *testing.T) {
 						"lodash": "^4.17.21"
 					}
 				}`
-				
+
 				err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(unsupportedPackageJSON), 0644)
 				if err != nil {
 					t.Fatalf("Failed to write unsupported JSON: %v", err)
 				}
-				
+
 				config := analysis.DependencyAnalyzerConfig{
 					ProjectRoot:         testDir,
 					IncludePackageFiles: []string{"package.json"},
@@ -282,7 +282,7 @@ func TestErrorHandlingValidation(t *testing.T) {
 			}()
 
 			testDir, config := tt.setupFunc(t)
-			
+
 			analyzer, err := analysis.NewDependencyAnalyzer(config)
 			if err != nil {
 				if tt.expectError {
@@ -303,18 +303,18 @@ func TestErrorHandlingValidation(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), timeout)
 			defer cancel()
 
-			result, err := analyzer.AnalyzeProject(ctx)
+			result, err := analyzer.AnalyzeDependencies(ctx)
 
 			if tt.expectError {
 				if err == nil {
 					t.Errorf("Expected error but got none")
 					return
 				}
-				
+
 				if tt.errorCheck != nil && !tt.errorCheck(err) {
 					t.Errorf("Error didn't match expected pattern: %v", err)
 				}
-				
+
 				t.Logf("Got expected error: %v", err)
 				return
 			}
@@ -351,11 +351,11 @@ func validateErrorHandlingResult(t *testing.T, result *analysis.DependencyTree, 
 				t.Errorf("Direct dependency '%s' is nil", name)
 				continue
 			}
-			
+
 			if dep.Name == "" {
 				t.Errorf("Dependency '%s' has empty name", name)
 			}
-			
+
 			if dep.Version == "" {
 				t.Errorf("Dependency '%s' has empty version", name)
 			}
@@ -379,7 +379,7 @@ func validateErrorHandlingResult(t *testing.T, result *analysis.DependencyTree, 
 // TestConcurrentAnalysis tests behavior under concurrent access
 func TestConcurrentAnalysis(t *testing.T) {
 	testDir := t.TempDir()
-	
+
 	packageJSON := `{
 		"name": "concurrent-test",
 		"version": "1.0.0",
@@ -388,17 +388,17 @@ func TestConcurrentAnalysis(t *testing.T) {
 			"axios": "^0.27.2"
 		}
 	}`
-	
+
 	err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(packageJSON), 0644)
 	if err != nil {
 		t.Fatalf("Failed to write package.json: %v", err)
 	}
-	
+
 	config := analysis.DependencyAnalyzerConfig{
 		ProjectRoot:         testDir,
 		IncludePackageFiles: []string{"package.json"},
 	}
-	
+
 	analyzer, err := analysis.NewDependencyAnalyzer(config)
 	if err != nil {
 		t.Fatalf("Failed to create analyzer: %v", err)
@@ -413,13 +413,13 @@ func TestConcurrentAnalysis(t *testing.T) {
 		go func(id int) {
 			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 			defer cancel()
-			
-			result, err := analyzer.AnalyzeProject(ctx)
+
+			result, err := analyzer.AnalyzeDependencies(ctx)
 			if err != nil {
 				errChan <- fmt.Errorf("goroutine %d: %w", id, err)
 				return
 			}
-			
+
 			resultChan <- result
 		}(i)
 	}
@@ -452,10 +452,10 @@ func TestConcurrentAnalysis(t *testing.T) {
 		baseline := results[0]
 		for i, result := range results[1:] {
 			if result.RootPackage.Name != baseline.RootPackage.Name {
-				t.Errorf("Result %d has different project name: %s vs %s", 
+				t.Errorf("Result %d has different project name: %s vs %s",
 					i+1, result.RootPackage.Name, baseline.RootPackage.Name)
 			}
-			
+
 			if len(result.DirectDeps) != len(baseline.DirectDeps) {
 				t.Errorf("Result %d has different number of direct deps: %d vs %d",
 					i+1, len(result.DirectDeps), len(baseline.DirectDeps))
@@ -469,13 +469,13 @@ func TestConcurrentAnalysis(t *testing.T) {
 // TestMemoryConstraints tests behavior under memory pressure
 func TestMemoryConstraints(t *testing.T) {
 	testDir := t.TempDir()
-	
+
 	// Create a package.json with many dependencies to test memory usage
 	var deps []string
 	for i := 0; i < 500; i++ {
 		deps = append(deps, fmt.Sprintf(`"package-%d": "^1.0.%d"`, i, i%10))
 	}
-	
+
 	largePackageJSON := fmt.Sprintf(`{
 		"name": "memory-test",
 		"version": "1.0.0",
@@ -483,18 +483,18 @@ func TestMemoryConstraints(t *testing.T) {
 			%s
 		}
 	}`, strings.Join(deps, ",\n\t\t"))
-	
+
 	err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(largePackageJSON), 0644)
 	if err != nil {
 		t.Fatalf("Failed to write large package.json: %v", err)
 	}
-	
+
 	config := analysis.DependencyAnalyzerConfig{
 		ProjectRoot:         testDir,
 		IncludePackageFiles: []string{"package.json"},
 		MaxDependencyDepth:  3, // Limit depth to control memory usage
 	}
-	
+
 	analyzer, err := analysis.NewDependencyAnalyzer(config)
 	if err != nil {
 		t.Fatalf("Failed to create analyzer: %v", err)
@@ -503,7 +503,7 @@ func TestMemoryConstraints(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	result, err := analyzer.AnalyzeProject(ctx)
+	result, err := analyzer.AnalyzeDependencies(ctx)
 	if err != nil {
 		t.Fatalf("Analysis failed under memory constraints: %v", err)
 	}
@@ -521,16 +521,16 @@ func TestMemoryConstraints(t *testing.T) {
 		t.Error("Expected some direct dependencies")
 	}
 
-	t.Logf("Memory constraint test completed with %d dependencies", 
+	t.Logf("Memory constraint test completed with %d dependencies",
 		result.Statistics.TotalDependencies)
 }
 
 // TestRecoveryMechanisms tests the system's ability to recover from various failure modes
 func TestRecoveryMechanisms(t *testing.T) {
 	testCases := []struct {
-		name        string
-		setupError  func(string) error
-		cleanupFunc func(string) error
+		name          string
+		setupError    func(string) error
+		cleanupFunc   func(string) error
 		shouldRecover bool
 	}{
 		{
@@ -568,12 +568,12 @@ func TestRecoveryMechanisms(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			testDir := t.TempDir()
-			
+
 			config := analysis.DependencyAnalyzerConfig{
 				ProjectRoot:         testDir,
 				IncludePackageFiles: []string{"package.json"},
 			}
-			
+
 			analyzer, err := analysis.NewDependencyAnalyzer(config)
 			if err != nil {
 				t.Fatalf("Failed to create analyzer: %v", err)
@@ -586,7 +586,7 @@ func TestRecoveryMechanisms(t *testing.T) {
 
 			// First analysis should fail
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			result1, err1 := analyzer.AnalyzeProject(ctx)
+			result1, err1 := analyzer.AnalyzeDependencies(ctx)
 			cancel()
 
 			if err1 == nil {
@@ -601,7 +601,7 @@ func TestRecoveryMechanisms(t *testing.T) {
 			if tc.shouldRecover {
 				// Second analysis should succeed
 				ctx, cancel = context.WithTimeout(context.Background(), 30*time.Second)
-				result2, err2 := analyzer.AnalyzeProject(ctx)
+				result2, err2 := analyzer.AnalyzeDependencies(ctx)
 				cancel()
 
 				if err2 != nil {

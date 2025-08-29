@@ -1,18 +1,18 @@
 package analysis
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestComponentIdentifier_IdentifyReactComponent(t *testing.T) {
 	ci := NewComponentIdentifier()
 
 	tests := []struct {
-		name        string
-		filePath    string
-		content     string
-		expectedType ComponentType
+		name             string
+		filePath         string
+		content          string
+		expectedType     ComponentType
 		expectedMetadata map[string]interface{}
 	}{
 		{
@@ -29,10 +29,10 @@ export default Button;
 			`,
 			expectedType: ReactComponent,
 			expectedMetadata: map[string]interface{}{
-				"has_jsx": true,
-				"is_functional": true,
-				"is_class": false,
-				"uses_hooks": false,
+				"has_jsx":              true,
+				"is_functional":        true,
+				"is_class":             false,
+				"uses_hooks":           false,
 				"detection_confidence": "high",
 			},
 		},
@@ -57,10 +57,10 @@ export default Counter;
 			`,
 			expectedType: ReactComponent,
 			expectedMetadata: map[string]interface{}{
-				"has_jsx": true,
-				"is_functional": false,
-				"is_class": true,
-				"uses_hooks": false,
+				"has_jsx":              true,
+				"is_functional":        false,
+				"is_class":             true,
+				"uses_hooks":           false,
 				"detection_confidence": "high",
 			},
 		},
@@ -84,10 +84,10 @@ export default UserProfile;
 			`,
 			expectedType: ReactComponent,
 			expectedMetadata: map[string]interface{}{
-				"has_jsx": true,
-				"is_functional": true,
-				"is_class": false,
-				"uses_hooks": true,
+				"has_jsx":              true,
+				"is_functional":        true,
+				"is_class":             false,
+				"uses_hooks":           true,
 				"detection_confidence": "high",
 			},
 		},
@@ -114,11 +114,11 @@ export default useAuth;
 			`,
 			expectedType: ReactComponent,
 			expectedMetadata: map[string]interface{}{
-				"has_jsx": false,
-				"is_functional": false,
-				"is_class": false,
-				"uses_hooks": true,
-				"is_custom_hook": true,
+				"has_jsx":              false,
+				"is_functional":        false,
+				"is_class":             false,
+				"uses_hooks":           true,
+				"is_custom_hook":       true,
 				"detection_confidence": "high",
 			},
 		},
@@ -148,10 +148,10 @@ func TestComponentIdentifier_IdentifyService(t *testing.T) {
 	ci := NewComponentIdentifier()
 
 	tests := []struct {
-		name        string
-		filePath    string
-		content     string
-		expectedType ComponentType
+		name             string
+		filePath         string
+		content          string
+		expectedType     ComponentType
 		expectedMetadata map[string]interface{}
 	}{
 		{
@@ -175,9 +175,9 @@ export class UserService {
 			`,
 			expectedType: Service,
 			expectedMetadata: map[string]interface{}{
-				"has_http_client": true,
-				"has_db_operations": false,
-				"has_async_patterns": true,
+				"has_http_client":      true,
+				"has_db_operations":    false,
+				"has_async_patterns":   true,
 				"detection_confidence": "high",
 			},
 		},
@@ -208,9 +208,9 @@ export class UserRepository {
 			`,
 			expectedType: Service,
 			expectedMetadata: map[string]interface{}{
-				"has_http_client": false,
-				"has_db_operations": true,
-				"has_async_patterns": true,
+				"has_http_client":      false,
+				"has_db_operations":    true,
+				"has_async_patterns":   true,
 				"detection_confidence": "high",
 			},
 		},
@@ -240,10 +240,10 @@ func TestComponentIdentifier_IdentifyUtility(t *testing.T) {
 	ci := NewComponentIdentifier()
 
 	tests := []struct {
-		name        string
-		filePath    string
-		content     string
-		expectedType ComponentType
+		name             string
+		filePath         string
+		content          string
+		expectedType     ComponentType
 		expectedMetadata map[string]interface{}
 	}{
 		{
@@ -268,7 +268,7 @@ export function validateEmail(email: string): boolean {
 			`,
 			expectedType: Utility,
 			expectedMetadata: map[string]interface{}{
-				"has_pure_functions": true,
+				"has_pure_functions":   true,
 				"detection_confidence": "medium",
 			},
 		},
@@ -290,7 +290,7 @@ export const roundToTwoDecimals = (num: number): number => {
 			`,
 			expectedType: Utility,
 			expectedMetadata: map[string]interface{}{
-				"has_pure_functions": true,
+				"has_pure_functions":   true,
 				"detection_confidence": "medium",
 			},
 		},
@@ -320,10 +320,10 @@ func TestComponentIdentifier_IdentifyConfiguration(t *testing.T) {
 	ci := NewComponentIdentifier()
 
 	tests := []struct {
-		name        string
-		filePath    string
-		content     string
-		expectedType ComponentType
+		name             string
+		filePath         string
+		content          string
+		expectedType     ComponentType
 		expectedMetadata map[string]interface{}
 	}{
 		{
@@ -341,8 +341,8 @@ export default config;
 			`,
 			expectedType: Configuration,
 			expectedMetadata: map[string]interface{}{
-				"has_env_vars": true,
-				"is_json": false,
+				"has_env_vars":         true,
+				"is_json":              false,
 				"detection_confidence": "high",
 			},
 		},
@@ -373,8 +373,8 @@ export const VALIDATION_RULES = {
 			`,
 			expectedType: Configuration,
 			expectedMetadata: map[string]interface{}{
-				"has_env_vars": false,
-				"is_json": false,
+				"has_env_vars":         false,
+				"is_json":              false,
 				"detection_confidence": "high",
 			},
 		},
@@ -404,10 +404,10 @@ func TestComponentIdentifier_IdentifyMiddleware(t *testing.T) {
 	ci := NewComponentIdentifier()
 
 	tests := []struct {
-		name        string
-		filePath    string
-		content     string
-		expectedType ComponentType
+		name             string
+		filePath         string
+		content          string
+		expectedType     ComponentType
 		expectedMetadata map[string]interface{}
 	}{
 		{
@@ -434,8 +434,8 @@ export const authenticateToken = (req, res, next) => {
 			expectedType: Middleware,
 			expectedMetadata: map[string]interface{}{
 				"is_express_middleware": true,
-				"is_auth_middleware": true,
-				"detection_confidence": "high",
+				"is_auth_middleware":    true,
+				"detection_confidence":  "high",
 			},
 		},
 		{
@@ -458,8 +458,8 @@ export default requestLogger;
 			expectedType: Middleware,
 			expectedMetadata: map[string]interface{}{
 				"is_express_middleware": true,
-				"is_auth_middleware": false,
-				"detection_confidence": "high",
+				"is_auth_middleware":    false,
+				"detection_confidence":  "high",
 			},
 		},
 	}
@@ -628,14 +628,14 @@ func TestComponentIdentifier_GetComponentStats(t *testing.T) {
 
 	expected := map[ComponentType]int{
 		ReactComponent: 2,
-		Service:       1,
-		Utility:       1,
-		Configuration: 1,
-		Middleware:    0,
+		Service:        1,
+		Utility:        1,
+		Configuration:  1,
+		Middleware:     0,
 	}
 
 	result := ci.GetComponentStats()
-	
+
 	for componentType, expectedCount := range expected {
 		if result[componentType] != expectedCount {
 			t.Errorf("GetComponentStats()[%s] = %d, want %d", componentType, result[componentType], expectedCount)

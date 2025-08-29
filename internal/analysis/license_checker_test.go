@@ -18,7 +18,7 @@ func TestNewLicenseChecker(t *testing.T) {
 	assert.NotNil(t, lc.licenseMatrix)
 	assert.NotNil(t, lc.spdxDatabase)
 	assert.NotNil(t, lc.cache)
-	
+
 	defer lc.Close()
 }
 
@@ -93,10 +93,10 @@ func TestAnalyzeLicenseCharacteristics(t *testing.T) {
 	defer lc.Close()
 
 	tests := []struct {
-		name             string
-		spdxID           string
-		expectedType     string
-		expectedRisk     string
+		name         string
+		spdxID       string
+		expectedType string
+		expectedRisk string
 	}{
 		{
 			name:         "mit_license",
@@ -141,7 +141,7 @@ func TestAnalyzeLicenseCharacteristics(t *testing.T) {
 			info := &PackageLicenseInfo{
 				SPDXIdentifier: tt.spdxID,
 			}
-			
+
 			lc.analyzeLicenseCharacteristics(info)
 			assert.Equal(t, tt.expectedType, info.LicenseType)
 			assert.Equal(t, tt.expectedRisk, info.RiskLevel)
@@ -155,28 +155,28 @@ func TestCheckLicenseConflict(t *testing.T) {
 	defer lc.Close()
 
 	tests := []struct {
-		name          string
-		pkg1License   string
-		pkg1Type      string
-		pkg2License   string
-		pkg2Type      string
-		shouldConflict bool
+		name             string
+		pkg1License      string
+		pkg1Type         string
+		pkg2License      string
+		pkg2Type         string
+		shouldConflict   bool
 		expectedSeverity string
 	}{
 		{
-			name:          "mit_mit_no_conflict",
-			pkg1License:   "MIT",
-			pkg1Type:      "permissive",
-			pkg2License:   "MIT",
-			pkg2Type:      "permissive",
+			name:           "mit_mit_no_conflict",
+			pkg1License:    "MIT",
+			pkg1Type:       "permissive",
+			pkg2License:    "MIT",
+			pkg2Type:       "permissive",
 			shouldConflict: false,
 		},
 		{
-			name:          "mit_apache_no_conflict",
-			pkg1License:   "MIT",
-			pkg1Type:      "permissive",
-			pkg2License:   "Apache-2.0",
-			pkg2Type:      "permissive",
+			name:           "mit_apache_no_conflict",
+			pkg1License:    "MIT",
+			pkg1Type:       "permissive",
+			pkg2License:    "Apache-2.0",
+			pkg2Type:       "permissive",
 			shouldConflict: false,
 		},
 		{
@@ -189,19 +189,19 @@ func TestCheckLicenseConflict(t *testing.T) {
 			expectedSeverity: "critical",
 		},
 		{
-			name:          "mit_gpl_no_conflict",
-			pkg1License:   "MIT",
-			pkg1Type:      "permissive",
-			pkg2License:   "GPL-3.0-only",
-			pkg2Type:      "strong-copyleft",
+			name:           "mit_gpl_no_conflict",
+			pkg1License:    "MIT",
+			pkg1Type:       "permissive",
+			pkg2License:    "GPL-3.0-only",
+			pkg2Type:       "strong-copyleft",
 			shouldConflict: false,
 		},
 		{
-			name:          "unknown_license_no_conflict",
-			pkg1License:   "",
-			pkg1Type:      "unknown",
-			pkg2License:   "MIT",
-			pkg2Type:      "permissive",
+			name:           "unknown_license_no_conflict",
+			pkg1License:    "",
+			pkg1Type:       "unknown",
+			pkg2License:    "MIT",
+			pkg2Type:       "permissive",
 			shouldConflict: false,
 		},
 	}
@@ -213,15 +213,15 @@ func TestCheckLicenseConflict(t *testing.T) {
 				SPDXIdentifier: tt.pkg1License,
 				LicenseType:    tt.pkg1Type,
 			}
-			
+
 			pkg2 := &PackageLicenseInfo{
 				PackageName:    "package2",
 				SPDXIdentifier: tt.pkg2License,
 				LicenseType:    tt.pkg2Type,
 			}
-			
+
 			conflict := lc.checkLicenseConflict(pkg1, pkg2)
-			
+
 			if !tt.shouldConflict {
 				assert.Nil(t, conflict)
 			} else {
@@ -252,9 +252,9 @@ func TestEvaluatePolicy(t *testing.T) {
 	}
 
 	tests := []struct {
-		name                string
-		spdxID              string
-		expectedViolations  int
+		name                  string
+		spdxID                string
+		expectedViolations    int
 		expectedViolationType string
 	}{
 		{
@@ -282,10 +282,10 @@ func TestEvaluatePolicy(t *testing.T) {
 				PackageName:    "test-package",
 				SPDXIdentifier: tt.spdxID,
 			}
-			
+
 			violations := lc.evaluatePolicy(info, policy)
 			assert.Len(t, violations, tt.expectedViolations)
-			
+
 			if tt.expectedViolations > 0 {
 				assert.Equal(t, tt.expectedViolationType, violations[0].ViolationType)
 				assert.Equal(t, "Test Policy", violations[0].PolicyName)
@@ -357,9 +357,9 @@ func TestGenerateLicenseRecommendations(t *testing.T) {
 	defer lc.Close()
 
 	tests := []struct {
-		name                    string
-		packages                []*PackageLicenseInfo
-		conflicts               []LicenseConflict
+		name                         string
+		packages                     []*PackageLicenseInfo
+		conflicts                    []LicenseConflict
 		shouldContainConflictWarning bool
 		shouldContainUnknownWarning  bool
 		shouldContainCopyleftWarning bool
@@ -398,7 +398,7 @@ func TestGenerateLicenseRecommendations(t *testing.T) {
 				{PackageName: "pkg1", LicenseType: "strong-copyleft"},
 				{PackageName: "pkg2", LicenseType: "permissive"},
 			},
-			conflicts:                   []LicenseConflict{},
+			conflicts:                    []LicenseConflict{},
 			shouldContainCopyleftWarning: true,
 		},
 	}
@@ -532,7 +532,7 @@ func TestCheckLicensesIntegration(t *testing.T) {
 	ctx := context.Background()
 	packages := []string{
 		"react@18.0.0",
-		"lodash@4.17.21", 
+		"lodash@4.17.21",
 		"express@4.18.0",
 	}
 

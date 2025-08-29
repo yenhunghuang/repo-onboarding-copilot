@@ -68,7 +68,7 @@ func TestPerformanceAnalysisIntegration(t *testing.T) {
 	foundPackages := make(map[string]bool)
 	for _, impact := range tree.PerformanceReport.Packages {
 		foundPackages[impact.PackageName] = true
-		
+
 		// Verify performance impact structure
 		assert.NotEmpty(t, impact.PackageName)
 		assert.Greater(t, impact.EstimatedSize, int64(0))
@@ -189,9 +189,9 @@ func TestBundleAnalysisWithBudgetViolations(t *testing.T) {
 
 	// Create analyzer with bundle analysis and tight budgets
 	config := DependencyAnalyzerConfig{
-		ProjectRoot:               tmpDir,
-		EnableBundleAnalysis:      true,
-		BundleSizeThreshold:       100 * 1024, // 100KB - very tight budget
+		ProjectRoot:          tmpDir,
+		EnableBundleAnalysis: true,
+		BundleSizeThreshold:  100 * 1024, // 100KB - very tight budget
 	}
 
 	analyzer, err := NewDependencyAnalyzer(config)
@@ -201,9 +201,9 @@ func TestBundleAnalysisWithBudgetViolations(t *testing.T) {
 	// Override bundle analyzer with tight budgets for testing
 	analyzer.bundleAnalyzer = NewBundleAnalyzer()
 	analyzer.bundleAnalyzer.budgets = PerformanceBudgets{
-		TotalSize:   512 * 1024,  // 512KB
-		InitialSize: 256 * 1024,  // 256KB  
-		AssetSize:   128 * 1024,  // 128KB
+		TotalSize:   512 * 1024, // 512KB
+		InitialSize: 256 * 1024, // 256KB
+		AssetSize:   128 * 1024, // 128KB
 	}
 
 	ctx := context.Background()
@@ -312,7 +312,7 @@ func TestPerformanceRecommendationGeneration(t *testing.T) {
 
 	// Should have performance recommendations
 	assert.NotEmpty(t, tree.PerformanceReport.Recommendations)
-	
+
 	// Verify recommendation structure
 	for _, rec := range tree.PerformanceReport.Recommendations {
 		assert.NotEmpty(t, rec.Type)
@@ -320,7 +320,7 @@ func TestPerformanceRecommendationGeneration(t *testing.T) {
 		assert.NotEmpty(t, rec.Priority)
 		assert.Greater(t, rec.ImpactScore, 0.0)
 		assert.LessOrEqual(t, rec.ImpactScore, 100.0)
-		
+
 		// Priority should be valid
 		validPriorities := map[string]bool{
 			"high": true, "medium": true, "low": true,
@@ -373,14 +373,14 @@ func TestAnalysisResultSerialization(t *testing.T) {
 	// Check performance report structure
 	perfReport, exists := result["performance_report"]
 	assert.True(t, exists)
-	
+
 	perfMap, ok := perfReport.(map[string]interface{})
 	require.True(t, ok)
-	
+
 	_, hasPackages := perfMap["packages"]
 	_, hasLoadTime := perfMap["average_load_time"]
 	_, hasRecommendations := perfMap["recommendations"]
-	
+
 	assert.True(t, hasPackages, "Should have performance packages data")
 	assert.True(t, hasLoadTime, "Should have load time data")
 	assert.True(t, hasRecommendations, "Should have performance recommendations")
@@ -388,14 +388,14 @@ func TestAnalysisResultSerialization(t *testing.T) {
 	// Check bundle result structure
 	bundleResult, exists := result["bundle_result"]
 	assert.True(t, exists)
-	
+
 	bundleMap, ok := bundleResult.(map[string]interface{})
 	require.True(t, ok)
-	
+
 	_, hasSizeAnalysis := bundleMap["size_analysis"]
 	_, hasBudgetAnalysis := bundleMap["budget_analysis"]
 	_, hasTreeShaking := bundleMap["tree_shaking_analysis"]
-	
+
 	assert.True(t, hasSizeAnalysis, "Should have size analysis data")
 	assert.True(t, hasBudgetAnalysis, "Should have budget analysis data")
 	assert.True(t, hasTreeShaking, "Should have tree-shaking analysis data")

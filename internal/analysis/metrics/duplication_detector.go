@@ -19,79 +19,79 @@ type DuplicationDetector struct {
 
 // DuplicationConfig defines thresholds and settings for duplication detection
 type DuplicationConfig struct {
-	MinLines           int     `yaml:"min_lines" json:"min_lines"`
-	MinTokens          int     `yaml:"min_tokens" json:"min_tokens"`
-	SimilarityThreshold float64 `yaml:"similarity_threshold" json:"similarity_threshold"`
-	TokenSimilarityThreshold float64 `yaml:"token_similarity_threshold" json:"token_similarity_threshold"`
-	MaxDistance        int     `yaml:"max_distance" json:"max_distance"`
-	IgnoreWhitespace   bool    `yaml:"ignore_whitespace" json:"ignore_whitespace"`
-	IgnoreComments     bool    `yaml:"ignore_comments" json:"ignore_comments"`
-	IgnoreVariableNames bool   `yaml:"ignore_variable_names" json:"ignore_variable_names"`
-	EnableCrossFile    bool    `yaml:"enable_cross_file" json:"enable_cross_file"`
-	ReportTopN         int     `yaml:"report_top_n" json:"report_top_n"`
-	WeightFactors      DuplicationWeights `yaml:"weight_factors" json:"weight_factors"`
+	MinLines                 int                `yaml:"min_lines" json:"min_lines"`
+	MinTokens                int                `yaml:"min_tokens" json:"min_tokens"`
+	SimilarityThreshold      float64            `yaml:"similarity_threshold" json:"similarity_threshold"`
+	TokenSimilarityThreshold float64            `yaml:"token_similarity_threshold" json:"token_similarity_threshold"`
+	MaxDistance              int                `yaml:"max_distance" json:"max_distance"`
+	IgnoreWhitespace         bool               `yaml:"ignore_whitespace" json:"ignore_whitespace"`
+	IgnoreComments           bool               `yaml:"ignore_comments" json:"ignore_comments"`
+	IgnoreVariableNames      bool               `yaml:"ignore_variable_names" json:"ignore_variable_names"`
+	EnableCrossFile          bool               `yaml:"enable_cross_file" json:"enable_cross_file"`
+	ReportTopN               int                `yaml:"report_top_n" json:"report_top_n"`
+	WeightFactors            DuplicationWeights `yaml:"weight_factors" json:"weight_factors"`
 }
 
 // DuplicationWeights for different types of duplication impact
 type DuplicationWeights struct {
-	ExactDuplication      float64 `yaml:"exact_duplication" json:"exact_duplication"`
-	StructuralSimilarity  float64 `yaml:"structural_similarity" json:"structural_similarity"`
-	TokenSimilarity       float64 `yaml:"token_similarity" json:"token_similarity"`
-	CrossFileImpact       float64 `yaml:"cross_file_impact" json:"cross_file_impact"`
-	MaintenanceBurden     float64 `yaml:"maintenance_burden" json:"maintenance_burden"`
+	ExactDuplication     float64 `yaml:"exact_duplication" json:"exact_duplication"`
+	StructuralSimilarity float64 `yaml:"structural_similarity" json:"structural_similarity"`
+	TokenSimilarity      float64 `yaml:"token_similarity" json:"token_similarity"`
+	CrossFileImpact      float64 `yaml:"cross_file_impact" json:"cross_file_impact"`
+	MaintenanceBurden    float64 `yaml:"maintenance_burden" json:"maintenance_burden"`
 }
 
 // DuplicationMetrics contains comprehensive duplication analysis results
 type DuplicationMetrics struct {
-	OverallScore         float64                    `json:"overall_score"`
-	TotalDuplicatedLines int                        `json:"total_duplicated_lines"`
-	DuplicationRatio     float64                    `json:"duplication_ratio"`
-	ExactDuplicates      []DuplicationCluster       `json:"exact_duplicates"`
-	StructuralDuplicates []DuplicationCluster       `json:"structural_duplicates"`
-	TokenDuplicates      []DuplicationCluster       `json:"token_duplicates"`
-	CrossFileDuplicates  []CrossFileDuplication     `json:"cross_file_duplicates"`
-	DuplicationByFile    map[string]FileDuplication `json:"duplication_by_file"`
-	ConsolidationOps     []ConsolidationOpportunity `json:"consolidation_opportunities"`
-	ImpactAnalysis       DuplicationImpact          `json:"impact_analysis"`
+	OverallScore         float64                     `json:"overall_score"`
+	TotalDuplicatedLines int                         `json:"total_duplicated_lines"`
+	DuplicationRatio     float64                     `json:"duplication_ratio"`
+	ExactDuplicates      []DuplicationCluster        `json:"exact_duplicates"`
+	StructuralDuplicates []DuplicationCluster        `json:"structural_duplicates"`
+	TokenDuplicates      []DuplicationCluster        `json:"token_duplicates"`
+	CrossFileDuplicates  []CrossFileDuplication      `json:"cross_file_duplicates"`
+	DuplicationByFile    map[string]FileDuplication  `json:"duplication_by_file"`
+	ConsolidationOps     []ConsolidationOpportunity  `json:"consolidation_opportunities"`
+	ImpactAnalysis       DuplicationImpact           `json:"impact_analysis"`
 	Recommendations      []DuplicationRecommendation `json:"recommendations"`
 	Summary              DuplicationSummary          `json:"summary"`
 }
 
 // DuplicationCluster represents a group of similar code blocks
 type DuplicationCluster struct {
-	ID               string             `json:"id"`
-	Type             string             `json:"type"` // exact, structural, token
-	Instances        []DuplicationInstance `json:"instances"`
-	SimilarityScore  float64            `json:"similarity_score"`
-	LineCount        int                `json:"line_count"`
-	TokenCount       int                `json:"token_count"`
-	MaintenanceBurden float64           `json:"maintenance_burden"`
-	RefactoringEffort string            `json:"refactoring_effort"`
-	Priority         string             `json:"priority"`
-	Recommendations  []string           `json:"recommendations"`
+	ID                string                `json:"id"`
+	Type              string                `json:"type"` // exact, structural, token
+	Instances         []DuplicationInstance `json:"instances"`
+	SimilarityScore   float64               `json:"similarity_score"`
+	LineCount         int                   `json:"line_count"`
+	TokenCount        int                   `json:"token_count"`
+	MaintenanceBurden float64               `json:"maintenance_burden"`
+	RefactoringEffort string                `json:"refactoring_effort"`
+	Priority          string                `json:"priority"`
+	Recommendations   []string              `json:"recommendations"`
 }
 
 // DuplicationInstance represents a single occurrence of duplicated code
 type DuplicationInstance struct {
-	FilePath     string                 `json:"file_path"`
-	StartLine    int                    `json:"start_line"`
-	EndLine      int                    `json:"end_line"`
-	FunctionName string                 `json:"function_name,omitempty"`
-	ClassName    string                 `json:"class_name,omitempty"`
-	Content      string                 `json:"content"`
-	TokenizedContent string             `json:"tokenized_content"`
-	StructuralHash string               `json:"structural_hash"`
-	Metadata     map[string]interface{} `json:"metadata"`
+	FilePath         string                 `json:"file_path"`
+	StartLine        int                    `json:"start_line"`
+	EndLine          int                    `json:"end_line"`
+	FunctionName     string                 `json:"function_name,omitempty"`
+	ClassName        string                 `json:"class_name,omitempty"`
+	Content          string                 `json:"content"`
+	TokenizedContent string                 `json:"tokenized_content"`
+	StructuralHash   string                 `json:"structural_hash"`
+	Metadata         map[string]interface{} `json:"metadata"`
 }
 
 // CrossFileDuplication tracks duplication across different files
 type CrossFileDuplication struct {
-	ClusterID       string                `json:"cluster_id"`
-	FilePairs       []CrossFileInstance   `json:"file_pairs"`
-	SharedFunctionality string            `json:"shared_functionality"`
-	ConsolidationTarget string            `json:"consolidation_target"`
-	EstimatedSavings    int               `json:"estimated_savings"`
-	RefactoringStrategy string            `json:"refactoring_strategy"`
+	ClusterID           string              `json:"cluster_id"`
+	FilePairs           []CrossFileInstance `json:"file_pairs"`
+	SharedFunctionality string              `json:"shared_functionality"`
+	ConsolidationTarget string              `json:"consolidation_target"`
+	EstimatedSavings    int                 `json:"estimated_savings"`
+	RefactoringStrategy string              `json:"refactoring_strategy"`
 }
 
 // CrossFileInstance represents duplication between specific files
@@ -115,27 +115,27 @@ type FileDuplication struct {
 
 // ConsolidationOpportunity identifies specific refactoring opportunities
 type ConsolidationOpportunity struct {
-	ID                  string   `json:"id"`
-	Type                string   `json:"type"` // extract_function, create_utility, merge_classes
-	Description         string   `json:"description"`
-	AffectedFiles       []string `json:"affected_files"`
-	AffectedFunctions   []string `json:"affected_functions"`
-	EstimatedReduction  int      `json:"estimated_reduction"`
-	ComplexityReduction float64  `json:"complexity_reduction"`
-	MaintenanceImprovement string `json:"maintenance_improvement"`
-	RefactoringSteps    []string `json:"refactoring_steps"`
-	EstimatedEffort     int      `json:"estimated_effort_hours"`
-	ROIScore            float64  `json:"roi_score"`
+	ID                     string   `json:"id"`
+	Type                   string   `json:"type"` // extract_function, create_utility, merge_classes
+	Description            string   `json:"description"`
+	AffectedFiles          []string `json:"affected_files"`
+	AffectedFunctions      []string `json:"affected_functions"`
+	EstimatedReduction     int      `json:"estimated_reduction"`
+	ComplexityReduction    float64  `json:"complexity_reduction"`
+	MaintenanceImprovement string   `json:"maintenance_improvement"`
+	RefactoringSteps       []string `json:"refactoring_steps"`
+	EstimatedEffort        int      `json:"estimated_effort_hours"`
+	ROIScore               float64  `json:"roi_score"`
 }
 
 // DuplicationImpact analyzes the maintenance and technical debt impact
 type DuplicationImpact struct {
-	MaintenanceMultiplier float64                    `json:"maintenance_multiplier"`
-	TechnicalDebtScore    float64                    `json:"technical_debt_score"`
-	ChangeRiskFactor      float64                    `json:"change_risk_factor"`
-	TestingBurden         int                        `json:"testing_burden"`
-	CodebaseHealth        string                     `json:"codebase_health"`
-	HotspotAnalysis       []DuplicationHotspot       `json:"hotspot_analysis"`
+	MaintenanceMultiplier float64              `json:"maintenance_multiplier"`
+	TechnicalDebtScore    float64              `json:"technical_debt_score"`
+	ChangeRiskFactor      float64              `json:"change_risk_factor"`
+	TestingBurden         int                  `json:"testing_burden"`
+	CodebaseHealth        string               `json:"codebase_health"`
+	HotspotAnalysis       []DuplicationHotspot `json:"hotspot_analysis"`
 }
 
 // DuplicationHotspot identifies areas with high duplication density
@@ -149,16 +149,16 @@ type DuplicationHotspot struct {
 
 // DuplicationRecommendation provides actionable improvement suggestions
 type DuplicationRecommendation struct {
-	Priority        string   `json:"priority"`
-	Category        string   `json:"category"`
-	Title           string   `json:"title"`
-	Description     string   `json:"description"`
-	Impact          string   `json:"impact"`
-	Effort          string   `json:"effort"`
-	Clusters        []string `json:"clusters"`
-	Techniques      []string `json:"techniques"`
-	EstimatedHours  int      `json:"estimated_hours"`
-	ExpectedReduction int    `json:"expected_reduction"`
+	Priority          string   `json:"priority"`
+	Category          string   `json:"category"`
+	Title             string   `json:"title"`
+	Description       string   `json:"description"`
+	Impact            string   `json:"impact"`
+	Effort            string   `json:"effort"`
+	Clusters          []string `json:"clusters"`
+	Techniques        []string `json:"techniques"`
+	EstimatedHours    int      `json:"estimated_hours"`
+	ExpectedReduction int      `json:"expected_reduction"`
 }
 
 // DuplicationSummary provides executive-level overview
@@ -286,11 +286,11 @@ func (dd *DuplicationDetector) extractCodeBlocks(parseResults []*ast.ParseResult
 						"param_count": len(function.Parameters),
 					},
 				}
-				
+
 				// Generate tokenized and structural representations
 				block.TokenizedContent = dd.tokenizeContent(block.Content)
 				block.StructuralHash = dd.generateStructuralHash(block.Content)
-				
+
 				blocks = append(blocks, block)
 				blockID++
 			}
@@ -315,10 +315,10 @@ func (dd *DuplicationDetector) extractCodeBlocks(parseResults []*ast.ParseResult
 							"param_count": len(method.Parameters),
 						},
 					}
-					
+
 					block.TokenizedContent = dd.tokenizeContent(block.Content)
 					block.StructuralHash = dd.generateStructuralHash(block.Content)
-					
+
 					blocks = append(blocks, block)
 					blockID++
 				}
@@ -349,40 +349,40 @@ func (dd *DuplicationDetector) generateBlockContent(startLine, endLine int) stri
 // tokenizeContent creates a normalized token representation
 func (dd *DuplicationDetector) tokenizeContent(content string) string {
 	tokenized := content
-	
+
 	// Remove comments first if configured
 	if dd.config.IgnoreComments {
 		// Remove single-line comments
 		singleLineCommentRegex := regexp.MustCompile(`//.*`)
 		tokenized = singleLineCommentRegex.ReplaceAllString(tokenized, "")
-		
+
 		// Remove multi-line comments
 		multiLineCommentRegex := regexp.MustCompile(`/\*[\s\S]*?\*/`)
 		tokenized = multiLineCommentRegex.ReplaceAllString(tokenized, "")
 	}
-	
+
 	// Normalize whitespace if configured
 	if dd.config.IgnoreWhitespace {
 		whitespaceRegex := regexp.MustCompile(`\s+`)
 		tokenized = whitespaceRegex.ReplaceAllString(tokenized, " ")
 		tokenized = strings.TrimSpace(tokenized)
 	}
-	
+
 	// Replace identifiers with generic tokens if configured
 	if dd.config.IgnoreVariableNames {
 		// Replace identifiers with generic tokens
 		identifierRegex := regexp.MustCompile(`\b[a-zA-Z_][a-zA-Z0-9_]*\b`)
 		tokenized = identifierRegex.ReplaceAllString(tokenized, "IDENTIFIER")
-		
+
 		// Replace string literals
 		stringRegex := regexp.MustCompile(`["'][^"']*["']`)
 		tokenized = stringRegex.ReplaceAllString(tokenized, "STRING_LITERAL")
-		
+
 		// Replace numeric literals
 		numberRegex := regexp.MustCompile(`\b\d+(\.\d+)?\b`)
 		tokenized = numberRegex.ReplaceAllString(tokenized, "NUMBER_LITERAL")
 	}
-	
+
 	return tokenized
 }
 
@@ -392,7 +392,7 @@ func (dd *DuplicationDetector) generateStructuralHash(content string) string {
 	structuralRegex := regexp.MustCompile(`\b(if|else|for|while|function|class|return|var|let|const)\b|[{}\[\]();,.]`)
 	matches := structuralRegex.FindAllString(content, -1)
 	structural := strings.Join(matches, "")
-	
+
 	// Generate MD5 hash
 	hash := md5.Sum([]byte(structural))
 	return fmt.Sprintf("%x", hash)
@@ -402,7 +402,7 @@ func (dd *DuplicationDetector) generateStructuralHash(content string) string {
 func (dd *DuplicationDetector) findExactDuplicates(blocks []DuplicationInstance) [][]DuplicationInstance {
 	clusters := [][]DuplicationInstance{}
 	duplicateMap := make(map[string][]DuplicationInstance)
-	
+
 	// Group blocks by exact content
 	for _, block := range blocks {
 		content := block.Content
@@ -411,14 +411,14 @@ func (dd *DuplicationDetector) findExactDuplicates(blocks []DuplicationInstance)
 		}
 		duplicateMap[content] = append(duplicateMap[content], block)
 	}
-	
+
 	// Extract clusters with multiple instances
 	for _, instances := range duplicateMap {
 		if len(instances) > 1 {
 			clusters = append(clusters, instances)
 		}
 	}
-	
+
 	return clusters
 }
 
@@ -426,12 +426,12 @@ func (dd *DuplicationDetector) findExactDuplicates(blocks []DuplicationInstance)
 func (dd *DuplicationDetector) findStructuralDuplicates(blocks []DuplicationInstance) [][]DuplicationInstance {
 	clusters := [][]DuplicationInstance{}
 	hashGroups := make(map[string][]DuplicationInstance)
-	
+
 	// Group blocks by structural hash
 	for _, block := range blocks {
 		hashGroups[block.StructuralHash] = append(hashGroups[block.StructuralHash], block)
 	}
-	
+
 	// Extract clusters with multiple instances and high similarity
 	for _, instances := range hashGroups {
 		if len(instances) > 1 {
@@ -442,25 +442,25 @@ func (dd *DuplicationDetector) findStructuralDuplicates(blocks []DuplicationInst
 			}
 		}
 	}
-	
+
 	return clusters
 }
 
 // findTokenDuplicates identifies token-based similar code
 func (dd *DuplicationDetector) findTokenDuplicates(blocks []DuplicationInstance) [][]DuplicationInstance {
 	clusters := [][]DuplicationInstance{}
-	
+
 	// Compare all pairs of blocks for token similarity
 	for i := 0; i < len(blocks); i++ {
 		cluster := []DuplicationInstance{blocks[i]}
-		
+
 		for j := i + 1; j < len(blocks); j++ {
 			similarity := dd.calculateTokenSimilarity(blocks[i].TokenizedContent, blocks[j].TokenizedContent)
 			if similarity >= dd.config.TokenSimilarityThreshold {
 				cluster = append(cluster, blocks[j])
 			}
 		}
-		
+
 		if len(cluster) > 1 {
 			// Check if this cluster overlaps with existing ones
 			if !dd.clusterExists(clusters, cluster) {
@@ -468,7 +468,7 @@ func (dd *DuplicationDetector) findTokenDuplicates(blocks []DuplicationInstance)
 			}
 		}
 	}
-	
+
 	return clusters
 }
 
@@ -477,11 +477,11 @@ func (dd *DuplicationDetector) validateStructuralCluster(instances []Duplication
 	if len(instances) < 2 {
 		return false
 	}
-	
+
 	// Calculate average similarity within cluster
 	totalSimilarity := 0.0
 	comparisons := 0
-	
+
 	for i := 0; i < len(instances); i++ {
 		for j := i + 1; j < len(instances); j++ {
 			similarity := dd.calculateContentSimilarity(instances[i].Content, instances[j].Content)
@@ -489,7 +489,7 @@ func (dd *DuplicationDetector) validateStructuralCluster(instances []Duplication
 			comparisons++
 		}
 	}
-	
+
 	avgSimilarity := totalSimilarity / float64(comparisons)
 	return avgSimilarity >= dd.config.SimilarityThreshold
 }
@@ -498,28 +498,28 @@ func (dd *DuplicationDetector) validateStructuralCluster(instances []Duplication
 func (dd *DuplicationDetector) calculateTokenSimilarity(content1, content2 string) float64 {
 	tokens1 := strings.Fields(content1)
 	tokens2 := strings.Fields(content2)
-	
+
 	if len(tokens1) == 0 && len(tokens2) == 0 {
 		return 1.0
 	}
 	if len(tokens1) == 0 || len(tokens2) == 0 {
 		return 0.0
 	}
-	
+
 	// Calculate Jaccard similarity
 	set1 := make(map[string]bool)
 	set2 := make(map[string]bool)
-	
+
 	for _, token := range tokens1 {
 		set1[token] = true
 	}
 	for _, token := range tokens2 {
 		set2[token] = true
 	}
-	
+
 	intersection := 0
 	union := len(set1)
-	
+
 	for token := range set2 {
 		if set1[token] {
 			intersection++
@@ -527,11 +527,11 @@ func (dd *DuplicationDetector) calculateTokenSimilarity(content1, content2 strin
 			union++
 		}
 	}
-	
+
 	if union == 0 {
 		return 0.0
 	}
-	
+
 	return float64(intersection) / float64(union)
 }
 
@@ -540,15 +540,15 @@ func (dd *DuplicationDetector) calculateContentSimilarity(content1, content2 str
 	if content1 == content2 {
 		return 1.0
 	}
-	
+
 	// Use Levenshtein distance for similarity calculation
 	distance := dd.levenshteinDistance(content1, content2)
 	maxLen := math.Max(float64(len(content1)), float64(len(content2)))
-	
+
 	if maxLen == 0 {
 		return 1.0
 	}
-	
+
 	return 1.0 - (float64(distance) / maxLen)
 }
 
@@ -556,23 +556,23 @@ func (dd *DuplicationDetector) calculateContentSimilarity(content1, content2 str
 func (dd *DuplicationDetector) levenshteinDistance(s1, s2 string) int {
 	len1, len2 := len(s1), len(s2)
 	matrix := make([][]int, len1+1)
-	
+
 	for i := range matrix {
 		matrix[i] = make([]int, len2+1)
 		matrix[i][0] = i
 	}
-	
+
 	for j := 1; j <= len2; j++ {
 		matrix[0][j] = j
 	}
-	
+
 	for i := 1; i <= len1; i++ {
 		for j := 1; j <= len2; j++ {
 			cost := 1
 			if s1[i-1] == s2[j-1] {
 				cost = 0
 			}
-			
+
 			matrix[i][j] = dd.min3(
 				matrix[i-1][j]+1,      // deletion
 				matrix[i][j-1]+1,      // insertion
@@ -580,7 +580,7 @@ func (dd *DuplicationDetector) levenshteinDistance(s1, s2 string) int {
 			)
 		}
 	}
-	
+
 	return matrix[len1][len2]
 }
 
@@ -615,13 +615,13 @@ func (dd *DuplicationDetector) clustersOverlap(cluster1, cluster2 []DuplicationI
 			}
 		}
 	}
-	
+
 	// Consider overlap significant if > 50% of smaller cluster overlaps
 	minSize := len(cluster1)
 	if len(cluster2) < minSize {
 		minSize = len(cluster2)
 	}
-	
+
 	return float64(overlap)/float64(minSize) > 0.5
 }
 
@@ -635,46 +635,46 @@ func (dd *DuplicationDetector) instancesEqual(instance1, instance2 DuplicationIn
 // clusterDuplicates converts duplicate groups into structured clusters
 func (dd *DuplicationDetector) clusterDuplicates(duplicateGroups [][]DuplicationInstance, clusterType string) []DuplicationCluster {
 	clusters := []DuplicationCluster{}
-	
+
 	for i, group := range duplicateGroups {
 		if len(group) < 2 {
 			continue
 		}
-		
+
 		cluster := DuplicationCluster{
-			ID:               fmt.Sprintf("%s_%d", clusterType, i),
-			Type:             clusterType,
-			Instances:        group,
-			LineCount:        group[0].EndLine - group[0].StartLine + 1,
-			Recommendations:  []string{},
+			ID:              fmt.Sprintf("%s_%d", clusterType, i),
+			Type:            clusterType,
+			Instances:       group,
+			LineCount:       group[0].EndLine - group[0].StartLine + 1,
+			Recommendations: []string{},
 		}
-		
+
 		// Calculate similarity score
 		cluster.SimilarityScore = dd.calculateClusterSimilarity(group)
-		
+
 		// Estimate token count
 		cluster.TokenCount = dd.estimateTokenCount(group[0].Content)
-		
+
 		// Calculate maintenance burden
 		cluster.MaintenanceBurden = dd.calculateMaintenanceBurden(cluster)
-		
+
 		// Assess refactoring effort
 		cluster.RefactoringEffort = dd.assessRefactoringEffort(cluster)
-		
+
 		// Determine priority
 		cluster.Priority = dd.determinePriority(cluster)
-		
+
 		// Generate recommendations
 		cluster.Recommendations = dd.generateClusterRecommendations(cluster)
-		
+
 		clusters = append(clusters, cluster)
 	}
-	
+
 	// Sort clusters by priority and impact
 	sort.Slice(clusters, func(i, j int) bool {
 		return clusters[i].MaintenanceBurden > clusters[j].MaintenanceBurden
 	})
-	
+
 	return clusters
 }
 
@@ -683,10 +683,10 @@ func (dd *DuplicationDetector) calculateClusterSimilarity(instances []Duplicatio
 	if len(instances) < 2 {
 		return 0.0
 	}
-	
+
 	totalSimilarity := 0.0
 	comparisons := 0
-	
+
 	for i := 0; i < len(instances); i++ {
 		for j := i + 1; j < len(instances); j++ {
 			similarity := dd.calculateContentSimilarity(instances[i].Content, instances[j].Content)
@@ -694,7 +694,7 @@ func (dd *DuplicationDetector) calculateClusterSimilarity(instances []Duplicatio
 			comparisons++
 		}
 	}
-	
+
 	return totalSimilarity / float64(comparisons)
 }
 
@@ -704,14 +704,14 @@ func (dd *DuplicationDetector) estimateTokenCount(content string) int {
 	tokens := strings.Fields(content)
 	symbolRegex := regexp.MustCompile(`[{}\[\]();,.]`)
 	symbols := symbolRegex.FindAllString(content, -1)
-	
+
 	return len(tokens) + len(symbols)
 }
 
 // calculateMaintenanceBurden assesses the maintenance impact of duplication
 func (dd *DuplicationDetector) calculateMaintenanceBurden(cluster DuplicationCluster) float64 {
 	burden := float64(len(cluster.Instances)) * float64(cluster.LineCount)
-	
+
 	// Apply weight factors
 	switch cluster.Type {
 	case "exact":
@@ -721,14 +721,14 @@ func (dd *DuplicationDetector) calculateMaintenanceBurden(cluster DuplicationClu
 	case "token":
 		burden *= dd.config.WeightFactors.TokenSimilarity
 	}
-	
+
 	return burden * dd.config.WeightFactors.MaintenanceBurden
 }
 
 // assessRefactoringEffort evaluates the difficulty of refactoring
 func (dd *DuplicationDetector) assessRefactoringEffort(cluster DuplicationCluster) string {
 	crossFileCount := dd.countCrossFileInstances(cluster.Instances)
-	
+
 	if crossFileCount > len(cluster.Instances)/2 {
 		return "high" // Cross-file refactoring is complex
 	} else if cluster.LineCount > 50 {
@@ -736,7 +736,7 @@ func (dd *DuplicationDetector) assessRefactoringEffort(cluster DuplicationCluste
 	} else if len(cluster.Instances) > 5 {
 		return "medium" // Many instances increase coordination complexity
 	}
-	
+
 	return "low"
 }
 
@@ -764,61 +764,61 @@ func (dd *DuplicationDetector) determinePriority(cluster DuplicationCluster) str
 // generateClusterRecommendations creates specific recommendations for a cluster
 func (dd *DuplicationDetector) generateClusterRecommendations(cluster DuplicationCluster) []string {
 	recommendations := []string{}
-	
+
 	if cluster.Type == "exact" {
 		recommendations = append(recommendations, "Extract common functionality into a shared utility function")
 		recommendations = append(recommendations, "Consider creating a base class or mixin for shared behavior")
 	}
-	
+
 	if cluster.Type == "structural" {
 		recommendations = append(recommendations, "Identify common patterns and create template functions")
 		recommendations = append(recommendations, "Use design patterns like Strategy or Template Method")
 	}
-	
+
 	if cluster.Type == "token" {
 		recommendations = append(recommendations, "Standardize variable naming and code formatting")
 		recommendations = append(recommendations, "Consider refactoring to use consistent abstractions")
 	}
-	
+
 	if cluster.RefactoringEffort == "high" {
 		recommendations = append(recommendations, "Plan refactoring in phases to minimize risk")
 		recommendations = append(recommendations, "Ensure comprehensive test coverage before refactoring")
 	}
-	
+
 	return recommendations
 }
 
 // analyzeCrossFileDuplication identifies duplication patterns across files
 func (dd *DuplicationDetector) analyzeCrossFileDuplication(parseResults []*ast.ParseResult, metrics *DuplicationMetrics) []CrossFileDuplication {
 	crossFileInstances := []CrossFileDuplication{}
-	
+
 	// Analyze each cluster for cross-file patterns
 	allClusters := append(append(metrics.ExactDuplicates, metrics.StructuralDuplicates...), metrics.TokenDuplicates...)
-	
+
 	for _, cluster := range allClusters {
 		crossFile := dd.analyzeCrossFileCluster(cluster)
 		if crossFile != nil {
 			crossFileInstances = append(crossFileInstances, *crossFile)
 		}
 	}
-	
+
 	return crossFileInstances
 }
 
 // analyzeCrossFileCluster analyzes a cluster for cross-file implications
 func (dd *DuplicationDetector) analyzeCrossFileCluster(cluster DuplicationCluster) *CrossFileDuplication {
 	fileGroups := make(map[string][]DuplicationInstance)
-	
+
 	// Group instances by file
 	for _, instance := range cluster.Instances {
 		fileGroups[instance.FilePath] = append(fileGroups[instance.FilePath], instance)
 	}
-	
+
 	// Only consider clusters with cross-file duplication
 	if len(fileGroups) < 2 {
 		return nil
 	}
-	
+
 	crossFile := &CrossFileDuplication{
 		ClusterID:           cluster.ID,
 		FilePairs:           []CrossFileInstance{},
@@ -826,13 +826,13 @@ func (dd *DuplicationDetector) analyzeCrossFileCluster(cluster DuplicationCluste
 		EstimatedSavings:    cluster.LineCount * (len(cluster.Instances) - 1),
 		RefactoringStrategy: dd.determineRefactoringStrategy(cluster),
 	}
-	
+
 	// Analyze all file pairs
 	files := make([]string, 0, len(fileGroups))
 	for file := range fileGroups {
 		files = append(files, file)
 	}
-	
+
 	for i := 0; i < len(files); i++ {
 		for j := i + 1; j < len(files); j++ {
 			pair := CrossFileInstance{
@@ -845,10 +845,10 @@ func (dd *DuplicationDetector) analyzeCrossFileCluster(cluster DuplicationCluste
 			crossFile.FilePairs = append(crossFile.FilePairs, pair)
 		}
 	}
-	
+
 	// Determine consolidation target
 	crossFile.ConsolidationTarget = dd.determineConsolidationTarget(fileGroups)
-	
+
 	return crossFile
 }
 
@@ -856,7 +856,7 @@ func (dd *DuplicationDetector) analyzeCrossFileCluster(cluster DuplicationCluste
 func (dd *DuplicationDetector) identifySharedFunctionality(cluster DuplicationCluster) string {
 	// Analyze function names and content to identify common functionality
 	functionTypes := make(map[string]int)
-	
+
 	for _, instance := range cluster.Instances {
 		if instance.FunctionName != "" {
 			// Extract common patterns from function names
@@ -873,7 +873,7 @@ func (dd *DuplicationDetector) identifySharedFunctionality(cluster DuplicationCl
 			}
 		}
 	}
-	
+
 	// Return most common functionality type
 	maxCount := 0
 	mostCommon := "utility"
@@ -883,14 +883,14 @@ func (dd *DuplicationDetector) identifySharedFunctionality(cluster DuplicationCl
 			mostCommon = funcType
 		}
 	}
-	
+
 	return mostCommon
 }
 
 // determineRefactoringStrategy suggests an appropriate refactoring approach
 func (dd *DuplicationDetector) determineRefactoringStrategy(cluster DuplicationCluster) string {
 	crossFileCount := dd.countCrossFileInstances(cluster.Instances)
-	
+
 	if cluster.Type == "exact" && crossFileCount > 1 {
 		return "extract_to_shared_module"
 	} else if cluster.Type == "structural" {
@@ -900,7 +900,7 @@ func (dd *DuplicationDetector) determineRefactoringStrategy(cluster DuplicationC
 	} else if crossFileCount == 1 {
 		return "extract_local_function"
 	}
-	
+
 	return "manual_review_required"
 }
 
@@ -909,14 +909,14 @@ func (dd *DuplicationDetector) determineConsolidationTarget(fileGroups map[strin
 	// Simple heuristic: choose file with most instances
 	maxInstances := 0
 	targetFile := ""
-	
+
 	// Get sorted file names for deterministic behavior
 	var files []string
 	for file := range fileGroups {
 		files = append(files, file)
 	}
 	sort.Strings(files)
-	
+
 	for _, file := range files {
 		instances := fileGroups[file]
 		if len(instances) > maxInstances {
@@ -927,12 +927,12 @@ func (dd *DuplicationDetector) determineConsolidationTarget(fileGroups map[strin
 			targetFile = file
 		}
 	}
-	
+
 	// If no clear winner, suggest creating a new utility file
 	if maxInstances <= 1 {
 		return "new_utility_file"
 	}
-	
+
 	return targetFile
 }
 
@@ -940,21 +940,21 @@ func (dd *DuplicationDetector) determineConsolidationTarget(fileGroups map[strin
 func (dd *DuplicationDetector) calculateFileMetrics(parseResults []*ast.ParseResult, metrics *DuplicationMetrics) {
 	for _, parseResult := range parseResults {
 		filePath := parseResult.FilePath
-		
+
 		fileDuplication := FileDuplication{
 			FilePath: filePath,
 		}
-		
+
 		// Count internal and external duplications
 		allClusters := append(append(metrics.ExactDuplicates, metrics.StructuralDuplicates...), metrics.TokenDuplicates...)
-		
+
 		internalLines := 0
 		externalLines := 0
-		
+
 		for _, cluster := range allClusters {
 			fileInstances := 0
 			otherFileInstances := 0
-			
+
 			for _, instance := range cluster.Instances {
 				if instance.FilePath == filePath {
 					fileInstances++
@@ -963,27 +963,27 @@ func (dd *DuplicationDetector) calculateFileMetrics(parseResults []*ast.ParseRes
 					otherFileInstances++
 				}
 			}
-			
+
 			if fileInstances > 0 && otherFileInstances > 0 {
 				externalLines += cluster.LineCount * fileInstances
 			}
 		}
-		
+
 		fileDuplication.InternalDuplication = internalLines
 		fileDuplication.ExternalDuplication = externalLines
-		
+
 		// Calculate total lines in file (estimated)
 		totalLines := dd.estimateTotalLines(parseResult)
 		if totalLines > 0 {
 			fileDuplication.DuplicationRatio = float64(internalLines+externalLines) / float64(totalLines)
 		}
-		
+
 		// Calculate hotspot score
 		fileDuplication.HotspotScore = dd.calculateHotspotScore(fileDuplication)
-		
+
 		// Determine refactoring priority
 		fileDuplication.RefactoringPriority = dd.determineFileRefactoringPriority(fileDuplication)
-		
+
 		metrics.DuplicationByFile[filePath] = fileDuplication
 	}
 }
@@ -991,13 +991,13 @@ func (dd *DuplicationDetector) calculateFileMetrics(parseResults []*ast.ParseRes
 // estimateTotalLines estimates the total lines of code in a file
 func (dd *DuplicationDetector) estimateTotalLines(parseResult *ast.ParseResult) int {
 	maxLine := 0
-	
+
 	for _, function := range parseResult.Functions {
 		if function.EndLine > maxLine {
 			maxLine = function.EndLine
 		}
 	}
-	
+
 	for _, class := range parseResult.Classes {
 		for _, method := range class.Methods {
 			if method.EndLine > maxLine {
@@ -1005,7 +1005,7 @@ func (dd *DuplicationDetector) estimateTotalLines(parseResult *ast.ParseResult) 
 			}
 		}
 	}
-	
+
 	return maxLine
 }
 
@@ -1030,10 +1030,10 @@ func (dd *DuplicationDetector) determineFileRefactoringPriority(fileDuplication 
 func (dd *DuplicationDetector) generateConsolidationOpportunities(metrics *DuplicationMetrics) []ConsolidationOpportunity {
 	opportunities := []ConsolidationOpportunity{}
 	opportunityID := 0
-	
+
 	// Analyze each cluster for consolidation potential
 	allClusters := append(append(metrics.ExactDuplicates, metrics.StructuralDuplicates...), metrics.TokenDuplicates...)
-	
+
 	for _, cluster := range allClusters {
 		if cluster.Priority == "critical" || cluster.Priority == "high" {
 			opportunity := dd.generateConsolidationOpportunity(cluster, opportunityID)
@@ -1041,12 +1041,12 @@ func (dd *DuplicationDetector) generateConsolidationOpportunities(metrics *Dupli
 			opportunityID++
 		}
 	}
-	
+
 	// Sort by ROI score
 	sort.Slice(opportunities, func(i, j int) bool {
 		return opportunities[i].ROIScore > opportunities[j].ROIScore
 	})
-	
+
 	return opportunities
 }
 
@@ -1058,7 +1058,7 @@ func (dd *DuplicationDetector) generateConsolidationOpportunity(cluster Duplicat
 		AffectedFunctions:  dd.extractAffectedFunctions(cluster.Instances),
 		EstimatedReduction: cluster.LineCount * (len(cluster.Instances) - 1),
 	}
-	
+
 	// Determine consolidation type and strategy
 	if cluster.Type == "exact" {
 		opportunity.Type = "extract_function"
@@ -1095,14 +1095,14 @@ func (dd *DuplicationDetector) generateConsolidationOpportunity(cluster Duplicat
 		}
 		opportunity.EstimatedEffort = len(cluster.Instances) * 1 // 1 hour per instance
 	}
-	
+
 	// Calculate complexity reduction
 	opportunity.ComplexityReduction = float64(opportunity.EstimatedReduction) / 10.0
-	
+
 	// Calculate ROI score
 	maintenanceSavings := cluster.MaintenanceBurden * 0.2 // 20% maintenance reduction per year
 	opportunity.ROIScore = maintenanceSavings / float64(opportunity.EstimatedEffort)
-	
+
 	return opportunity
 }
 
@@ -1112,12 +1112,12 @@ func (dd *DuplicationDetector) extractAffectedFiles(instances []DuplicationInsta
 	for _, instance := range instances {
 		fileSet[instance.FilePath] = true
 	}
-	
+
 	files := make([]string, 0, len(fileSet))
 	for file := range fileSet {
 		files = append(files, file)
 	}
-	
+
 	return files
 }
 
@@ -1133,12 +1133,12 @@ func (dd *DuplicationDetector) extractAffectedFunctions(instances []DuplicationI
 			functionSet[functionName] = true
 		}
 	}
-	
+
 	functions := make([]string, 0, len(functionSet))
 	for function := range functionSet {
 		functions = append(functions, function)
 	}
-	
+
 	return functions
 }
 
@@ -1147,34 +1147,34 @@ func (dd *DuplicationDetector) analyzeImpact(metrics *DuplicationMetrics) Duplic
 	impact := DuplicationImpact{
 		HotspotAnalysis: []DuplicationHotspot{},
 	}
-	
+
 	// Calculate maintenance multiplier
 	totalInstances := 0
 	totalUniqueFunctions := 0
-	
+
 	allClusters := append(append(metrics.ExactDuplicates, metrics.StructuralDuplicates...), metrics.TokenDuplicates...)
 	for _, cluster := range allClusters {
 		totalInstances += len(cluster.Instances)
 		totalUniqueFunctions++ // Each cluster represents one unique function that was duplicated
 	}
-	
+
 	if totalUniqueFunctions > 0 {
 		impact.MaintenanceMultiplier = float64(totalInstances) / float64(totalUniqueFunctions)
 	}
-	
+
 	// Calculate technical debt score
 	totalBurden := 0.0
 	for _, cluster := range allClusters {
 		totalBurden += cluster.MaintenanceBurden
 	}
 	impact.TechnicalDebtScore = totalBurden / 100.0 // Normalize to 0-100 scale
-	
+
 	// Calculate change risk factor
-	impact.ChangeRiskFactor = math.Min(impact.MaintenanceMultiplier * 0.2, 2.0)
-	
+	impact.ChangeRiskFactor = math.Min(impact.MaintenanceMultiplier*0.2, 2.0)
+
 	// Estimate testing burden
 	impact.TestingBurden = totalInstances * 2 // Assume 2 tests per duplicated instance
-	
+
 	// Determine overall codebase health
 	if impact.TechnicalDebtScore > 50 {
 		impact.CodebaseHealth = "critical"
@@ -1185,17 +1185,17 @@ func (dd *DuplicationDetector) analyzeImpact(metrics *DuplicationMetrics) Duplic
 	} else {
 		impact.CodebaseHealth = "good"
 	}
-	
+
 	// Generate hotspot analysis
 	impact.HotspotAnalysis = dd.generateHotspotAnalysis(metrics)
-	
+
 	return impact
 }
 
 // generateHotspotAnalysis identifies high-duplication areas
 func (dd *DuplicationDetector) generateHotspotAnalysis(metrics *DuplicationMetrics) []DuplicationHotspot {
 	hotspots := []DuplicationHotspot{}
-	
+
 	// Analyze file-level hotspots
 	for filePath, fileDuplication := range metrics.DuplicationByFile {
 		if fileDuplication.HotspotScore > 20 { // More than 20% duplication
@@ -1209,19 +1209,19 @@ func (dd *DuplicationDetector) generateHotspotAnalysis(metrics *DuplicationMetri
 			hotspots = append(hotspots, hotspot)
 		}
 	}
-	
+
 	// Sort by duplication score
 	sort.Slice(hotspots, func(i, j int) bool {
 		return hotspots[i].DuplicationScore > hotspots[j].DuplicationScore
 	})
-	
+
 	return hotspots
 }
 
 // countAffectedFunctionsInFile counts functions affected by duplication in a file
 func (dd *DuplicationDetector) countAffectedFunctionsInFile(filePath string, metrics *DuplicationMetrics) int {
 	functionSet := make(map[string]bool)
-	
+
 	allClusters := append(append(metrics.ExactDuplicates, metrics.StructuralDuplicates...), metrics.TokenDuplicates...)
 	for _, cluster := range allClusters {
 		for _, instance := range cluster.Instances {
@@ -1230,7 +1230,7 @@ func (dd *DuplicationDetector) countAffectedFunctionsInFile(filePath string, met
 			}
 		}
 	}
-	
+
 	return len(functionSet)
 }
 
@@ -1250,14 +1250,14 @@ func (dd *DuplicationDetector) generateHotspotRecommendation(fileDuplication Fil
 func (dd *DuplicationDetector) calculateAggregateMetrics(metrics *DuplicationMetrics) {
 	totalDuplicatedLines := 0
 	totalLines := 0
-	
+
 	// Calculate totals from all clusters
 	allClusters := append(append(metrics.ExactDuplicates, metrics.StructuralDuplicates...), metrics.TokenDuplicates...)
 	for _, cluster := range allClusters {
 		clusterLines := cluster.LineCount * len(cluster.Instances)
 		totalDuplicatedLines += clusterLines
 	}
-	
+
 	// Estimate total lines from file metrics
 	for _, fileDuplication := range metrics.DuplicationByFile {
 		// Rough estimation based on duplication ratio
@@ -1268,13 +1268,13 @@ func (dd *DuplicationDetector) calculateAggregateMetrics(metrics *DuplicationMet
 			totalLines += 100 // Default estimate for files without duplication
 		}
 	}
-	
+
 	metrics.TotalDuplicatedLines = totalDuplicatedLines
-	
+
 	if totalLines > 0 {
 		metrics.DuplicationRatio = float64(totalDuplicatedLines) / float64(totalLines)
 	}
-	
+
 	// Calculate overall score (inverse of duplication ratio)
 	metrics.OverallScore = math.Max(0, 100*(1-metrics.DuplicationRatio*2))
 }
@@ -1282,13 +1282,13 @@ func (dd *DuplicationDetector) calculateAggregateMetrics(metrics *DuplicationMet
 // generateRecommendations creates prioritized improvement recommendations
 func (dd *DuplicationDetector) generateRecommendations(metrics *DuplicationMetrics) {
 	recommendations := []DuplicationRecommendation{}
-	
+
 	// High-priority exact duplicate recommendations
 	if len(metrics.ExactDuplicates) > 0 {
 		criticalDuplicates := []string{}
 		totalEstimatedHours := 0
 		totalReduction := 0
-		
+
 		for _, cluster := range metrics.ExactDuplicates {
 			if cluster.Priority == "critical" || cluster.Priority == "high" {
 				criticalDuplicates = append(criticalDuplicates, cluster.ID)
@@ -1296,7 +1296,7 @@ func (dd *DuplicationDetector) generateRecommendations(metrics *DuplicationMetri
 				totalReduction += cluster.LineCount * (len(cluster.Instances) - 1)
 			}
 		}
-		
+
 		if len(criticalDuplicates) > 0 {
 			recommendations = append(recommendations, DuplicationRecommendation{
 				Priority:          "critical",
@@ -1312,14 +1312,14 @@ func (dd *DuplicationDetector) generateRecommendations(metrics *DuplicationMetri
 			})
 		}
 	}
-	
+
 	// Cross-file duplication recommendations
 	if len(metrics.CrossFileDuplicates) > 0 {
 		crossFileIds := []string{}
 		for _, crossFile := range metrics.CrossFileDuplicates {
 			crossFileIds = append(crossFileIds, crossFile.ClusterID)
 		}
-		
+
 		recommendations = append(recommendations, DuplicationRecommendation{
 			Priority:          "high",
 			Category:          "architecture",
@@ -1333,7 +1333,7 @@ func (dd *DuplicationDetector) generateRecommendations(metrics *DuplicationMetri
 			ExpectedReduction: dd.calculateCrossFileReduction(metrics.CrossFileDuplicates),
 		})
 	}
-	
+
 	// Structural duplication recommendations
 	if len(metrics.StructuralDuplicates) > 0 {
 		structuralIds := []string{}
@@ -1342,7 +1342,7 @@ func (dd *DuplicationDetector) generateRecommendations(metrics *DuplicationMetri
 				structuralIds = append(structuralIds, cluster.ID)
 			}
 		}
-		
+
 		if len(structuralIds) > 0 {
 			recommendations = append(recommendations, DuplicationRecommendation{
 				Priority:          "medium",
@@ -1358,7 +1358,7 @@ func (dd *DuplicationDetector) generateRecommendations(metrics *DuplicationMetri
 			})
 		}
 	}
-	
+
 	metrics.Recommendations = recommendations
 }
 
@@ -1389,7 +1389,7 @@ func (dd *DuplicationDetector) generateSummary(metrics *DuplicationMetrics) {
 	summary := DuplicationSummary{
 		HealthScore: metrics.OverallScore,
 	}
-	
+
 	// Determine risk level
 	if metrics.DuplicationRatio > 0.25 {
 		summary.RiskLevel = "critical"
@@ -1404,7 +1404,7 @@ func (dd *DuplicationDetector) generateSummary(metrics *DuplicationMetrics) {
 		summary.RiskLevel = "low"
 		summary.MaintenanceBurden = "low"
 	}
-	
+
 	// Count clusters needing refactoring
 	allClusters := append(append(metrics.ExactDuplicates, metrics.StructuralDuplicates...), metrics.TokenDuplicates...)
 	for _, cluster := range allClusters {
@@ -1412,13 +1412,13 @@ func (dd *DuplicationDetector) generateSummary(metrics *DuplicationMetrics) {
 			summary.RefactoringNeeded++
 		}
 	}
-	
+
 	// Calculate potential savings
 	for _, opportunity := range metrics.ConsolidationOps {
 		summary.PotentialSavings += opportunity.EstimatedReduction
 	}
-	
+
 	summary.RecommendedActions = len(metrics.Recommendations)
-	
+
 	metrics.Summary = summary
 }

@@ -9,38 +9,38 @@ import (
 // GraphGenerator creates component relationship graphs and dependency visualizations
 type GraphGenerator struct {
 	componentIdentifier *ComponentIdentifier
-	dataFlowAnalyzer   *DataFlowAnalyzer
-	cycleDetector      *CycleDetector
-	nodes              map[string]*ComponentGraphNode
-	edges              []*ComponentGraphEdge
-	clusters           map[string]*ComponentGraphCluster
+	dataFlowAnalyzer    *DataFlowAnalyzer
+	cycleDetector       *CycleDetector
+	nodes               map[string]*ComponentGraphNode
+	edges               []*ComponentGraphEdge
+	clusters            map[string]*ComponentGraphCluster
 }
 
 // ComponentGraphNode represents a node in the component relationship graph
 type ComponentGraphNode struct {
-	ID           string                 `json:"id"`
-	Name         string                 `json:"name"`
-	Type         GraphNodeType          `json:"type"`
-	FilePath     string                 `json:"file_path"`
-	Size         int                    `json:"size"`         // Lines of code or complexity measure
-	Importance   float64                `json:"importance"`   // Importance score (0-1)
-	Complexity   float64                `json:"complexity"`   // Complexity score (0-1)
-	Position     *GraphPosition         `json:"position"`     // Visual position
-	Style        *GraphNodeStyle        `json:"style"`        // Visual styling
-	Metadata     map[string]interface{} `json:"metadata"`
+	ID         string                 `json:"id"`
+	Name       string                 `json:"name"`
+	Type       GraphNodeType          `json:"type"`
+	FilePath   string                 `json:"file_path"`
+	Size       int                    `json:"size"`       // Lines of code or complexity measure
+	Importance float64                `json:"importance"` // Importance score (0-1)
+	Complexity float64                `json:"complexity"` // Complexity score (0-1)
+	Position   *GraphPosition         `json:"position"`   // Visual position
+	Style      *GraphNodeStyle        `json:"style"`      // Visual styling
+	Metadata   map[string]interface{} `json:"metadata"`
 }
 
 // ComponentGraphEdge represents a relationship between graph nodes
 type ComponentGraphEdge struct {
-	ID           string                 `json:"id"`
-	Source       string                 `json:"source"`       // Source node ID
-	Target       string                 `json:"target"`       // Target node ID
-	Type         GraphEdgeType          `json:"type"`
-	Weight       float64                `json:"weight"`       // Relationship strength (0-1)
-	Direction    EdgeDirection          `json:"direction"`
-	Label        string                 `json:"label"`
-	Style        *GraphEdgeStyle        `json:"style"`        // Visual styling
-	Metadata     map[string]interface{} `json:"metadata"`
+	ID        string                 `json:"id"`
+	Source    string                 `json:"source"` // Source node ID
+	Target    string                 `json:"target"` // Target node ID
+	Type      GraphEdgeType          `json:"type"`
+	Weight    float64                `json:"weight"` // Relationship strength (0-1)
+	Direction EdgeDirection          `json:"direction"`
+	Label     string                 `json:"label"`
+	Style     *GraphEdgeStyle        `json:"style"` // Visual styling
+	Metadata  map[string]interface{} `json:"metadata"`
 }
 
 // ComponentGraphCluster represents a group of related nodes
@@ -56,12 +56,12 @@ type ComponentGraphCluster struct {
 
 // ComponentGraph represents the complete component relationship graph
 type ComponentGraph struct {
-	Nodes     []*ComponentGraphNode    `json:"nodes"`
-	Edges     []*ComponentGraphEdge    `json:"edges"`
-	Clusters  []*ComponentGraphCluster `json:"clusters"`
-	Metadata  *GraphMetadata           `json:"metadata"`
-	Layout    *GraphLayout             `json:"layout"`
-	Stats     *ComponentGraphStats     `json:"stats"`
+	Nodes    []*ComponentGraphNode    `json:"nodes"`
+	Edges    []*ComponentGraphEdge    `json:"edges"`
+	Clusters []*ComponentGraphCluster `json:"clusters"`
+	Metadata *GraphMetadata           `json:"metadata"`
+	Layout   *GraphLayout             `json:"layout"`
+	Stats    *ComponentGraphStats     `json:"stats"`
 }
 
 // Supporting types and enums
@@ -79,12 +79,12 @@ const (
 type GraphEdgeType string
 
 const (
-	ImportEdge     GraphEdgeType = "import"      // Direct import relationship
-	ComponentEdge  GraphEdgeType = "component"   // Component usage
-	FlowEdge       GraphEdgeType = "dataflow"    // Data flow relationship
-	APIEdge        GraphEdgeType = "api"         // API call relationship
-	EventEdge      GraphEdgeType = "event"       // Event-based relationship
-	ConfigEdge     GraphEdgeType = "config"      // Configuration dependency
+	ImportEdge    GraphEdgeType = "import"    // Direct import relationship
+	ComponentEdge GraphEdgeType = "component" // Component usage
+	FlowEdge      GraphEdgeType = "dataflow"  // Data flow relationship
+	APIEdge       GraphEdgeType = "api"       // API call relationship
+	EventEdge     GraphEdgeType = "event"     // Event-based relationship
+	ConfigEdge    GraphEdgeType = "config"    // Configuration dependency
 )
 
 type EdgeDirection string
@@ -98,11 +98,11 @@ const (
 type GraphClusterType string
 
 const (
-	FeatureCluster    GraphClusterType = "feature"     // Feature-based grouping
-	LayerCluster      GraphClusterType = "layer"       // Architectural layer
-	ModuleCluster     GraphClusterType = "module"      // Module/package grouping
-	DomainCluster     GraphClusterType = "domain"      // Domain-driven grouping
-	CycleCluster      GraphClusterType = "cycle"       // Circular dependency group
+	FeatureCluster GraphClusterType = "feature" // Feature-based grouping
+	LayerCluster   GraphClusterType = "layer"   // Architectural layer
+	ModuleCluster  GraphClusterType = "module"  // Module/package grouping
+	DomainCluster  GraphClusterType = "domain"  // Domain-driven grouping
+	CycleCluster   GraphClusterType = "cycle"   // Circular dependency group
 )
 
 type GraphPosition struct {
@@ -123,7 +123,7 @@ type GraphNodeStyle struct {
 type GraphEdgeStyle struct {
 	Color     string  `json:"color"`
 	Width     float64 `json:"width"`
-	Style     string  `json:"style"`     // solid, dashed, dotted
+	Style     string  `json:"style"` // solid, dashed, dotted
 	Opacity   float64 `json:"opacity"`
 	Curvature float64 `json:"curvature"` // For curved edges
 }
@@ -136,34 +136,34 @@ type GraphLayout struct {
 }
 
 type GraphMetadata struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	CreatedAt   string    `json:"created_at"`
-	Version     string    `json:"version"`
-	ProjectPath string    `json:"project_path"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	CreatedAt   string `json:"created_at"`
+	Version     string `json:"version"`
+	ProjectPath string `json:"project_path"`
 }
 
 type ComponentGraphStats struct {
-	TotalNodes         int                        `json:"total_nodes"`
-	TotalEdges         int                        `json:"total_edges"`
-	TotalClusters      int                        `json:"total_clusters"`
-	NodesByType        map[GraphNodeType]int      `json:"nodes_by_type"`
-	EdgesByType        map[GraphEdgeType]int      `json:"edges_by_type"`
-	ClustersByType     map[GraphClusterType]int   `json:"clusters_by_type"`
-	AverageConnectivity float64                   `json:"average_connectivity"`
-	MaxDepth           int                        `json:"max_depth"`
-	CriticalPaths      []string                   `json:"critical_paths"`
+	TotalNodes          int                      `json:"total_nodes"`
+	TotalEdges          int                      `json:"total_edges"`
+	TotalClusters       int                      `json:"total_clusters"`
+	NodesByType         map[GraphNodeType]int    `json:"nodes_by_type"`
+	EdgesByType         map[GraphEdgeType]int    `json:"edges_by_type"`
+	ClustersByType      map[GraphClusterType]int `json:"clusters_by_type"`
+	AverageConnectivity float64                  `json:"average_connectivity"`
+	MaxDepth            int                      `json:"max_depth"`
+	CriticalPaths       []string                 `json:"critical_paths"`
 }
 
 // NewGraphGenerator creates a new graph generator
 func NewGraphGenerator(ci *ComponentIdentifier, dfa *DataFlowAnalyzer, cd *CycleDetector) *GraphGenerator {
 	return &GraphGenerator{
 		componentIdentifier: ci,
-		dataFlowAnalyzer:   dfa,
-		cycleDetector:      cd,
-		nodes:              make(map[string]*ComponentGraphNode),
-		edges:              make([]*ComponentGraphEdge, 0),
-		clusters:           make(map[string]*ComponentGraphCluster),
+		dataFlowAnalyzer:    dfa,
+		cycleDetector:       cd,
+		nodes:               make(map[string]*ComponentGraphNode),
+		edges:               make([]*ComponentGraphEdge, 0),
+		clusters:            make(map[string]*ComponentGraphCluster),
 	}
 }
 
@@ -285,7 +285,7 @@ func (gg *GraphGenerator) analyzeDataFlowRelationships(filePath, content, curren
 			if gg.isDifferentFile(edge.From, edge.To, filePath) {
 				fromNodeID := gg.resolveNodeID(edge.From, filePath)
 				toNodeID := gg.resolveNodeID(edge.To, filePath)
-				
+
 				if fromNodeID != "" && toNodeID != "" {
 					gg.createEdge(fromNodeID, toNodeID, FlowEdge, 0.6, DirectionalEdge,
 						fmt.Sprintf("data flow: %s", edge.FlowType), 0)
@@ -401,8 +401,8 @@ func (gg *GraphGenerator) createFeatureClusters() error {
 				Color:       gg.generateFeatureColor(feature),
 				Description: fmt.Sprintf("Feature cluster containing %d components", len(nodeIDs)),
 				Metadata: map[string]interface{}{
-					"feature":     feature,
-					"node_count":  len(nodeIDs),
+					"feature":    feature,
+					"node_count": len(nodeIDs),
 				},
 			}
 			gg.clusters[cluster.ID] = cluster
@@ -427,9 +427,9 @@ func (gg *GraphGenerator) createLayerClusters() error {
 
 	// Create clusters for each layer
 	layerColors := map[string]string{
-		"presentation": "#4CAF50",
-		"business":     "#2196F3",
-		"data":         "#FF9800",
+		"presentation":   "#4CAF50",
+		"business":       "#2196F3",
+		"data":           "#FF9800",
 		"infrastructure": "#9C27B0",
 	}
 
@@ -476,10 +476,10 @@ func (gg *GraphGenerator) createCycleClusters() error {
 				Color:       "#F44336", // Red for cycles
 				Description: fmt.Sprintf("Circular dependency involving %d components", len(nodeIDs)),
 				Metadata: map[string]interface{}{
-					"cycle_id":    cycle.ID,
-					"cycle_type":  cycle.Type,
-					"severity":    cycle.Severity,
-					"node_count":  len(nodeIDs),
+					"cycle_id":   cycle.ID,
+					"cycle_type": cycle.Type,
+					"severity":   cycle.Severity,
+					"node_count": len(nodeIDs),
 				},
 			}
 			gg.clusters[cluster.ID] = cluster
@@ -615,12 +615,12 @@ func (gg *GraphGenerator) generateNodeID(filePath string) string {
 func (gg *GraphGenerator) extractNodeName(filePath string) string {
 	parts := strings.Split(filePath, "/")
 	name := parts[len(parts)-1]
-	
+
 	// Remove extension
 	if dotIndex := strings.LastIndex(name, "."); dotIndex != -1 {
 		name = name[:dotIndex]
 	}
-	
+
 	return name
 }
 
@@ -631,13 +631,13 @@ func (gg *GraphGenerator) extractNodeName(filePath string) string {
 func (gg *GraphGenerator) createNodeStyle(nodeType GraphNodeType, importance, complexity float64) *GraphNodeStyle {
 	colorMap := map[GraphNodeType]string{
 		ComponentNode: "#4CAF50",
-		ServiceNode:   "#2196F3", 
+		ServiceNode:   "#2196F3",
 		UtilityNode:   "#FF9800",
 		ConfigNode:    "#9C27B0",
 		TestNode:      "#607D8B",
 		AssetNode:     "#795548",
 	}
-	
+
 	return &GraphNodeStyle{
 		Color:       colorMap[nodeType],
 		Size:        10 + (importance * 20),
@@ -657,7 +657,7 @@ func (gg *GraphGenerator) createEdgeStyle(edgeType GraphEdgeType, weight float64
 		EventEdge:     "#9C27B0",
 		ConfigEdge:    "#607D8B",
 	}
-	
+
 	return &GraphEdgeStyle{
 		Color:     colorMap[edgeType],
 		Width:     1 + (weight * 3),
@@ -680,7 +680,7 @@ func (gg *GraphGenerator) extractImportPath(line, currentFile string) string {
 }
 
 func (gg *GraphGenerator) extractRequirePath(line, currentFile string) string {
-	// Simplified require path extraction  
+	// Simplified require path extraction
 	if idx := strings.Index(line, "require('"); idx != -1 {
 		start := idx + 9
 		if end := strings.Index(line[start:], "'"); end != -1 {
@@ -704,7 +704,7 @@ func (gg *GraphGenerator) containsJSX(content string) bool {
 
 func (gg *GraphGenerator) extractComponentReferences(content string) []string {
 	// Simplified component reference extraction
-	return []string{} 
+	return []string{}
 }
 
 func (gg *GraphGenerator) resolveComponentNodeID(ref, currentFile string) string {
@@ -783,11 +783,11 @@ func (gg *GraphGenerator) generateLayout() *GraphLayout {
 
 func (gg *GraphGenerator) calculateGraphStats(nodes []*ComponentGraphNode, edges []*ComponentGraphEdge, clusters []*ComponentGraphCluster) *ComponentGraphStats {
 	stats := &ComponentGraphStats{
-		TotalNodes:    len(nodes),
-		TotalEdges:    len(edges),
-		TotalClusters: len(clusters),
-		NodesByType:   make(map[GraphNodeType]int),
-		EdgesByType:   make(map[GraphEdgeType]int),
+		TotalNodes:     len(nodes),
+		TotalEdges:     len(edges),
+		TotalClusters:  len(clusters),
+		NodesByType:    make(map[GraphNodeType]int),
+		EdgesByType:    make(map[GraphEdgeType]int),
 		ClustersByType: make(map[GraphClusterType]int),
 	}
 

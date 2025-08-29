@@ -20,12 +20,12 @@ func TestNewPerformanceAnalyzer(t *testing.T) {
 
 func TestAnalyzePackagePerformance(t *testing.T) {
 	tests := []struct {
-		name           string
-		packageName    string
-		version        string
-		expectedError  bool
-		expectedSize   int64
-		expectedScore  float64
+		name          string
+		packageName   string
+		version       string
+		expectedError bool
+		expectedSize  int64
+		expectedScore float64
 	}{
 		{
 			name:          "successful analysis with lodash",
@@ -38,10 +38,10 @@ func TestAnalyzePackagePerformance(t *testing.T) {
 		{
 			name:          "analysis with react",
 			packageName:   "react",
-			version:       "18.2.0", 
+			version:       "18.2.0",
 			expectedError: false,
-			expectedSize:  42000,    // smaller size
-			expectedScore: 85.0,     // better performance score
+			expectedSize:  42000, // smaller size
+			expectedScore: 85.0,  // better performance score
 		},
 	}
 
@@ -77,19 +77,19 @@ func TestAnalyzePackagePerformance(t *testing.T) {
 
 func TestCalculateLoadTimeImpact(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
-	
+
 	// Test with realistic package sizes
-	rawSize := int64(500000)     // 500KB
-	minifiedSize := int64(350000) // 350KB after minification  
+	rawSize := int64(500000)        // 500KB
+	minifiedSize := int64(350000)   // 350KB after minification
 	compressedSize := int64(140000) // 140KB after compression
-	
+
 	result := analyzer.calculateLoadTimeImpact(rawSize, minifiedSize, compressedSize)
-	
+
 	require.NotNil(t, result)
 	assert.NotNil(t, result.Network3G)
-	assert.NotNil(t, result.Network4G) 
+	assert.NotNil(t, result.Network4G)
 	assert.NotNil(t, result.NetworkWiFi)
-	
+
 	// Verify load times are reasonable and properly ordered (3G > 4G > WiFi)
 	assert.Greater(t, result.Network3G.TotalTime, result.Network4G.TotalTime)
 	assert.Greater(t, result.Network4G.TotalTime, result.NetworkWiFi.TotalTime)
@@ -97,7 +97,7 @@ func TestCalculateLoadTimeImpact(t *testing.T) {
 
 func TestCalculatePerformanceScore(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
-	
+
 	// Test with different package sizes
 	testCases := []struct {
 		name     string
@@ -105,11 +105,11 @@ func TestCalculatePerformanceScore(t *testing.T) {
 		minScore float64
 		maxScore float64
 	}{
-		{"small package", 10000, 80.0, 100.0},   // 10KB should score well
-		{"medium package", 100000, 60.0, 80.0}, // 100KB should score moderately  
+		{"small package", 10000, 80.0, 100.0},  // 10KB should score well
+		{"medium package", 100000, 60.0, 80.0}, // 100KB should score moderately
 		{"large package", 1000000, 30.0, 60.0}, // 1MB should score poorly
 	}
-	
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Create minimal package metrics for testing
@@ -119,9 +119,9 @@ func TestCalculatePerformanceScore(t *testing.T) {
 				GzippedSize:    int64(float64(tc.size) * 0.3),
 				IsTreeShakable: true,
 			}
-			
+
 			score := analyzer.calculatePerformanceScore(tc.size, metrics)
-			
+
 			assert.GreaterOrEqual(t, score, tc.minScore)
 			assert.LessOrEqual(t, score, tc.maxScore)
 			assert.GreaterOrEqual(t, score, 0.0)
@@ -132,25 +132,25 @@ func TestCalculatePerformanceScore(t *testing.T) {
 
 func TestGeneratePackageRecommendations(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
-	
+
 	// Create test package info and metrics
 	pkg := &GraphPackageInfo{
 		Name:    "test-package",
 		Version: "1.0.0",
 	}
-	
+
 	metrics := &PackageMetrics{
 		RawSize:        500000, // 500KB
 		MinifiedSize:   350000, // 350KB after minification
 		GzippedSize:    150000, // 150KB after compression
 		IsTreeShakable: true,
 	}
-	
+
 	recommendations := analyzer.generatePackageRecommendations(pkg, metrics, 500000)
-	
+
 	assert.NotNil(t, recommendations)
 	assert.Greater(t, len(recommendations), 0)
-	
+
 	// Should contain relevant recommendations for a large, tree-shakable package
 	hasTreeShakingRec := false
 	for _, rec := range recommendations {

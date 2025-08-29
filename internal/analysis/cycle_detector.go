@@ -33,12 +33,12 @@ type DependencyCycle struct {
 type CycleType string
 
 const (
-	ImportCycle     CycleType = "import"      // Direct import/require cycles
-	ComponentCycle  CycleType = "component"   // React component dependency cycles
-	ModuleCycle     CycleType = "module"      // Module-level circular dependencies
-	ServiceCycle    CycleType = "service"     // Service layer circular dependencies
-	UtilityCycle    CycleType = "utility"     // Utility function circular dependencies
-	TypeCycle       CycleType = "type"        // TypeScript type/interface cycles
+	ImportCycle    CycleType = "import"    // Direct import/require cycles
+	ComponentCycle CycleType = "component" // React component dependency cycles
+	ModuleCycle    CycleType = "module"    // Module-level circular dependencies
+	ServiceCycle   CycleType = "service"   // Service layer circular dependencies
+	UtilityCycle   CycleType = "utility"   // Utility function circular dependencies
+	TypeCycle      CycleType = "type"      // TypeScript type/interface cycles
 )
 
 // CycleSeverity represents the severity of a dependency cycle
@@ -53,11 +53,11 @@ const (
 
 // CycleImpact describes the impact of a dependency cycle
 type CycleImpact struct {
-	BuildImpact        string   `json:"build_impact"`        // Impact on build process
-	RuntimeImpact      string   `json:"runtime_impact"`      // Runtime performance impact
-	MaintainabilityImpact string `json:"maintainability_impact"` // Code maintainability impact
-	TestabilityImpact  string   `json:"testability_impact"`  // Impact on testing
-	RiskFactors        []string `json:"risk_factors"`        // Specific risk factors
+	BuildImpact           string   `json:"build_impact"`           // Impact on build process
+	RuntimeImpact         string   `json:"runtime_impact"`         // Runtime performance impact
+	MaintainabilityImpact string   `json:"maintainability_impact"` // Code maintainability impact
+	TestabilityImpact     string   `json:"testability_impact"`     // Impact on testing
+	RiskFactors           []string `json:"risk_factors"`           // Specific risk factors
 }
 
 // ResolutionStrategy provides strategies for resolving dependency cycles
@@ -70,10 +70,10 @@ type ResolutionStrategy struct {
 
 // CycleStats provides statistics about dependency cycles
 type CycleStats struct {
-	TotalCycles       int                      `json:"total_cycles"`
-	CyclesBySeverity  map[CycleSeverity]int    `json:"cycles_by_severity"`
-	CyclesByType      map[CycleType]int        `json:"cycles_by_type"`
-	AverageCycleLength float64                 `json:"average_cycle_length"`
+	TotalCycles          int                   `json:"total_cycles"`
+	CyclesBySeverity     map[CycleSeverity]int `json:"cycles_by_severity"`
+	CyclesByType         map[CycleType]int     `json:"cycles_by_type"`
+	AverageCycleLength   float64               `json:"average_cycle_length"`
 	MostProblematicFiles []string              `json:"most_problematic_files"`
 	CycleComplexityScore float64               `json:"cycle_complexity_score"`
 }
@@ -172,7 +172,7 @@ func (cd *CycleDetector) findCycleStart(target string, path []string) int {
 func (cd *CycleDetector) recordCycle(cyclePath []string) {
 	// Avoid duplicate cycles by normalizing the path
 	normalizedPath := cd.normalizeCyclePath(cyclePath)
-	
+
 	// Check if this cycle already exists
 	for _, existingCycle := range cd.cycles {
 		if cd.compareCyclePaths(existingCycle.Files, normalizedPath) {
@@ -202,7 +202,7 @@ func (cd *CycleDetector) extractDependencies(filePath, content string) ([]string
 
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
-		
+
 		// Extract import/require dependencies
 		if deps := cd.extractImportDependencies(line, filePath); len(deps) > 0 {
 			dependencies = append(dependencies, deps...)
@@ -252,7 +252,7 @@ func (cd *CycleDetector) extractFromClause(line string, currentFile string) stri
 
 	path := strings.TrimSpace(parts[1])
 	path = strings.Trim(path, "\"'`;")
-	
+
 	// Only track relative imports for cycle detection
 	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
 		return cd.resolvePath(path, currentFile)
@@ -276,7 +276,7 @@ func (cd *CycleDetector) extractRequirePath(line string, currentFile string) str
 
 	path := strings.TrimSpace(line[start : start+end])
 	path = strings.Trim(path, "\"'`")
-	
+
 	// Only track relative imports for cycle detection
 	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
 		return cd.resolvePath(path, currentFile)
@@ -300,7 +300,7 @@ func (cd *CycleDetector) extractDynamicImportPath(line string, currentFile strin
 
 	path := strings.TrimSpace(line[start : start+end])
 	path = strings.Trim(path, "\"'`")
-	
+
 	// Only track relative imports for cycle detection
 	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
 		return cd.resolvePath(path, currentFile)
@@ -313,14 +313,14 @@ func (cd *CycleDetector) extractDynamicImportPath(line string, currentFile strin
 func (cd *CycleDetector) resolvePath(relativePath string, currentFile string) string {
 	// For testing purposes, we need to resolve relative paths correctly
 	// This is a simplified implementation
-	
+
 	if strings.HasPrefix(relativePath, "./") {
 		// Same directory - replace ./ with current file's directory
 		dir := cd.getDirectory(currentFile)
 		resolved := dir + "/" + relativePath[2:]
 		return cd.normalizeAndAddExtension(resolved)
 	}
-	
+
 	if strings.HasPrefix(relativePath, "../") {
 		// Parent directory - need to resolve relative to current file
 		dir := cd.getDirectory(currentFile)
@@ -329,7 +329,7 @@ func (cd *CycleDetector) resolvePath(relativePath string, currentFile string) st
 		resolved := parentDir + "/" + relativePath[3:]
 		return cd.normalizeAndAddExtension(resolved)
 	}
-	
+
 	return cd.normalizeAndAddExtension(relativePath)
 }
 
@@ -355,12 +355,12 @@ func (cd *CycleDetector) getParentDirectory(dir string) string {
 func (cd *CycleDetector) normalizeAndAddExtension(path string) string {
 	// Clean up double slashes
 	path = strings.ReplaceAll(path, "//", "/")
-	
+
 	// If path already has an extension, return as-is
 	if strings.Contains(path, ".") {
 		return path
 	}
-	
+
 	// Add extension if not present (for cycle detection matching)
 	// Check if we're in a types directory, prefer .d.ts
 	if strings.Contains(path, "/types/") {
@@ -389,7 +389,7 @@ func (cd *CycleDetector) isSelfReference(dependency, filePath string) bool {
 	// Extract filename from both paths for comparison
 	depBase := cd.getBaseName(dependency)
 	fileBase := cd.getBaseName(filePath)
-	
+
 	return depBase == fileBase
 }
 
@@ -398,12 +398,12 @@ func (cd *CycleDetector) getBaseName(path string) string {
 	// Remove directory path
 	parts := strings.Split(path, "/")
 	name := parts[len(parts)-1]
-	
+
 	// Remove extension
 	if dotIndex := strings.LastIndex(name, "."); dotIndex != -1 {
 		name = name[:dotIndex]
 	}
-	
+
 	return name
 }
 
@@ -411,16 +411,16 @@ func (cd *CycleDetector) getBaseName(path string) string {
 func (cd *CycleDetector) categorizeCycles() {
 	for i := range cd.cycles {
 		cycle := &cd.cycles[i]
-		
+
 		// Determine cycle type
 		cycle.Type = cd.determineCycleType(cycle.Files)
-		
+
 		// Assess severity
 		cycle.Severity = cd.assessCycleSeverity(cycle)
-		
+
 		// Analyze impact
 		cycle.Impact = cd.analyzeCycleImpact(cycle)
-		
+
 		// Generate resolution strategies
 		cycle.Resolution = cd.generateResolutionStrategies(cycle)
 	}
@@ -696,12 +696,12 @@ func (cd *CycleDetector) GetCycleStats() CycleStats {
 		file  string
 		count int
 	}
-	
+
 	fileCounts := make([]fileCount, 0, len(fileOccurrences))
 	for file, count := range fileOccurrences {
 		fileCounts = append(fileCounts, fileCount{file, count})
 	}
-	
+
 	sort.Slice(fileCounts, func(i, j int) bool {
 		return fileCounts[i].count > fileCounts[j].count
 	})
@@ -711,7 +711,7 @@ func (cd *CycleDetector) GetCycleStats() CycleStats {
 	if len(fileCounts) < maxFiles {
 		maxFiles = len(fileCounts)
 	}
-	
+
 	stats.MostProblematicFiles = make([]string, maxFiles)
 	for i := 0; i < maxFiles; i++ {
 		stats.MostProblematicFiles[i] = fileCounts[i].file
@@ -731,7 +731,7 @@ func (cd *CycleDetector) GetCycleStats() CycleStats {
 			complexityScore += 3.0
 		}
 	}
-	
+
 	if complexityScore > 100 {
 		complexityScore = 100
 	}

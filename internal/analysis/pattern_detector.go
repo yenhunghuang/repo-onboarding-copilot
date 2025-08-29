@@ -9,44 +9,44 @@ import (
 type FrameworkType string
 
 const (
-	ReactFramework    FrameworkType = "react"
-	VueFramework      FrameworkType = "vue"
-	AngularFramework  FrameworkType = "angular"
-	NextJSFramework   FrameworkType = "nextjs"
-	ExpressFramework  FrameworkType = "express"
-	FastifyFramework  FrameworkType = "fastify"
-	NestJSFramework   FrameworkType = "nestjs"
-	UnknownFramework  FrameworkType = "unknown"
+	ReactFramework   FrameworkType = "react"
+	VueFramework     FrameworkType = "vue"
+	AngularFramework FrameworkType = "angular"
+	NextJSFramework  FrameworkType = "nextjs"
+	ExpressFramework FrameworkType = "express"
+	FastifyFramework FrameworkType = "fastify"
+	NestJSFramework  FrameworkType = "nestjs"
+	UnknownFramework FrameworkType = "unknown"
 )
 
 // ArchitecturalStyle represents different architectural patterns
 type ArchitecturalStyle string
 
 const (
-	MVCArchitecture        ArchitecturalStyle = "mvc"
-	CleanArchitecture      ArchitecturalStyle = "clean"
-	HexagonalArchitecture  ArchitecturalStyle = "hexagonal"
-	LayeredArchitecture    ArchitecturalStyle = "layered"
-	MicroservicesArch      ArchitecturalStyle = "microservices"
-	MonolithicArch         ArchitecturalStyle = "monolithic"
-	ComponentBasedArch     ArchitecturalStyle = "component_based"
-	UnknownArchitecture    ArchitecturalStyle = "unknown"
+	MVCArchitecture       ArchitecturalStyle = "mvc"
+	CleanArchitecture     ArchitecturalStyle = "clean"
+	HexagonalArchitecture ArchitecturalStyle = "hexagonal"
+	LayeredArchitecture   ArchitecturalStyle = "layered"
+	MicroservicesArch     ArchitecturalStyle = "microservices"
+	MonolithicArch        ArchitecturalStyle = "monolithic"
+	ComponentBasedArch    ArchitecturalStyle = "component_based"
+	UnknownArchitecture   ArchitecturalStyle = "unknown"
 )
 
 // DesignPattern represents common design patterns
 type DesignPattern string
 
 const (
-	FactoryPattern     DesignPattern = "factory"
-	SingletonPattern   DesignPattern = "singleton"
-	ObserverPattern    DesignPattern = "observer"
-	StrategyPattern    DesignPattern = "strategy"
-	RepositoryPattern  DesignPattern = "repository"
-	DecoratorPattern   DesignPattern = "decorator"
-	AdapterPattern     DesignPattern = "adapter"
-	MiddlewarePattern  DesignPattern = "middleware"
-	HOCPattern         DesignPattern = "hoc" // Higher Order Component
-	HooksPattern       DesignPattern = "hooks"
+	FactoryPattern    DesignPattern = "factory"
+	SingletonPattern  DesignPattern = "singleton"
+	ObserverPattern   DesignPattern = "observer"
+	StrategyPattern   DesignPattern = "strategy"
+	RepositoryPattern DesignPattern = "repository"
+	DecoratorPattern  DesignPattern = "decorator"
+	AdapterPattern    DesignPattern = "adapter"
+	MiddlewarePattern DesignPattern = "middleware"
+	HOCPattern        DesignPattern = "hoc" // Higher Order Component
+	HooksPattern      DesignPattern = "hooks"
 )
 
 // DetectionResult represents the result of pattern detection
@@ -85,12 +85,12 @@ func (apd *ArchitecturePatternDetector) DetectPatterns(filePath string, content 
 	if err := apd.detectFrameworks(filePath, content, packageJSON); err != nil {
 		return err
 	}
-	
+
 	// Detect architectural styles
 	if err := apd.detectArchitecturalStyles(filePath, content); err != nil {
 		return err
 	}
-	
+
 	// Detect design patterns
 	if err := apd.detectDesignPatterns(filePath, content); err != nil {
 		return err
@@ -206,9 +206,9 @@ func (apd *ArchitecturePatternDetector) detectArchitecturalStyles(filePath, cont
 			Evidence:   apd.getCleanArchitectureEvidence(filePath, content),
 			Location:   filePath,
 			Metadata: map[string]interface{}{
-				"has_entities":    strings.Contains(filePath, "entities") || strings.Contains(filePath, "domain"),
-				"has_use_cases":   strings.Contains(filePath, "usecases") || strings.Contains(filePath, "services"),
-				"has_adapters":    strings.Contains(filePath, "adapters") || strings.Contains(filePath, "infrastructure"),
+				"has_entities":  strings.Contains(filePath, "entities") || strings.Contains(filePath, "domain"),
+				"has_use_cases": strings.Contains(filePath, "usecases") || strings.Contains(filePath, "services"),
+				"has_adapters":  strings.Contains(filePath, "adapters") || strings.Contains(filePath, "infrastructure"),
 			},
 		}
 		apd.architectural = append(apd.architectural, result)
@@ -224,9 +224,9 @@ func (apd *ArchitecturePatternDetector) detectArchitecturalStyles(filePath, cont
 			Evidence:   apd.getComponentBasedEvidence(filePath, content),
 			Location:   filePath,
 			Metadata: map[string]interface{}{
-				"has_components":    strings.Contains(filePath, "components"),
-				"has_reusability":   strings.Contains(content, "props") || strings.Contains(content, "children"),
-				"has_composition":   strings.Contains(content, "Component") && strings.Contains(content, "render"),
+				"has_components":  strings.Contains(filePath, "components"),
+				"has_reusability": strings.Contains(content, "props") || strings.Contains(content, "children"),
+				"has_composition": strings.Contains(content, "Component") && strings.Contains(content, "render"),
 			},
 		}
 		apd.architectural = append(apd.architectural, result)
@@ -333,105 +333,105 @@ func (apd *ArchitecturePatternDetector) detectDesignPatterns(filePath, content s
 
 func (apd *ArchitecturePatternDetector) detectReact(content, packageJSON string) float64 {
 	score := 0.0
-	
+
 	// Package.json evidence
 	if strings.Contains(packageJSON, "\"react\"") {
 		score += 0.4
 	}
-	
+
 	// Import evidence
 	if strings.Contains(content, "import React") || strings.Contains(content, "from 'react'") {
 		score += 0.3
 	}
-	
+
 	// JSX evidence
 	if strings.Contains(content, "jsx") || (strings.Contains(content, "<") && strings.Contains(content, ">")) {
 		score += 0.2
 	}
-	
+
 	// Hooks evidence
 	if strings.Contains(content, "useState") || strings.Contains(content, "useEffect") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectNextJS(content, packageJSON string) float64 {
 	score := 0.0
-	
+
 	// Package.json evidence
 	if strings.Contains(packageJSON, "\"next\"") {
 		score += 0.5
 	}
-	
+
 	// Next.js specific imports
 	if strings.Contains(content, "next/") {
 		score += 0.2
 	}
-	
+
 	// SSR/SSG evidence
 	if strings.Contains(content, "getServerSideProps") || strings.Contains(content, "getStaticProps") {
 		score += 0.2
 	}
-	
+
 	// API routes evidence
 	if strings.Contains(content, "req.") && strings.Contains(content, "res.") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectVue(content, packageJSON string) float64 {
 	score := 0.0
-	
+
 	// Package.json evidence
 	if strings.Contains(packageJSON, "\"vue\"") {
 		score += 0.4
 	}
-	
+
 	// Vue template evidence
 	if strings.Contains(content, "<template>") {
 		score += 0.3
 	}
-	
+
 	// Vue script evidence
 	if strings.Contains(content, "<script>") && strings.Contains(content, "export default") {
 		score += 0.2
 	}
-	
+
 	// Composition API evidence
 	if strings.Contains(content, "ref(") || strings.Contains(content, "reactive(") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectExpress(content, packageJSON string) float64 {
 	score := 0.0
-	
+
 	// Package.json evidence
 	if strings.Contains(packageJSON, "\"express\"") {
 		score += 0.4
 	}
-	
+
 	// Express app evidence
 	if strings.Contains(content, "express()") || strings.Contains(content, "app.") {
 		score += 0.3
 	}
-	
+
 	// Route handler evidence
 	if strings.Contains(content, "app.get") || strings.Contains(content, "app.post") {
 		score += 0.2
 	}
-	
+
 	// Middleware evidence
 	if strings.Contains(content, "app.use") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
@@ -439,80 +439,80 @@ func (apd *ArchitecturePatternDetector) detectExpress(content, packageJSON strin
 
 func (apd *ArchitecturePatternDetector) detectMVC(filePath, content string) float64 {
 	score := 0.0
-	
+
 	// Directory structure evidence
 	if strings.Contains(filePath, "controller") || strings.Contains(filePath, "model") || strings.Contains(filePath, "view") {
 		score += 0.4
 	}
-	
+
 	// Class naming evidence
 	if strings.Contains(content, "Controller") || strings.Contains(content, "Model") || strings.Contains(content, "View") {
 		score += 0.3
 	}
-	
+
 	// Separation pattern evidence
 	if strings.Contains(content, "router") && strings.Contains(content, "service") {
 		score += 0.2
 	}
-	
+
 	// Request/Response handling
 	if strings.Contains(content, "req") && strings.Contains(content, "res") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectCleanArchitecture(filePath, content string) float64 {
 	score := 0.0
-	
+
 	// Directory structure evidence
 	if strings.Contains(filePath, "domain") || strings.Contains(filePath, "entities") ||
-	   strings.Contains(filePath, "usecases") || strings.Contains(filePath, "infrastructure") {
+		strings.Contains(filePath, "usecases") || strings.Contains(filePath, "infrastructure") {
 		score += 0.4
 	}
-	
+
 	// Dependency inversion evidence
 	if strings.Contains(content, "interface") || strings.Contains(content, "abstract") {
 		score += 0.3
 	}
-	
+
 	// Use case evidence
 	if strings.Contains(content, "UseCase") || strings.Contains(content, "Service") {
 		score += 0.2
 	}
-	
+
 	// Repository pattern evidence
 	if strings.Contains(content, "Repository") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectComponentBased(filePath, content string) float64 {
 	score := 0.0
-	
+
 	// Component directory evidence
 	if strings.Contains(filePath, "components") {
 		score += 0.3
 	}
-	
+
 	// React component evidence
 	if strings.Contains(content, "Component") || strings.Contains(content, "const ") {
 		score += 0.3
 	}
-	
+
 	// Props evidence (reusability)
 	if strings.Contains(content, "props") || strings.Contains(content, "children") {
 		score += 0.2
 	}
-	
+
 	// Composition evidence
 	if strings.Contains(content, "render") || strings.Contains(content, "return") {
 		score += 0.2
 	}
-	
+
 	return score
 }
 
@@ -520,131 +520,131 @@ func (apd *ArchitecturePatternDetector) detectComponentBased(filePath, content s
 
 func (apd *ArchitecturePatternDetector) detectFactory(content string) float64 {
 	score := 0.0
-	
+
 	// Factory naming evidence
 	if strings.Contains(content, "Factory") || strings.Contains(content, "factory") {
 		score += 0.4
 	}
-	
+
 	// Create method evidence
 	if strings.Contains(content, "create") && (strings.Contains(content, "function") || strings.Contains(content, "method")) {
 		score += 0.3
 	}
-	
+
 	// Abstract creation evidence
 	if strings.Contains(content, "interface") || strings.Contains(content, "abstract") {
 		score += 0.2
 	}
-	
+
 	// Switch/case evidence for object creation
 	if strings.Contains(content, "switch") && strings.Contains(content, "case") && strings.Contains(content, "new ") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectRepository(content string) float64 {
 	score := 0.0
-	
+
 	// Repository naming evidence
 	if strings.Contains(content, "Repository") {
 		score += 0.4
 	}
-	
+
 	// CRUD operations evidence
 	if strings.Contains(content, "find") && strings.Contains(content, "create") {
 		score += 0.3
 	}
-	
+
 	// Database abstraction evidence
 	if strings.Contains(content, "query") || strings.Contains(content, "database") {
 		score += 0.2
 	}
-	
+
 	// Interface evidence
 	if strings.Contains(content, "interface") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectObserver(content string) float64 {
 	score := 0.0
-	
+
 	// Event listener evidence
 	if strings.Contains(content, "addEventListener") || strings.Contains(content, "on") {
 		score += 0.3
 	}
-	
+
 	// React event evidence
 	if strings.Contains(content, "onClick") || strings.Contains(content, "onChange") {
 		score += 0.3
 	}
-	
+
 	// Observer naming evidence
 	if strings.Contains(content, "observer") || strings.Contains(content, "subscribe") {
 		score += 0.2
 	}
-	
+
 	// Callback evidence
 	if strings.Contains(content, "callback") || strings.Contains(content, "=>") {
 		score += 0.2
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectHOC(content string) float64 {
 	score := 0.0
-	
+
 	// HOC naming convention evidence
 	if strings.Contains(content, "with") && strings.Contains(content, "Component") {
 		score += 0.4
 	}
-	
+
 	// Function returning component evidence
 	if strings.Contains(content, "return ") && strings.Contains(content, "Component") {
 		score += 0.3
 	}
-	
+
 	// Higher-order function evidence
 	if strings.Contains(content, "=>") && strings.Contains(content, "=>") { // Nested arrows
 		score += 0.2
 	}
-	
+
 	// Enhancement evidence
 	if strings.Contains(content, "enhance") || strings.Contains(content, "wrapper") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
 func (apd *ArchitecturePatternDetector) detectHooksPattern(content string) float64 {
 	score := 0.0
-	
+
 	// Built-in hooks evidence
 	if strings.Contains(content, "useState") || strings.Contains(content, "useEffect") {
 		score += 0.4
 	}
-	
+
 	// Custom hooks evidence
 	if strings.Contains(content, "const use") || strings.Contains(content, "function use") {
 		score += 0.3
 	}
-	
+
 	// Hook composition evidence
 	if strings.Contains(content, "useContext") || strings.Contains(content, "useReducer") {
 		score += 0.2
 	}
-	
+
 	// Hook rules compliance
 	if strings.Contains(content, "useCallback") || strings.Contains(content, "useMemo") {
 		score += 0.1
 	}
-	
+
 	return score
 }
 
@@ -652,7 +652,7 @@ func (apd *ArchitecturePatternDetector) detectHooksPattern(content string) float
 
 func (apd *ArchitecturePatternDetector) getReactEvidence(content, packageJSON string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(packageJSON, "\"react\"") {
 		evidence = append(evidence, "React dependency in package.json")
 	}
@@ -665,13 +665,13 @@ func (apd *ArchitecturePatternDetector) getReactEvidence(content, packageJSON st
 	if strings.Contains(content, "useState") {
 		evidence = append(evidence, "React hooks usage")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getNextJSEvidence(content, packageJSON string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(packageJSON, "\"next\"") {
 		evidence = append(evidence, "Next.js dependency in package.json")
 	}
@@ -684,13 +684,13 @@ func (apd *ArchitecturePatternDetector) getNextJSEvidence(content, packageJSON s
 	if strings.Contains(content, "getStaticProps") {
 		evidence = append(evidence, "Static site generation")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getVueEvidence(content, packageJSON string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(packageJSON, "\"vue\"") {
 		evidence = append(evidence, "Vue.js dependency in package.json")
 	}
@@ -700,13 +700,13 @@ func (apd *ArchitecturePatternDetector) getVueEvidence(content, packageJSON stri
 	if strings.Contains(content, "setup()") {
 		evidence = append(evidence, "Vue Composition API")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getExpressEvidence(content, packageJSON string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(packageJSON, "\"express\"") {
 		evidence = append(evidence, "Express.js dependency in package.json")
 	}
@@ -719,13 +719,13 @@ func (apd *ArchitecturePatternDetector) getExpressEvidence(content, packageJSON 
 	if strings.Contains(content, "app.use") {
 		evidence = append(evidence, "Express middleware")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getMVCEvidence(filePath, content string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(filePath, "controller") {
 		evidence = append(evidence, "Controller directory structure")
 	}
@@ -738,13 +738,13 @@ func (apd *ArchitecturePatternDetector) getMVCEvidence(filePath, content string)
 	if strings.Contains(content, "View") {
 		evidence = append(evidence, "View layer implementation")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getCleanArchitectureEvidence(filePath, content string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(filePath, "domain") {
 		evidence = append(evidence, "Domain layer directory")
 	}
@@ -757,13 +757,13 @@ func (apd *ArchitecturePatternDetector) getCleanArchitectureEvidence(filePath, c
 	if strings.Contains(content, "Repository") {
 		evidence = append(evidence, "Repository pattern usage")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getComponentBasedEvidence(filePath, content string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(filePath, "components") {
 		evidence = append(evidence, "Components directory structure")
 	}
@@ -776,13 +776,13 @@ func (apd *ArchitecturePatternDetector) getComponentBasedEvidence(filePath, cont
 	if strings.Contains(content, "Component") {
 		evidence = append(evidence, "Component class/function")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getFactoryEvidence(content string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(content, "Factory") {
 		evidence = append(evidence, "Factory class naming")
 	}
@@ -792,13 +792,13 @@ func (apd *ArchitecturePatternDetector) getFactoryEvidence(content string) []str
 	if strings.Contains(content, "switch") && strings.Contains(content, "case") {
 		evidence = append(evidence, "Factory switch-case pattern")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getRepositoryEvidence(content string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(content, "Repository") {
 		evidence = append(evidence, "Repository class naming")
 	}
@@ -808,13 +808,13 @@ func (apd *ArchitecturePatternDetector) getRepositoryEvidence(content string) []
 	if strings.Contains(content, "interface") {
 		evidence = append(evidence, "Repository interface")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getObserverEvidence(content string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(content, "addEventListener") {
 		evidence = append(evidence, "Event listeners")
 	}
@@ -824,13 +824,13 @@ func (apd *ArchitecturePatternDetector) getObserverEvidence(content string) []st
 	if strings.Contains(content, "subscribe") {
 		evidence = append(evidence, "Observer subscription")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getHOCEvidence(content string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(content, "with") && strings.Contains(content, "Component") {
 		evidence = append(evidence, "HOC naming convention")
 	}
@@ -840,13 +840,13 @@ func (apd *ArchitecturePatternDetector) getHOCEvidence(content string) []string 
 	if strings.Contains(content, "enhance") {
 		evidence = append(evidence, "Component enhancement pattern")
 	}
-	
+
 	return evidence
 }
 
 func (apd *ArchitecturePatternDetector) getHooksEvidence(content string) []string {
 	evidence := make([]string, 0)
-	
+
 	if strings.Contains(content, "useState") {
 		evidence = append(evidence, "useState hook usage")
 	}
@@ -859,7 +859,7 @@ func (apd *ArchitecturePatternDetector) getHooksEvidence(content string) []strin
 	if strings.Contains(content, "useContext") {
 		evidence = append(evidence, "Context hook usage")
 	}
-	
+
 	return evidence
 }
 
@@ -881,7 +881,7 @@ func (apd *ArchitecturePatternDetector) GetPrimaryFramework() *DetectionResult {
 	if len(apd.frameworks) == 0 {
 		return nil
 	}
-	
+
 	// Return the framework with highest confidence
 	primary := &apd.frameworks[0]
 	for i := range apd.frameworks {
@@ -889,13 +889,13 @@ func (apd *ArchitecturePatternDetector) GetPrimaryFramework() *DetectionResult {
 			primary = &apd.frameworks[i]
 		}
 	}
-	
+
 	return primary
 }
 
 func (apd *ArchitecturePatternDetector) GetPatternComplianceAssessment() map[string]interface{} {
 	assessment := make(map[string]interface{})
-	
+
 	// Framework compliance
 	primaryFramework := apd.GetPrimaryFramework()
 	if primaryFramework != nil {
@@ -903,17 +903,17 @@ func (apd *ArchitecturePatternDetector) GetPatternComplianceAssessment() map[str
 		assessment["framework_confidence"] = primaryFramework.Confidence
 		assessment["framework_compliance"] = apd.assessFrameworkCompliance(primaryFramework.Name)
 	}
-	
+
 	// Architectural style assessment
 	if len(apd.architectural) > 0 {
 		assessment["architectural_styles"] = len(apd.architectural)
 		assessment["architecture_clarity"] = apd.assessArchitecturalClarity()
 	}
-	
+
 	// Design pattern usage
 	assessment["design_patterns_count"] = len(apd.designPatterns)
 	assessment["pattern_consistency"] = apd.assessPatternConsistency()
-	
+
 	return assessment
 }
 
@@ -954,11 +954,11 @@ func (apd *ArchitecturePatternDetector) assessPatternConsistency() string {
 
 func (apd *ArchitecturePatternDetector) ExportToJSON() ([]byte, error) {
 	result := map[string]interface{}{
-		"frameworks":        apd.frameworks,
-		"architectural_styles": apd.architectural,
-		"design_patterns":   apd.designPatterns,
+		"frameworks":            apd.frameworks,
+		"architectural_styles":  apd.architectural,
+		"design_patterns":       apd.designPatterns,
 		"compliance_assessment": apd.GetPatternComplianceAssessment(),
 	}
-	
+
 	return json.MarshalIndent(result, "", "  ")
 }

@@ -13,10 +13,10 @@ import (
 
 // UpdateChecker analyzes package versions and provides update recommendations
 type UpdateChecker struct {
-	client        *http.Client
-	registryURL   string
-	cache         UpdateCache
-	semverParser  *SemanticVersionParser
+	client       *http.Client
+	registryURL  string
+	cache        UpdateCache
+	semverParser *SemanticVersionParser
 }
 
 // UpdateCache provides caching for package version data
@@ -28,41 +28,41 @@ type UpdateCache interface {
 
 // PackageVersionData represents cached version information from npm registry
 type PackageVersionData struct {
-	Name         string                    `json:"name"`
-	DistTags     map[string]string         `json:"dist-tags"`
-	Versions     map[string]PackageVersion `json:"versions"`
-	Time         map[string]string         `json:"time"`
-	LastFetched  time.Time                 `json:"last_fetched"`
+	Name        string                    `json:"name"`
+	DistTags    map[string]string         `json:"dist-tags"`
+	Versions    map[string]PackageVersion `json:"versions"`
+	Time        map[string]string         `json:"time"`
+	LastFetched time.Time                 `json:"last_fetched"`
 }
 
 // PackageVersion represents detailed version information
 type PackageVersion struct {
-	Version      string                 `json:"version"`
-	Description  string                 `json:"description"`
-	Dependencies map[string]string      `json:"dependencies"`
-	DevDependencies map[string]string   `json:"devDependencies"`
-	PeerDependencies map[string]string  `json:"peerDependencies"`
-	Engines      map[string]string      `json:"engines"`
-	Scripts      map[string]string      `json:"scripts"`
-	Keywords     []string               `json:"keywords"`
-	License      interface{}            `json:"license"`
-	Repository   interface{}            `json:"repository"`
-	Homepage     string                 `json:"homepage"`
-	Bugs         interface{}            `json:"bugs"`
-	Author       interface{}            `json:"author"`
-	Maintainers  []interface{}          `json:"maintainers"`
-	Dist         PackageDistribution    `json:"dist"`
-	PublishTime  time.Time              `json:"publish_time"`
-	Deprecated   string                 `json:"deprecated,omitempty"`
+	Version          string              `json:"version"`
+	Description      string              `json:"description"`
+	Dependencies     map[string]string   `json:"dependencies"`
+	DevDependencies  map[string]string   `json:"devDependencies"`
+	PeerDependencies map[string]string   `json:"peerDependencies"`
+	Engines          map[string]string   `json:"engines"`
+	Scripts          map[string]string   `json:"scripts"`
+	Keywords         []string            `json:"keywords"`
+	License          interface{}         `json:"license"`
+	Repository       interface{}         `json:"repository"`
+	Homepage         string              `json:"homepage"`
+	Bugs             interface{}         `json:"bugs"`
+	Author           interface{}         `json:"author"`
+	Maintainers      []interface{}       `json:"maintainers"`
+	Dist             PackageDistribution `json:"dist"`
+	PublishTime      time.Time           `json:"publish_time"`
+	Deprecated       string              `json:"deprecated,omitempty"`
 }
 
 // PackageDistribution represents package distribution information
 type PackageDistribution struct {
-	Tarball    string `json:"tarball"`
-	Shasum     string `json:"shasum"`
-	Integrity  string `json:"integrity"`
-	FileCount  int    `json:"fileCount"`
-	UnpackedSize int64 `json:"unpackedSize"`
+	Tarball      string `json:"tarball"`
+	Shasum       string `json:"shasum"`
+	Integrity    string `json:"integrity"`
+	FileCount    int    `json:"fileCount"`
+	UnpackedSize int64  `json:"unpackedSize"`
 }
 
 // SemanticVersionParser handles semantic version parsing and comparison
@@ -85,31 +85,31 @@ type SemanticVersion struct {
 
 // UpdateCompatibility represents compatibility assessment for updates
 type UpdateCompatibility struct {
-	Level              string                 `json:"level"`                // safe, minor-risk, major-risk, breaking
-	BreakingChanges    []BreakingChange       `json:"breaking_changes"`
+	Level               string                `json:"level"` // safe, minor-risk, major-risk, breaking
+	BreakingChanges     []BreakingChange      `json:"breaking_changes"`
 	DependencyConflicts []DependencyConflict  `json:"dependency_conflicts"`
-	PeerConflicts      []PeerDependencyIssue `json:"peer_conflicts"`
+	PeerConflicts       []PeerDependencyIssue `json:"peer_conflicts"`
 	EngineCompatibility EngineCompatibility   `json:"engine_compatibility"`
-	RiskScore          float64               `json:"risk_score"` // 0-1 scale
-	Recommendations    []string              `json:"recommendations"`
+	RiskScore           float64               `json:"risk_score"` // 0-1 scale
+	Recommendations     []string              `json:"recommendations"`
 }
 
 // BreakingChange represents detected breaking changes
 type BreakingChange struct {
-	Type        string `json:"type"`        // api, dependency, behavior, deprecation
+	Type        string `json:"type"` // api, dependency, behavior, deprecation
 	Description string `json:"description"`
-	Severity    string `json:"severity"`    // low, medium, high, critical
-	Source      string `json:"source"`      // changelog, semver, analysis
+	Severity    string `json:"severity"` // low, medium, high, critical
+	Source      string `json:"source"`   // changelog, semver, analysis
 	Mitigation  string `json:"mitigation"`
 }
 
 // DependencyConflict represents conflicts with other dependencies
 type DependencyConflict struct {
-	Package      string `json:"package"`
-	CurrentRange string `json:"current_range"`
+	Package       string `json:"package"`
+	CurrentRange  string `json:"current_range"`
 	RequiredRange string `json:"required_range"`
-	ConflictType string `json:"conflict_type"` // version, peer, engine
-	Resolution   string `json:"resolution"`
+	ConflictType  string `json:"conflict_type"` // version, peer, engine
+	Resolution    string `json:"resolution"`
 }
 
 // PeerDependencyIssue represents peer dependency compatibility issues
@@ -123,29 +123,29 @@ type PeerDependencyIssue struct {
 
 // EngineCompatibility represents Node.js/npm engine compatibility
 type EngineCompatibility struct {
-	NodeCompatible bool   `json:"node_compatible"`
-	NPMCompatible  bool   `json:"npm_compatible"`
-	NodeCurrent    string `json:"node_current"`
-	NodeRequired   string `json:"node_required"`
-	NPMCurrent     string `json:"npm_current"`
-	NPMRequired    string `json:"npm_required"`
+	NodeCompatible bool     `json:"node_compatible"`
+	NPMCompatible  bool     `json:"npm_compatible"`
+	NodeCurrent    string   `json:"node_current"`
+	NodeRequired   string   `json:"node_required"`
+	NPMCurrent     string   `json:"npm_current"`
+	NPMRequired    string   `json:"npm_required"`
 	Issues         []string `json:"issues"`
 }
 
 // UpdateRecommendation represents a comprehensive update recommendation
 type UpdateRecommendation struct {
-	Package           string               `json:"package"`
-	CurrentVersion    string               `json:"current_version"`
+	Package            string              `json:"package"`
+	CurrentVersion     string              `json:"current_version"`
 	RecommendedVersion string              `json:"recommended_version"`
-	LatestVersion     string               `json:"latest_version"`
-	UpdateType        string               `json:"update_type"`     // patch, minor, major
-	Priority          string               `json:"priority"`        // low, medium, high, critical
-	SecurityUpdate    bool                 `json:"security_update"`
-	Compatibility     UpdateCompatibility  `json:"compatibility"`
-	Benefits          []string             `json:"benefits"`
-	Risks             []string             `json:"risks"`
-	EstimatedEffort   string               `json:"estimated_effort"` // low, medium, high
-	Timeline          string               `json:"timeline"`         // immediate, short-term, long-term
+	LatestVersion      string              `json:"latest_version"`
+	UpdateType         string              `json:"update_type"` // patch, minor, major
+	Priority           string              `json:"priority"`    // low, medium, high, critical
+	SecurityUpdate     bool                `json:"security_update"`
+	Compatibility      UpdateCompatibility `json:"compatibility"`
+	Benefits           []string            `json:"benefits"`
+	Risks              []string            `json:"risks"`
+	EstimatedEffort    string              `json:"estimated_effort"` // low, medium, high
+	Timeline           string              `json:"timeline"`         // immediate, short-term, long-term
 }
 
 // MemoryUpdateCache provides in-memory caching for update data

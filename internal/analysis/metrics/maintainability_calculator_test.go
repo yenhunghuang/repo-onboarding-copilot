@@ -11,7 +11,7 @@ import (
 
 func TestNewMaintainabilityCalculator(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	assert.NotNil(t, calculator)
 	assert.Equal(t, 85.0, calculator.config.GoodThreshold)
 	assert.Equal(t, 70.0, calculator.config.FairThreshold)
@@ -35,9 +35,9 @@ func TestNewMaintainabilityCalculatorWithConfig(t *testing.T) {
 		ReportTopN:       5,
 		MinFunctionLines: 5,
 	}
-	
+
 	calculator := NewMaintainabilityCalculatorWithConfig(config)
-	
+
 	assert.NotNil(t, calculator)
 	assert.Equal(t, config.GoodThreshold, calculator.config.GoodThreshold)
 	assert.Equal(t, config.FairThreshold, calculator.config.FairThreshold)
@@ -47,9 +47,9 @@ func TestNewMaintainabilityCalculatorWithConfig(t *testing.T) {
 
 func TestAnalyzeMaintainability_EmptyInput(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	metrics, err := calculator.AnalyzeMaintainability(context.Background(), []*ast.ParseResult{}, nil)
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, metrics)
 	assert.Equal(t, 100.0, metrics.OverallIndex) // Perfect score for no code
@@ -61,32 +61,32 @@ func TestAnalyzeMaintainability_EmptyInput(t *testing.T) {
 
 func TestAnalyzeMaintainability_ValidInput(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	parseResults := createMockParseResultsForMaintainability()
 	complexityMetrics := createMockComplexityMetricsForMaintainability()
-	
+
 	metrics, err := calculator.AnalyzeMaintainability(context.Background(), parseResults, complexityMetrics)
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, metrics)
-	
+
 	// Verify basic metrics structure
 	assert.GreaterOrEqual(t, metrics.OverallIndex, 0.0)
 	assert.LessOrEqual(t, metrics.OverallIndex, 100.0)
 	assert.NotEmpty(t, metrics.Classification)
 	assert.Greater(t, metrics.TotalFunctions, 0)
 	assert.Greater(t, metrics.TotalFiles, 0)
-	
+
 	// Verify component breakdown
 	assert.GreaterOrEqual(t, metrics.ComponentBreakdown.HalsteadVolume, 0.0)
 	assert.GreaterOrEqual(t, metrics.ComponentBreakdown.CyclomaticComplexity, 0.0)
 	assert.Greater(t, metrics.ComponentBreakdown.LinesOfCode, 0)
 	assert.GreaterOrEqual(t, metrics.ComponentBreakdown.CommentRatio, 0.0)
-	
+
 	// Verify breakdown by level
 	totalBreakdown := metrics.IndexByLevel.Good.Count + metrics.IndexByLevel.Fair.Count + metrics.IndexByLevel.Poor.Count
 	assert.Equal(t, metrics.TotalFunctions, totalBreakdown)
-	
+
 	// Verify recommendations are generated
 	assert.NotNil(t, metrics.ImprovementSuggestions)
 	assert.NotNil(t, metrics.Summary)
@@ -95,7 +95,7 @@ func TestAnalyzeMaintainability_ValidInput(t *testing.T) {
 
 func TestCalculateHalsteadMetrics(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	function := ast.FunctionInfo{
 		Name:      "testFunction",
 		StartLine: 1,
@@ -106,14 +106,14 @@ func TestCalculateHalsteadMetrics(t *testing.T) {
 		},
 		IsAsync: true,
 	}
-	
+
 	result := &ast.ParseResult{
 		FilePath: "test.js",
 		Language: "javascript",
 	}
-	
+
 	halsteadMetrics := calculator.calculateHalsteadMetrics(function, result)
-	
+
 	assert.Greater(t, halsteadMetrics.UniqueOperators, 0)
 	assert.Greater(t, halsteadMetrics.UniqueOperands, 0)
 	assert.Greater(t, halsteadMetrics.TotalOperators, 0)
@@ -129,7 +129,7 @@ func TestCalculateHalsteadMetrics(t *testing.T) {
 
 func TestGetCyclomaticComplexity(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	function := ast.FunctionInfo{
 		Name:      "testFunction",
 		StartLine: 10,
@@ -138,7 +138,7 @@ func TestGetCyclomaticComplexity(t *testing.T) {
 			{Name: "param1", Type: "string"},
 		},
 	}
-	
+
 	// Test with existing complexity metrics
 	complexityMetrics := &ComplexityMetrics{
 		FunctionMetrics: []FunctionComplexity{
@@ -149,10 +149,10 @@ func TestGetCyclomaticComplexity(t *testing.T) {
 			},
 		},
 	}
-	
+
 	complexity := calculator.getCyclomaticComplexity(function, complexityMetrics)
 	assert.Equal(t, 5, complexity)
-	
+
 	// Test with nil complexity metrics (fallback)
 	complexityFallback := calculator.getCyclomaticComplexity(function, nil)
 	assert.GreaterOrEqual(t, complexityFallback, 1)
@@ -161,12 +161,12 @@ func TestGetCyclomaticComplexity(t *testing.T) {
 
 func TestCalculateCommentRatio(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	result := &ast.ParseResult{
 		FilePath: "test.js",
 		Language: "javascript",
 	}
-	
+
 	tests := []struct {
 		name     string
 		function ast.FunctionInfo
@@ -186,9 +186,9 @@ func TestCalculateCommentRatio(t *testing.T) {
 		{
 			name: "large_exported_function",
 			function: ast.FunctionInfo{
-				Name:       "largeFunc",
-				StartLine:  1,
-				EndLine:    60,
+				Name:      "largeFunc",
+				StartLine: 1,
+				EndLine:   60,
 				Parameters: []ast.ParameterInfo{
 					{Name: "param1", Type: "string"},
 					{Name: "param2", Type: "object"},
@@ -202,7 +202,7 @@ func TestCalculateCommentRatio(t *testing.T) {
 			expected: 0.20, // Around 20%
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ratio := calculator.calculateCommentRatio(tt.function, result)
@@ -215,41 +215,41 @@ func TestCalculateCommentRatio(t *testing.T) {
 
 func TestCalculateMaintainabilityIndex(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	tests := []struct {
-		name               string
-		halsteadVolume     float64
+		name                 string
+		halsteadVolume       float64
 		cyclomaticComplexity float64
-		linesOfCode        float64
-		commentRatio       float64
-		expectedRange      [2]float64 // [min, max]
+		linesOfCode          float64
+		commentRatio         float64
+		expectedRange        [2]float64 // [min, max]
 	}{
 		{
-			name:               "simple_function",
-			halsteadVolume:     100.0,
+			name:                 "simple_function",
+			halsteadVolume:       100.0,
 			cyclomaticComplexity: 2.0,
-			linesOfCode:        10.0,
-			commentRatio:       0.15,
-			expectedRange:      [2]float64{80.0, 100.0}, // Actually gets high score due to small values
+			linesOfCode:          10.0,
+			commentRatio:         0.15,
+			expectedRange:        [2]float64{80.0, 100.0}, // Actually gets high score due to small values
 		},
 		{
-			name:               "complex_function",
-			halsteadVolume:     2000.0,
+			name:                 "complex_function",
+			halsteadVolume:       2000.0,
 			cyclomaticComplexity: 15.0,
-			linesOfCode:        100.0,
-			commentRatio:       0.05,
-			expectedRange:      [2]float64{50.0, 70.0}, // Fair maintainability
+			linesOfCode:          100.0,
+			commentRatio:         0.05,
+			expectedRange:        [2]float64{50.0, 70.0}, // Fair maintainability
 		},
 		{
-			name:               "well_documented_function",
-			halsteadVolume:     500.0,
+			name:                 "well_documented_function",
+			halsteadVolume:       500.0,
 			cyclomaticComplexity: 5.0,
-			linesOfCode:        30.0,
-			commentRatio:       0.25,
-			expectedRange:      [2]float64{85.0, 100.0}, // Good maintainability due to good documentation
+			linesOfCode:          30.0,
+			commentRatio:         0.25,
+			expectedRange:        [2]float64{85.0, 100.0}, // Good maintainability due to good documentation
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			index := calculator.calculateMaintainabilityIndex(
@@ -258,7 +258,7 @@ func TestCalculateMaintainabilityIndex(t *testing.T) {
 				tt.linesOfCode,
 				tt.commentRatio,
 			)
-			
+
 			assert.GreaterOrEqual(t, index, 0.0)
 			assert.LessOrEqual(t, index, 100.0)
 			assert.GreaterOrEqual(t, index, tt.expectedRange[0])
@@ -269,7 +269,7 @@ func TestCalculateMaintainabilityIndex(t *testing.T) {
 
 func TestClassifyMaintainability(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	tests := []struct {
 		index    float64
 		expected string
@@ -283,7 +283,7 @@ func TestClassifyMaintainability(t *testing.T) {
 		{0.0, "Poor"},
 		{100.0, "Good"},
 	}
-	
+
 	for _, tt := range tests {
 		classification := calculator.classifyMaintainability(tt.index)
 		assert.Equal(t, tt.expected, classification, "Index %.1f should be classified as %s", tt.index, tt.expected)
@@ -292,7 +292,7 @@ func TestClassifyMaintainability(t *testing.T) {
 
 func TestShouldAnalyzeFunction(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	tests := []struct {
 		name     string
 		function ast.FunctionInfo
@@ -335,7 +335,7 @@ func TestShouldAnalyzeFunction(t *testing.T) {
 			expected: true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := calculator.shouldAnalyzeFunction(tt.function)
@@ -346,7 +346,7 @@ func TestShouldAnalyzeFunction(t *testing.T) {
 
 func TestGenerateMaintainabilityBreakdown(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	functions := []FunctionMaintainability{
 		{Name: "goodFunc1", MaintainabilityIndex: 90.0, Classification: "Good"},
 		{Name: "goodFunc2", MaintainabilityIndex: 88.0, Classification: "Good"},
@@ -354,24 +354,24 @@ func TestGenerateMaintainabilityBreakdown(t *testing.T) {
 		{Name: "fairFunc2", MaintainabilityIndex: 72.0, Classification: "Fair"},
 		{Name: "poorFunc1", MaintainabilityIndex: 65.0, Classification: "Poor"},
 	}
-	
+
 	breakdown := calculator.generateMaintainabilityBreakdown(functions)
-	
+
 	// Check counts
 	assert.Equal(t, 2, breakdown.Good.Count)
 	assert.Equal(t, 2, breakdown.Fair.Count)
 	assert.Equal(t, 1, breakdown.Poor.Count)
-	
+
 	// Check percentages
-	assert.InDelta(t, 40.0, breakdown.Good.Percentage, 0.1)  // 2/5 = 40%
-	assert.InDelta(t, 40.0, breakdown.Fair.Percentage, 0.1)  // 2/5 = 40%
-	assert.InDelta(t, 20.0, breakdown.Poor.Percentage, 0.1)  // 1/5 = 20%
-	
+	assert.InDelta(t, 40.0, breakdown.Good.Percentage, 0.1) // 2/5 = 40%
+	assert.InDelta(t, 40.0, breakdown.Fair.Percentage, 0.1) // 2/5 = 40%
+	assert.InDelta(t, 20.0, breakdown.Poor.Percentage, 0.1) // 1/5 = 20%
+
 	// Check averages
-	assert.InDelta(t, 89.0, breakdown.Good.AverageIndex, 0.1)  // (90+88)/2 = 89
-	assert.InDelta(t, 73.5, breakdown.Fair.AverageIndex, 0.1)  // (75+72)/2 = 73.5
-	assert.InDelta(t, 65.0, breakdown.Poor.AverageIndex, 0.1)  // 65/1 = 65
-	
+	assert.InDelta(t, 89.0, breakdown.Good.AverageIndex, 0.1) // (90+88)/2 = 89
+	assert.InDelta(t, 73.5, breakdown.Fair.AverageIndex, 0.1) // (75+72)/2 = 73.5
+	assert.InDelta(t, 65.0, breakdown.Poor.AverageIndex, 0.1) // 65/1 = 65
+
 	// Check function names
 	assert.Contains(t, breakdown.Good.Functions, "goodFunc1")
 	assert.Contains(t, breakdown.Good.Functions, "goodFunc2")
@@ -382,20 +382,20 @@ func TestGenerateMaintainabilityBreakdown(t *testing.T) {
 
 func TestIdentifyImprovementFactors(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	tests := []struct {
-		name             string
-		components       MaintainabilityComponents
-		index            float64
-		expectedFactors  []string
+		name            string
+		components      MaintainabilityComponents
+		index           float64
+		expectedFactors []string
 	}{
 		{
 			name: "high_complexity_function",
 			components: MaintainabilityComponents{
 				CyclomaticComplexity: 15.0,
-				LinesOfCode:         30,
-				CommentRatio:        0.12,
-				HalsteadVolume:      800.0,
+				LinesOfCode:          30,
+				CommentRatio:         0.12,
+				HalsteadVolume:       800.0,
 			},
 			index:           65.0,
 			expectedFactors: []string{"High cyclomatic complexity", "Multiple maintainability issues"},
@@ -404,9 +404,9 @@ func TestIdentifyImprovementFactors(t *testing.T) {
 			name: "large_undocumented_function",
 			components: MaintainabilityComponents{
 				CyclomaticComplexity: 5.0,
-				LinesOfCode:         80,
-				CommentRatio:        0.02,
-				HalsteadVolume:      600.0,
+				LinesOfCode:          80,
+				CommentRatio:         0.02,
+				HalsteadVolume:       600.0,
 			},
 			index:           68.0,
 			expectedFactors: []string{"Function too large", "Insufficient documentation", "Multiple maintainability issues"},
@@ -415,19 +415,19 @@ func TestIdentifyImprovementFactors(t *testing.T) {
 			name: "complex_algorithmic_function",
 			components: MaintainabilityComponents{
 				CyclomaticComplexity: 12.0,
-				LinesOfCode:         40,
-				CommentRatio:        0.08,
-				HalsteadVolume:      1200.0,
+				LinesOfCode:          40,
+				CommentRatio:         0.08,
+				HalsteadVolume:       1200.0,
 			},
 			index:           60.0,
 			expectedFactors: []string{"High cyclomatic complexity", "Insufficient documentation", "Complex algorithmic logic", "Multiple maintainability issues"},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			factors := calculator.identifyImprovementFactors(tt.components, tt.index)
-			
+
 			for _, expectedFactor := range tt.expectedFactors {
 				assert.Contains(t, factors, expectedFactor)
 			}
@@ -437,7 +437,7 @@ func TestIdentifyImprovementFactors(t *testing.T) {
 
 func TestGenerateRecommendedActions(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	tests := []struct {
 		name            string
 		components      MaintainabilityComponents
@@ -448,9 +448,9 @@ func TestGenerateRecommendedActions(t *testing.T) {
 			name: "complex_large_function",
 			components: MaintainabilityComponents{
 				CyclomaticComplexity: 12.0,
-				LinesOfCode:         60,
-				CommentRatio:        0.05,
-				HalsteadVolume:      800.0,
+				LinesOfCode:          60,
+				CommentRatio:         0.05,
+				HalsteadVolume:       800.0,
 			},
 			function: ast.FunctionInfo{
 				Name: "complexFunc",
@@ -472,9 +472,9 @@ func TestGenerateRecommendedActions(t *testing.T) {
 			name: "async_function_with_many_params",
 			components: MaintainabilityComponents{
 				CyclomaticComplexity: 8.0,
-				LinesOfCode:         25,
-				CommentRatio:        0.15,
-				HalsteadVolume:      1100.0,
+				LinesOfCode:          25,
+				CommentRatio:         0.15,
+				HalsteadVolume:       1100.0,
 			},
 			function: ast.FunctionInfo{
 				Name: "asyncFunc",
@@ -493,11 +493,11 @@ func TestGenerateRecommendedActions(t *testing.T) {
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			actions := calculator.generateRecommendedActions(tt.components, tt.function)
-			
+
 			for _, expectedAction := range tt.expectedActions {
 				assert.Contains(t, actions, expectedAction)
 			}
@@ -507,46 +507,46 @@ func TestGenerateRecommendedActions(t *testing.T) {
 
 func TestGenerateImprovementSuggestions(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	functions := []FunctionMaintainability{
 		{
-			Name: "poorFunc",
-			FilePath: "test1.js",
+			Name:                 "poorFunc",
+			FilePath:             "test1.js",
 			MaintainabilityIndex: 60.0,
-			Classification: "Poor",
-			RecommendedActions: []string{"Reduce complexity", "Add documentation"},
+			Classification:       "Poor",
+			RecommendedActions:   []string{"Reduce complexity", "Add documentation"},
 			Components: MaintainabilityComponents{
-				LinesOfCode: 80,
+				LinesOfCode:  80,
 				CommentRatio: 0.02,
 			},
 		},
 		{
-			Name: "largeFunc",
-			FilePath: "test2.js",
+			Name:                 "largeFunc",
+			FilePath:             "test2.js",
 			MaintainabilityIndex: 75.0,
-			Classification: "Fair",
+			Classification:       "Fair",
 			Components: MaintainabilityComponents{
-				LinesOfCode: 60,
+				LinesOfCode:  60,
 				CommentRatio: 0.10,
 			},
 		},
 	}
-	
+
 	fileMetrics := map[string]FileMaintainability{
 		"test1.js": {
-			FilePath: "test1.js",
+			FilePath:   "test1.js",
 			Components: MaintainabilityComponents{CommentRatio: 0.03},
 		},
 		"test2.js": {
-			FilePath: "test2.js",
+			FilePath:   "test2.js",
 			Components: MaintainabilityComponents{CommentRatio: 0.02},
 		},
 	}
-	
+
 	improvements := calculator.generateImprovementSuggestions(functions, fileMetrics)
-	
+
 	assert.Greater(t, len(improvements), 0)
-	
+
 	// Check for critical improvement (poor function)
 	foundCritical := false
 	for _, improvement := range improvements {
@@ -559,7 +559,7 @@ func TestGenerateImprovementSuggestions(t *testing.T) {
 		}
 	}
 	assert.True(t, foundCritical, "Should find critical improvement for poor function")
-	
+
 	// Check for documentation improvement
 	foundDocumentation := false
 	for _, improvement := range improvements {
@@ -571,7 +571,7 @@ func TestGenerateImprovementSuggestions(t *testing.T) {
 		}
 	}
 	assert.True(t, foundDocumentation, "Should find documentation improvement")
-	
+
 	// Check for function decomposition
 	foundDecomposition := false
 	for _, improvement := range improvements {
@@ -587,7 +587,7 @@ func TestGenerateImprovementSuggestions(t *testing.T) {
 
 func TestCreateMaintainabilitySummary(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	metrics := &MaintainabilityMetrics{
 		ImprovementSuggestions: []MaintainabilityImprovement{
 			{Priority: "critical", ImpactEstimate: 10.0},
@@ -596,24 +596,24 @@ func TestCreateMaintainabilitySummary(t *testing.T) {
 			{Priority: "medium", ImpactEstimate: 4.0},
 		},
 	}
-	
+
 	// Set a top recommendation
 	metrics.ImprovementSuggestions[0].Description = "Fix critical function"
-	
+
 	summary := calculator.createMaintainabilitySummary(metrics)
-	
+
 	assert.Equal(t, 4, summary.TotalIssues)
 	assert.Equal(t, 2, summary.CriticalIssues)
 	assert.Equal(t, 1, summary.HighPriorityIssues)
 	assert.InDelta(t, 28.0, summary.ImprovementPotential, 0.1) // 10+8+6+4 = 28
 	assert.Equal(t, "Fix critical function", summary.TopRecommendation)
-	assert.Equal(t, 22, summary.EstimatedEffortHours) // 2*8 + 1*4 + 1*2 = 22 (corrected calculation)
+	assert.Equal(t, 22, summary.EstimatedEffortHours)            // 2*8 + 1*4 + 1*2 = 22 (corrected calculation)
 	assert.InDelta(t, 25.0, summary.PredictedIndexIncrease, 0.1) // Capped at 25
 }
 
 func TestGenerateBenchmarkComparison(t *testing.T) {
 	calculator := NewMaintainabilityCalculator()
-	
+
 	tests := []struct {
 		overallIndex    float64
 		expectedRanking string
@@ -623,15 +623,15 @@ func TestGenerateBenchmarkComparison(t *testing.T) {
 		{70.0, "average"},
 		{60.0, "below_average"},
 	}
-	
+
 	for _, tt := range tests {
 		benchmark := calculator.generateBenchmarkComparison(tt.overallIndex)
-		
+
 		assert.Equal(t, tt.expectedRanking, benchmark.ProjectRanking)
 		assert.Greater(t, benchmark.IndustryAverage, 0.0)
 		assert.Greater(t, len(benchmark.SimilarProjects), 0)
 		assert.NotEmpty(t, benchmark.BenchmarkSource)
-		
+
 		expectedGap := tt.overallIndex - benchmark.IndustryAverage
 		assert.InDelta(t, expectedGap, benchmark.CompetitiveGap, 0.1)
 	}
@@ -646,9 +646,9 @@ func createMockParseResultsForMaintainability() []*ast.ParseResult {
 			Language: "javascript",
 			Functions: []ast.FunctionInfo{
 				{
-					Name:       "simpleFunction",
-					StartLine:  1,
-					EndLine:    15,
+					Name:      "simpleFunction",
+					StartLine: 1,
+					EndLine:   15,
 					Parameters: []ast.ParameterInfo{
 						{Name: "param1", Type: "string"},
 					},
@@ -656,9 +656,9 @@ func createMockParseResultsForMaintainability() []*ast.ParseResult {
 					IsExported: true,
 				},
 				{
-					Name:       "complexFunction",
-					StartLine:  20,
-					EndLine:    80,
+					Name:      "complexFunction",
+					StartLine: 20,
+					EndLine:   80,
 					Parameters: []ast.ParameterInfo{
 						{Name: "param1", Type: "object"},
 						{Name: "param2", Type: "array"},
@@ -677,9 +677,9 @@ func createMockParseResultsForMaintainability() []*ast.ParseResult {
 			Language: "typescript",
 			Functions: []ast.FunctionInfo{
 				{
-					Name:       "mediumFunction",
-					StartLine:  1,
-					EndLine:    35,
+					Name:      "mediumFunction",
+					StartLine: 1,
+					EndLine:   35,
 					Parameters: []ast.ParameterInfo{
 						{Name: "data", Type: "object"},
 						{Name: "options", Type: "object"},

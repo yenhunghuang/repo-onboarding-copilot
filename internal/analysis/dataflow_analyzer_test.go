@@ -10,11 +10,11 @@ func TestDataFlowAnalyzer_AnalyzeStateFlow(t *testing.T) {
 	dfa := NewDataFlowAnalyzer(ci)
 
 	tests := []struct {
-		name           string
-		filePath       string
-		content        string
-		expectedNodes  int
-		expectedHook   string
+		name          string
+		filePath      string
+		content       string
+		expectedNodes int
+		expectedHook  string
 	}{
 		{
 			name:     "useState Hook Detection",
@@ -95,10 +95,10 @@ func TestDataFlowAnalyzer_AnalyzeAPIFlow(t *testing.T) {
 	dfa := NewDataFlowAnalyzer(ci)
 
 	tests := []struct {
-		name         string
-		filePath     string
-		content      string
-		expectedAPIs int
+		name           string
+		filePath       string
+		content        string
+		expectedAPIs   int
 		expectedMethod string
 	}{
 		{
@@ -115,7 +115,7 @@ export const fetchUser = async (id) => {
   return response.json();
 };
 			`,
-			expectedAPIs: 2,
+			expectedAPIs:   2,
 			expectedMethod: "GET",
 		},
 		{
@@ -140,7 +140,7 @@ export const deletePost = (id) => {
   return axios.delete('/api/posts/' + id);
 };
 			`,
-			expectedAPIs: 4,
+			expectedAPIs:   4,
 			expectedMethod: "DELETE", // Check the last one
 		},
 	}
@@ -242,11 +242,11 @@ func TestDataFlowAnalyzer_AnalyzeContextFlow(t *testing.T) {
 	dfa := NewDataFlowAnalyzer(ci)
 
 	tests := []struct {
-		name            string
-		filePath        string
-		content         string
-		expectedNodes   int
-		expectedEdges   int
+		name          string
+		filePath      string
+		content       string
+		expectedNodes int
+		expectedEdges int
 	}{
 		{
 			name:     "Context API Detection",
@@ -337,7 +337,7 @@ const ComplexComponent = () => {
 	}
 
 	bottlenecks := dfa.IdentifyStateManagementBottlenecks()
-	
+
 	// Should detect excessive local state
 	found := false
 	for _, bottleneck := range bottlenecks {
@@ -494,7 +494,7 @@ const UserProfile = ({ userId, onUserUpdate }) => {
 		t.Errorf("Expected at least 2 state nodes, got %d", stateNodes)
 	}
 
-	// Should detect API calls  
+	// Should detect API calls
 	if len(apiCalls) < 1 { // axios.get (fetch with POST body may not be detected)
 		t.Errorf("Expected at least 1 API call, got %d", len(apiCalls))
 	}
@@ -549,7 +549,7 @@ const response = await axios.get('/api/data');
 	// Verify it's valid JSON by checking it contains expected keys
 	jsonStr := string(jsonData)
 	expectedKeys := []string{"data_flow_graph", "state_patterns", "api_calls", "bottlenecks"}
-	
+
 	for _, key := range expectedKeys {
 		if !strings.Contains(jsonStr, key) {
 			t.Errorf("Expected JSON to contain key: %s", key)
@@ -579,7 +579,7 @@ func TestDataFlowAnalyzer_PatternDetectionHelpers(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var result bool
-			
+
 			switch tt.method {
 			case "containsUseState":
 				result = dfa.containsUseState(tt.line)
@@ -612,7 +612,7 @@ func TestDataFlowAnalyzer_StateManagementPatterns(t *testing.T) {
 	}
 
 	bottlenecks := dfa.IdentifyStateManagementBottlenecks()
-	
+
 	// Should detect prop drilling
 	foundPropDrilling := false
 	for _, bottleneck := range bottlenecks {

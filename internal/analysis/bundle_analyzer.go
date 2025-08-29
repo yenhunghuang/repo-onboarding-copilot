@@ -13,14 +13,14 @@ import (
 type BundleAnalyzer struct {
 	performanceAnalyzer *PerformanceAnalyzer
 	bundlerConfig       *BundlerConfig
-	budgets            PerformanceBudgets
-	bundlerConfigs     map[string]*BundlerConfig
+	budgets             PerformanceBudgets
+	bundlerConfigs      map[string]*BundlerConfig
 }
 
 // NewBundleAnalyzer creates a new bundle analyzer
 func NewBundleAnalyzer() *BundleAnalyzer {
 	defaultBudgets := getDefaultPerformanceBudgets()
-	
+
 	bundlerConfigs := map[string]*BundlerConfig{
 		"webpack": {
 			Type:                "webpack",
@@ -33,7 +33,7 @@ func NewBundleAnalyzer() *BundleAnalyzer {
 			OutputFormats:       []string{"js", "css"},
 		},
 		"rollup": {
-			Type:                "rollup", 
+			Type:                "rollup",
 			TreeShakingEnabled:  true,
 			CompressionEnabled:  true,
 			MinificationEnabled: false,
@@ -56,9 +56,9 @@ func NewBundleAnalyzer() *BundleAnalyzer {
 
 	return &BundleAnalyzer{
 		performanceAnalyzer: NewPerformanceAnalyzer(),
-		bundlerConfig: bundlerConfigs["webpack"], // default to webpack
-		budgets: *defaultBudgets,
-		bundlerConfigs: bundlerConfigs,
+		bundlerConfig:       bundlerConfigs["webpack"], // default to webpack
+		budgets:             *defaultBudgets,
+		bundlerConfigs:      bundlerConfigs,
 	}
 }
 
@@ -136,7 +136,7 @@ func (ba *BundleAnalyzer) AnalyzeBundle(ctx context.Context, dependencies []Depe
 func (ba *BundleAnalyzer) estimatePackageImpactFromDependency(dep Dependency) *PerformanceImpact {
 	// Basic estimation logic
 	baseSize := int64(50000) // 50KB default
-	
+
 	// Adjust based on package name patterns
 	if strings.Contains(dep.Name, "react") || strings.Contains(dep.Name, "vue") {
 		baseSize = 150000
@@ -167,7 +167,7 @@ func (ba *BundleAnalyzer) estimatePackageImpactFromDependency(dep Dependency) *P
 func (ba *BundleAnalyzer) estimatePackageImpact(pkg *GraphPackageInfo) *PerformanceImpact {
 	// Basic estimation logic
 	baseSize := int64(50000) // 50KB default
-	
+
 	// Adjust based on package name patterns
 	if strings.Contains(pkg.Name, "react") || strings.Contains(pkg.Name, "vue") {
 		baseSize = 150000
@@ -304,7 +304,7 @@ func (ba *BundleAnalyzer) performBudgetAnalysisLegacy(result *BundleAnalysisResu
 	if result.CompressedSize > ba.budgets.MaxBundleSize {
 		analysis.BundleSizeStatus = "fail"
 		analysis.OverBudgetBy = result.CompressedSize - ba.budgets.MaxBundleSize
-		
+
 		violation := BudgetViolation{
 			Metric:   "bundle_size",
 			Actual:   float64(result.CompressedSize),
@@ -324,12 +324,12 @@ func (ba *BundleAnalyzer) performBudgetAnalysisLegacy(result *BundleAnalysisResu
 		loadTime := result.LoadTimeAnalysis.NetworkWiFi.TotalTime
 		if loadTime > ba.budgets.MaxInitialLoadTime {
 			analysis.LoadTimeStatus = "fail"
-			
+
 			violation := BudgetViolation{
 				Metric:   "load_time",
 				Actual:   loadTime,
 				Budget:   ba.budgets.MaxInitialLoadTime,
-				Severity: ba.calculateViolationSeverity(loadTime/ba.budgets.MaxInitialLoadTime*100),
+				Severity: ba.calculateViolationSeverity(loadTime / ba.budgets.MaxInitialLoadTime * 100),
 				Impact:   ba.describeLoadTimeImpact(loadTime, ba.budgets.MaxInitialLoadTime),
 			}
 			analysis.Violations = append(analysis.Violations, violation)
@@ -421,26 +421,26 @@ func (ba *BundleAnalyzer) categorizePackage(packageName string) string {
 	name := strings.ToLower(packageName)
 
 	// Framework packages
-	if strings.Contains(name, "react") || strings.Contains(name, "vue") || 
-	   strings.Contains(name, "angular") || strings.Contains(name, "svelte") {
+	if strings.Contains(name, "react") || strings.Contains(name, "vue") ||
+		strings.Contains(name, "angular") || strings.Contains(name, "svelte") {
 		return "framework"
 	}
 
 	// Utility libraries
 	if strings.Contains(name, "lodash") || strings.Contains(name, "moment") ||
-	   strings.Contains(name, "date-fns") || strings.Contains(name, "ramda") {
+		strings.Contains(name, "date-fns") || strings.Contains(name, "ramda") {
 		return "utilities"
 	}
 
 	// Polyfills
 	if strings.Contains(name, "polyfill") || strings.Contains(name, "core-js") ||
-	   strings.Contains(name, "babel-runtime") {
+		strings.Contains(name, "babel-runtime") {
 		return "polyfills"
 	}
 
 	// Build tools and dev dependencies (shouldn't be in bundle)
 	if strings.Contains(name, "webpack") || strings.Contains(name, "babel") ||
-	   strings.Contains(name, "eslint") || strings.Contains(name, "typescript") {
+		strings.Contains(name, "eslint") || strings.Contains(name, "typescript") {
 		return "build-tools"
 	}
 
@@ -466,7 +466,7 @@ func (ba *BundleAnalyzer) generateBundleRecommendations(sizeAnalysis *SizeAnalys
 	if treeShakingAnalysis != nil && treeShakingAnalysis.PotentialSavings > 20 {
 		recommendations = append(recommendations, PerformanceRecommendation{
 			Type:        "tree-shaking",
-			Priority:    "high", 
+			Priority:    "high",
 			Description: fmt.Sprintf("Enable tree shaking to achieve %.1f%% bundle size reduction", treeShakingAnalysis.PotentialSavings),
 			ImpactScore: 80.0,
 		})
@@ -506,11 +506,11 @@ func (ba *BundleAnalyzer) generateBundleRecommendations(sizeAnalysis *SizeAnalys
 // PerformTreeShakingAnalysis analyzes the tree-shaking potential of the bundle
 func (ba *BundleAnalyzer) PerformTreeShakingAnalysis(ctx context.Context, packages []*GraphPackageInfo) (*TreeShakingAnalysis, error) {
 	analysis := &TreeShakingAnalysis{
-		TotalSize:         0,
-		TreeShakableSize:  0,
+		TotalSize:           0,
+		TreeShakableSize:    0,
 		NonTreeShakableSize: 0,
-		PackageAnalysis:   make([]PackageTreeShakingInfo, 0),
-		Recommendations:   make([]string, 0),
+		PackageAnalysis:     make([]PackageTreeShakingInfo, 0),
+		Recommendations:     make([]string, 0),
 	}
 
 	for _, pkg := range packages {
@@ -526,13 +526,13 @@ func (ba *BundleAnalyzer) PerformTreeShakingAnalysis(ctx context.Context, packag
 		}
 
 		info := PackageTreeShakingInfo{
-			PackageName:       pkg.Name,
-			TotalSize:         metrics.RawSize,
-			IsTreeShakable:    metrics.IsTreeShakable,
-			HasSideEffects:    metrics.HasSideEffects,
-			TreeShakableSize:  0,
-			TreeShakingRatio:  0,
-			Recommendations:   make([]string, 0),
+			PackageName:      pkg.Name,
+			TotalSize:        metrics.RawSize,
+			IsTreeShakable:   metrics.IsTreeShakable,
+			HasSideEffects:   metrics.HasSideEffects,
+			TreeShakableSize: 0,
+			TreeShakingRatio: 0,
+			Recommendations:  make([]string, 0),
 		}
 
 		if metrics.IsTreeShakable {
@@ -566,12 +566,12 @@ func (ba *BundleAnalyzer) PerformTreeShakingAnalysis(ctx context.Context, packag
 
 // TreeShakingAnalysis contains tree-shaking analysis results
 type TreeShakingAnalysis struct {
-	TotalSize           int64                      `json:"total_size"`
-	TreeShakableSize    int64                      `json:"tree_shakable_size"`
-	NonTreeShakableSize int64                      `json:"non_tree_shakable_size"`
-	PotentialSavings    float64                    `json:"potential_savings"` // percentage
-	PackageAnalysis     []PackageTreeShakingInfo   `json:"package_analysis"`
-	Recommendations     []string                   `json:"recommendations"`
+	TotalSize           int64                    `json:"total_size"`
+	TreeShakableSize    int64                    `json:"tree_shakable_size"`
+	NonTreeShakableSize int64                    `json:"non_tree_shakable_size"`
+	PotentialSavings    float64                  `json:"potential_savings"` // percentage
+	PackageAnalysis     []PackageTreeShakingInfo `json:"package_analysis"`
+	Recommendations     []string                 `json:"recommendations"`
 }
 
 // PackageTreeShakingInfo contains tree-shaking info for a specific package
@@ -608,12 +608,12 @@ func (ba *BundleAnalyzer) GetPerformanceBudgets() *PerformanceBudgets {
 // analyzeTreeShakingPotential analyzes tree-shaking potential from dependencies
 func (ba *BundleAnalyzer) analyzeTreeShakingPotential(dependencies []Dependency) *TreeShakingAnalysis {
 	analysis := &TreeShakingAnalysis{
-		PackageAnalysis: make([]PackageTreeShakingInfo, 0),
-		PotentialSavings: 0.0,
-		TotalSize: 0,
-		TreeShakableSize: 0,
+		PackageAnalysis:     make([]PackageTreeShakingInfo, 0),
+		PotentialSavings:    0.0,
+		TotalSize:           0,
+		TreeShakableSize:    0,
 		NonTreeShakableSize: 0,
-		Recommendations: make([]string, 0),
+		Recommendations:     make([]string, 0),
 	}
 
 	totalSavings := 0.0
@@ -669,7 +669,7 @@ func (ba *BundleAnalyzer) analyzeTreeShakingPotential(dependencies []Dependency)
 // Helper methods for tree-shaking analysis
 func (ba *BundleAnalyzer) isPackageTreeShakable(packageName string) bool {
 	name := strings.ToLower(packageName)
-	
+
 	// Known tree-shakable packages
 	treeShakablePackages := map[string]bool{
 		"lodash":   true,
@@ -678,7 +678,7 @@ func (ba *BundleAnalyzer) isPackageTreeShakable(packageName string) bool {
 		"ramda":    true,
 	}
 
-	// Known non-tree-shakable packages  
+	// Known non-tree-shakable packages
 	nonTreeShakablePackages := map[string]bool{
 		"moment": true,
 		"jquery": true,
@@ -697,7 +697,7 @@ func (ba *BundleAnalyzer) isPackageTreeShakable(packageName string) bool {
 
 func (ba *BundleAnalyzer) estimatePackageSize(packageName string) int64 {
 	name := strings.ToLower(packageName)
-	
+
 	// Size estimates for common packages
 	if strings.Contains(name, "react") || strings.Contains(name, "vue") {
 		return 150000 // 150KB
@@ -706,13 +706,13 @@ func (ba *BundleAnalyzer) estimatePackageSize(packageName string) int64 {
 	} else if strings.HasPrefix(name, "@types/") {
 		return 5000 // 5KB
 	}
-	
+
 	return 50000 // 50KB default
 }
 
 func (ba *BundleAnalyzer) calculateTreeShakingPotential(packageName string) float64 {
 	name := strings.ToLower(packageName)
-	
+
 	// Tree-shaking potential estimates
 	if strings.Contains(name, "lodash") {
 		return 40.0 // Can save ~40% with selective imports
@@ -721,13 +721,13 @@ func (ba *BundleAnalyzer) calculateTreeShakingPotential(packageName string) floa
 	} else if strings.Contains(name, "date-fns") {
 		return 35.0 // Can save ~35% with selective imports
 	}
-	
+
 	return 15.0 // Default 15% savings
 }
 
 func (ba *BundleAnalyzer) getTreeShakingTechniques(packageName string) []string {
 	name := strings.ToLower(packageName)
-	
+
 	if strings.Contains(name, "lodash") {
 		return []string{
 			"Import specific functions",
@@ -747,7 +747,7 @@ func (ba *BundleAnalyzer) getTreeShakingTechniques(packageName string) []string 
 	} else if strings.Contains(name, "moment") {
 		return []string{} // Not tree-shakable
 	}
-	
+
 	return []string{"Use ES6 imports", "Enable tree-shaking in bundler"}
 }
 
@@ -760,11 +760,11 @@ func (ba *BundleAnalyzer) calculateSizeBreakdown(ctx context.Context, dependenci
 	for _, dep := range dependencies {
 		estimatedSize := ba.estimatePackageSize(dep.Name)
 		totalSize += estimatedSize
-		
+
 		// Categorize package
 		category := ba.categorizePackage(dep.Name)
 		byCategory[category] += estimatedSize
-		
+
 		if dep.Type != "devDependencies" {
 			productionSize += estimatedSize
 		}
@@ -785,18 +785,17 @@ func (ba *BundleAnalyzer) calculateViolationSeverityFromSize(actual, budget int6
 	}
 
 	overagePercent := float64(actual-budget) / float64(budget) * 100
-	
+
 	if overagePercent > 150 {
 		return "critical"
 	} else if overagePercent > 50 {
-		return "high" 
+		return "high"
 	} else if overagePercent > 10 {
 		return "medium"
 	}
-	
+
 	return "low"
 }
-
 
 func (ba *BundleAnalyzer) isHigherSeverity(newSeverity, currentMax string) bool {
 	severityLevels := map[string]int{
@@ -806,7 +805,7 @@ func (ba *BundleAnalyzer) isHigherSeverity(newSeverity, currentMax string) bool 
 		"high":     3,
 		"critical": 4,
 	}
-	
+
 	return severityLevels[newSeverity] > severityLevels[currentMax]
 }
 
@@ -814,7 +813,7 @@ func (ba *BundleAnalyzer) describeSizeImpact(actual, budget int64) string {
 	if actual <= budget {
 		return "Within budget"
 	}
-	
+
 	overBy := actual - budget
 	percentOver := float64(overBy) / float64(budget) * 100
 
@@ -825,7 +824,6 @@ func (ba *BundleAnalyzer) describeSizeImpact(actual, budget int64) string {
 	} else if percentOver > 20 {
 		return "Size moderately exceeds budget, may affect performance on slower connections"
 	}
-	
+
 	return "Size slightly exceeds budget, minimal performance impact"
 }
-

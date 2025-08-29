@@ -18,44 +18,44 @@ type PerformanceAnalyzer struct {
 // PerformanceConfig defines configuration parameters for performance analysis
 type PerformanceConfig struct {
 	// Complexity thresholds for performance assessment
-	NestedLoopThreshold      int     `yaml:"nested_loop_threshold" default:"2"`
-	QueryPatternThreshold    int     `yaml:"query_pattern_threshold" default:"3"`
-	DOMAccessThreshold       int     `yaml:"dom_access_threshold" default:"5"`
-	BundleSizeThresholdKB    int     `yaml:"bundle_size_threshold_kb" default:"500"`
-	ComponentComplexityMax   int     `yaml:"component_complexity_max" default:"15"`
-	
+	NestedLoopThreshold    int `yaml:"nested_loop_threshold" default:"2"`
+	QueryPatternThreshold  int `yaml:"query_pattern_threshold" default:"3"`
+	DOMAccessThreshold     int `yaml:"dom_access_threshold" default:"5"`
+	BundleSizeThresholdKB  int `yaml:"bundle_size_threshold_kb" default:"500"`
+	ComponentComplexityMax int `yaml:"component_complexity_max" default:"15"`
+
 	// Performance impact weights
-	AlgorithmicWeight        float64 `yaml:"algorithmic_weight" default:"0.35"`
-	MemoryWeight            float64 `yaml:"memory_weight" default:"0.25"`
-	NetworkWeight           float64 `yaml:"network_weight" default:"0.20"`
-	RenderWeight            float64 `yaml:"render_weight" default:"0.15"`
-	BundleWeight            float64 `yaml:"bundle_weight" default:"0.05"`
+	AlgorithmicWeight float64 `yaml:"algorithmic_weight" default:"0.35"`
+	MemoryWeight      float64 `yaml:"memory_weight" default:"0.25"`
+	NetworkWeight     float64 `yaml:"network_weight" default:"0.20"`
+	RenderWeight      float64 `yaml:"render_weight" default:"0.15"`
+	BundleWeight      float64 `yaml:"bundle_weight" default:"0.05"`
 }
 
 // PerformanceMetrics contains comprehensive performance analysis results
 type PerformanceMetrics struct {
-	OverallScore             float64                    `json:"overall_score"`
-	PerformanceGrade         string                     `json:"performance_grade"`
-	AntiPatterns             []AntiPattern              `json:"anti_patterns"`
-	Bottlenecks              []PerformanceBottleneck    `json:"bottlenecks"`
-	OptimizationOpportunities []OptimizationOpportunity `json:"optimization_opportunities"`
-	BundleAnalysis           *BundleAnalysis            `json:"bundle_analysis"`
-	ReactAnalysis            *ReactPerformanceAnalysis  `json:"react_analysis,omitempty"`
-	FileAnalysis             []FilePerformanceAnalysis  `json:"file_analysis"`
-	Summary                  PerformanceSummary         `json:"summary"`
-	Recommendations          []PerformanceRecommendation `json:"recommendations"`
+	OverallScore              float64                     `json:"overall_score"`
+	PerformanceGrade          string                      `json:"performance_grade"`
+	AntiPatterns              []AntiPattern               `json:"anti_patterns"`
+	Bottlenecks               []PerformanceBottleneck     `json:"bottlenecks"`
+	OptimizationOpportunities []OptimizationOpportunity   `json:"optimization_opportunities"`
+	BundleAnalysis            *BundleAnalysis             `json:"bundle_analysis"`
+	ReactAnalysis             *ReactPerformanceAnalysis   `json:"react_analysis,omitempty"`
+	FileAnalysis              []FilePerformanceAnalysis   `json:"file_analysis"`
+	Summary                   PerformanceSummary          `json:"summary"`
+	Recommendations           []PerformanceRecommendation `json:"recommendations"`
 }
 
 // AntiPattern represents a performance anti-pattern
 type AntiPattern struct {
-	Type        string             `json:"type"`
-	Description string             `json:"description"`
-	Severity    string             `json:"severity"`
-	FilePath    string             `json:"file_path"`
-	StartLine   int                `json:"start_line,omitempty"`
-	EndLine     int                `json:"end_line,omitempty"`
-	Evidence    string             `json:"evidence"`
-	Impact      PerformanceImpact  `json:"impact"`
+	Type        string            `json:"type"`
+	Description string            `json:"description"`
+	Severity    string            `json:"severity"`
+	FilePath    string            `json:"file_path"`
+	StartLine   int               `json:"start_line,omitempty"`
+	EndLine     int               `json:"end_line,omitempty"`
+	Evidence    string            `json:"evidence"`
+	Impact      PerformanceImpact `json:"impact"`
 }
 
 // PerformanceImpact describes the impact of a performance issue
@@ -68,13 +68,13 @@ type PerformanceImpact struct {
 
 // PerformanceBottleneck represents a performance bottleneck
 type PerformanceBottleneck struct {
-	Type        string                `json:"type"`
-	Severity    string                `json:"severity"`
-	FilePath    string                `json:"file_path"`
-	StartLine   int                   `json:"start_line,omitempty"`
-	EndLine     int                   `json:"end_line,omitempty"`
-	Description string                `json:"description"`
-	Impact      BottleneckImpact      `json:"impact"`
+	Type        string                 `json:"type"`
+	Severity    string                 `json:"severity"`
+	FilePath    string                 `json:"file_path"`
+	StartLine   int                    `json:"start_line,omitempty"`
+	EndLine     int                    `json:"end_line,omitempty"`
+	Description string                 `json:"description"`
+	Impact      BottleneckImpact       `json:"impact"`
 	Solution    OptimizationSuggestion `json:"solution"`
 }
 
@@ -101,17 +101,17 @@ type OptimizationOpportunity struct {
 	Description    string  `json:"description"`
 	Impact         string  `json:"impact"`
 	Effort         string  `json:"effort"`
-	ROI           float64 `json:"roi"`
+	ROI            float64 `json:"roi"`
 	Implementation string  `json:"implementation"`
 	Evidence       string  `json:"evidence"`
 }
 
 // BundleAnalysis contains bundle size analysis
 type BundleAnalysis struct {
-	EstimatedSizeKB    int                   `json:"estimated_size_kb"`
-	HeavyDependencies  []HeavyDependency     `json:"heavy_dependencies"`
-	OptimizationTips   []string              `json:"optimization_tips"`
-	TreeShakingIssues  []TreeShakingIssue    `json:"tree_shaking_issues"`
+	EstimatedSizeKB   int                `json:"estimated_size_kb"`
+	HeavyDependencies []HeavyDependency  `json:"heavy_dependencies"`
+	OptimizationTips  []string           `json:"optimization_tips"`
+	TreeShakingIssues []TreeShakingIssue `json:"tree_shaking_issues"`
 }
 
 // HeavyDependency represents a heavy library dependency
@@ -136,9 +136,9 @@ type TreeShakingIssue struct {
 
 // ReactPerformanceAnalysis contains React-specific performance analysis
 type ReactPerformanceAnalysis struct {
-	ComponentIssues       []ReactComponentIssue   `json:"component_issues"`
-	HookIssues           []ReactHookIssue        `json:"hook_issues"`
-	RenderOptimizations  []RenderOptimization    `json:"render_optimizations"`
+	ComponentIssues       []ReactComponentIssue  `json:"component_issues"`
+	HookIssues            []ReactHookIssue       `json:"hook_issues"`
+	RenderOptimizations   []RenderOptimization   `json:"render_optimizations"`
 	StateManagementIssues []StateManagementIssue `json:"state_management_issues"`
 }
 
@@ -215,16 +215,16 @@ type PerformanceRecommendation struct {
 // NewPerformanceAnalyzer creates a new performance analyzer with default configuration
 func NewPerformanceAnalyzer() *PerformanceAnalyzer {
 	return NewPerformanceAnalyzerWithConfig(PerformanceConfig{
-		NestedLoopThreshold:      2,
-		QueryPatternThreshold:    3,
-		DOMAccessThreshold:       5,
-		BundleSizeThresholdKB:    500,
-		ComponentComplexityMax:   15,
-		AlgorithmicWeight:        0.35,
-		MemoryWeight:            0.25,
-		NetworkWeight:           0.20,
-		RenderWeight:            0.15,
-		BundleWeight:            0.05,
+		NestedLoopThreshold:    2,
+		QueryPatternThreshold:  3,
+		DOMAccessThreshold:     5,
+		BundleSizeThresholdKB:  500,
+		ComponentComplexityMax: 15,
+		AlgorithmicWeight:      0.35,
+		MemoryWeight:           0.25,
+		NetworkWeight:          0.20,
+		RenderWeight:           0.15,
+		BundleWeight:           0.05,
 	})
 }
 
@@ -238,34 +238,34 @@ func NewPerformanceAnalyzerWithConfig(config PerformanceConfig) *PerformanceAnal
 // AnalyzePerformance performs comprehensive performance analysis on parsed results
 func (pa *PerformanceAnalyzer) AnalyzePerformance(ctx context.Context, parseResults []*ast.ParseResult, complexityMetrics *ComplexityMetrics) (*PerformanceMetrics, error) {
 	metrics := &PerformanceMetrics{
-		AntiPatterns:             []AntiPattern{},
-		Bottlenecks:              []PerformanceBottleneck{},
+		AntiPatterns:              []AntiPattern{},
+		Bottlenecks:               []PerformanceBottleneck{},
 		OptimizationOpportunities: []OptimizationOpportunity{},
-		FileAnalysis:             []FilePerformanceAnalysis{},
-		Recommendations:          []PerformanceRecommendation{},
+		FileAnalysis:              []FilePerformanceAnalysis{},
+		Recommendations:           []PerformanceRecommendation{},
 	}
 
 	// Detect anti-patterns using AST analysis
 	pa.detectAntiPatternsAST(parseResults, metrics)
-	
+
 	// Identify performance bottlenecks
 	pa.identifyBottlenecks(parseResults, complexityMetrics, metrics)
-	
+
 	// Analyze bundle size impact
 	pa.analyzeBundleSize(parseResults, metrics)
-	
+
 	// Perform React-specific analysis if applicable
 	pa.analyzeReactPerformance(parseResults, metrics)
-	
+
 	// Generate optimization opportunities
 	pa.generateOptimizationOpportunities(parseResults, complexityMetrics, metrics)
-	
+
 	// Calculate overall performance score
 	pa.calculatePerformanceScore(metrics)
-	
+
 	// Generate summary and recommendations
 	pa.generateSummaryAndRecommendations(metrics)
-	
+
 	return metrics, nil
 }
 
@@ -274,25 +274,25 @@ func (pa *PerformanceAnalyzer) detectAntiPatternsAST(parseResults []*ast.ParseRe
 	for _, result := range parseResults {
 		// N+1 Query Pattern Detection
 		pa.detectNPlusOneQueriesAST(result, metrics)
-		
+
 		// Synchronous Loop Detection
 		pa.detectSynchronousLoopsAST(result, metrics)
-		
+
 		// Memory Leak Patterns
 		pa.detectMemoryLeaksAST(result, metrics)
-		
+
 		// Nested Loop Performance Issues
 		pa.detectNestedLoopsAST(result, metrics)
-		
+
 		// Large Function Detection
 		pa.detectLargeFunctions(result, metrics)
-		
+
 		// Repeated DOM Queries
 		pa.detectRepeatedDOMQueriesAST(result, metrics)
-		
+
 		// Inefficient String Operations
 		pa.detectStringInefficienciesAST(result, metrics)
-		
+
 		// Blocking Operations
 		pa.detectBlockingOperationsAST(result, metrics)
 	}
@@ -323,7 +323,7 @@ func (pa *PerformanceAnalyzer) detectNPlusOneQueriesAST(result *ast.ParseResult,
 				metrics.AntiPatterns = append(metrics.AntiPatterns, antiPattern)
 			}
 		}
-		
+
 		// Check for async functions with array parameters (potential sequential operations)
 		if function.IsAsync && pa.containsQueryPattern(function.Name) {
 			for _, param := range function.Parameters {
@@ -376,7 +376,7 @@ func (pa *PerformanceAnalyzer) detectSynchronousLoopsAST(result *ast.ParseResult
 				metrics.AntiPatterns = append(metrics.AntiPatterns, antiPattern)
 			}
 		}
-		
+
 		// Check for functions with names suggesting nested iterations
 		if pa.hasNestedIterationPattern(function.Name) {
 			antiPattern := AntiPattern{
@@ -422,11 +422,11 @@ func (pa *PerformanceAnalyzer) detectMemoryLeaksAST(result *ast.ParseResult, met
 			metrics.AntiPatterns = append(metrics.AntiPatterns, antiPattern)
 		}
 	}
-	
+
 	// Check for event listener patterns in imports
 	for _, imp := range result.Imports {
-		if strings.Contains(strings.ToLower(imp.Source), "event") || 
-		   strings.Contains(strings.ToLower(imp.Source), "listener") {
+		if strings.Contains(strings.ToLower(imp.Source), "event") ||
+			strings.Contains(strings.ToLower(imp.Source), "listener") {
 			antiPattern := AntiPattern{
 				Type:        "event_listener_risk",
 				Description: "Event listener imports detected - ensure proper cleanup",
@@ -454,10 +454,10 @@ func (pa *PerformanceAnalyzer) detectNestedLoopsAST(result *ast.ParseResult, met
 		if pa.hasNestedIterationPattern(function.Name) {
 			// Estimate nesting depth based on function complexity
 			nestingDepth := 2 // Default assumption for nested pattern names
-			if function.EndLine - function.StartLine > 100 {
+			if function.EndLine-function.StartLine > 100 {
 				nestingDepth = 3 // Larger functions likely have deeper nesting
 			}
-			
+
 			severity := pa.calculateNestedLoopSeverity(nestingDepth)
 			antiPattern := AntiPattern{
 				Type:        "nested_loops",
@@ -483,13 +483,13 @@ func (pa *PerformanceAnalyzer) detectNestedLoopsAST(result *ast.ParseResult, met
 func (pa *PerformanceAnalyzer) detectLargeFunctions(result *ast.ParseResult, metrics *PerformanceMetrics) {
 	for _, function := range result.Functions {
 		lineCount := function.EndLine - function.StartLine + 1
-		
+
 		if lineCount > 100 {
 			severity := "high"
 			if lineCount > 200 {
 				severity = "critical"
 			}
-			
+
 			antiPattern := AntiPattern{
 				Type:        "large_function",
 				Description: fmt.Sprintf("Function '%s' is too large (%d lines)", function.Name, lineCount),
@@ -513,16 +513,16 @@ func (pa *PerformanceAnalyzer) detectLargeFunctions(result *ast.ParseResult, met
 // detectRepeatedDOMQueriesAST identifies potential repeated DOM queries using AST analysis
 func (pa *PerformanceAnalyzer) detectRepeatedDOMQueriesAST(result *ast.ParseResult, metrics *PerformanceMetrics) {
 	domQueryFunctions := map[string]int{}
-	
+
 	for _, function := range result.Functions {
 		// Check for DOM query-related function names
 		nameLower := strings.ToLower(function.Name)
-		if strings.Contains(nameLower, "query") || strings.Contains(nameLower, "select") || 
-		   strings.Contains(nameLower, "element") || strings.Contains(nameLower, "dom") {
+		if strings.Contains(nameLower, "query") || strings.Contains(nameLower, "select") ||
+			strings.Contains(nameLower, "element") || strings.Contains(nameLower, "dom") {
 			domQueryFunctions[function.Name]++
 		}
 	}
-	
+
 	// Report if we find multiple functions that might be doing similar DOM queries
 	if len(domQueryFunctions) > pa.config.DOMAccessThreshold {
 		antiPattern := AntiPattern{
@@ -547,10 +547,10 @@ func (pa *PerformanceAnalyzer) detectStringInefficienciesAST(result *ast.ParseRe
 	for _, function := range result.Functions {
 		// Check for functions with names suggesting string manipulation in loops
 		nameLower := strings.ToLower(function.Name)
-		if (strings.Contains(nameLower, "concat") || strings.Contains(nameLower, "append") || 
-		    strings.Contains(nameLower, "build") || strings.Contains(nameLower, "join")) &&
-		   pa.containsArrayIteration(function.Name) {
-			
+		if (strings.Contains(nameLower, "concat") || strings.Contains(nameLower, "append") ||
+			strings.Contains(nameLower, "build") || strings.Contains(nameLower, "join")) &&
+			pa.containsArrayIteration(function.Name) {
+
 			antiPattern := AntiPattern{
 				Type:        "string_concatenation_in_loop",
 				Description: fmt.Sprintf("Potential inefficient string operations in function '%s'", function.Name),
@@ -612,13 +612,13 @@ func (pa *PerformanceAnalyzer) calculateNestedLoopSeverity(depth int) string {
 
 func (pa *PerformanceAnalyzer) getNestedLoopScoreImpact(depth int) float64 {
 	// Exponential impact based on nesting depth
-	return math.Min(90.0, 30.0 * math.Pow(1.5, float64(depth)))
+	return math.Min(90.0, 30.0*math.Pow(1.5, float64(depth)))
 }
 
 // identifyBottlenecks identifies performance bottlenecks using complexity metrics and AST analysis
 func (pa *PerformanceAnalyzer) identifyBottlenecks(parseResults []*ast.ParseResult, complexityMetrics *ComplexityMetrics, metrics *PerformanceMetrics) {
 	var bottlenecks []PerformanceBottleneck
-	
+
 	// Analyze based on complexity metrics if available
 	if complexityMetrics != nil {
 		for _, funcMetrics := range complexityMetrics.FunctionMetrics {
@@ -647,19 +647,19 @@ func (pa *PerformanceAnalyzer) identifyBottlenecks(parseResults []*ast.ParseResu
 			}
 		}
 	}
-	
+
 	// Analyze based on AST patterns
 	for _, result := range parseResults {
 		// Check for large classes that might be bottlenecks
 		for _, class := range result.Classes {
-			if len(class.Methods) > 20 || (class.EndLine - class.StartLine) > 500 {
+			if len(class.Methods) > 20 || (class.EndLine-class.StartLine) > 500 {
 				bottleneck := PerformanceBottleneck{
 					Type:        "large_class",
 					Severity:    "medium",
 					FilePath:    result.FilePath,
 					StartLine:   class.StartLine,
 					EndLine:     class.EndLine,
-					Description: fmt.Sprintf("Large class '%s' with %d methods (%d lines)", class.Name, len(class.Methods), class.EndLine - class.StartLine),
+					Description: fmt.Sprintf("Large class '%s' with %d methods (%d lines)", class.Name, len(class.Methods), class.EndLine-class.StartLine),
 					Impact: BottleneckImpact{
 						PerformanceHit:  "medium",
 						ScalabilityRisk: "high",
@@ -676,7 +676,7 @@ func (pa *PerformanceAnalyzer) identifyBottlenecks(parseResults []*ast.ParseResu
 				bottlenecks = append(bottlenecks, bottleneck)
 			}
 		}
-		
+
 		// Check for files with too many imports (possible architecture issues)
 		if len(result.Imports) > 30 {
 			bottleneck := PerformanceBottleneck{
@@ -700,7 +700,7 @@ func (pa *PerformanceAnalyzer) identifyBottlenecks(parseResults []*ast.ParseResu
 			bottlenecks = append(bottlenecks, bottleneck)
 		}
 	}
-	
+
 	metrics.Bottlenecks = bottlenecks
 }
 
@@ -745,7 +745,7 @@ func (pa *PerformanceAnalyzer) getComplexityScalabilityRisk(score float64) strin
 }
 
 func (pa *PerformanceAnalyzer) calculateComplexityOptimizationGain(score float64) float64 {
-	return math.Min(80.0, score * 2.0) // Cap at 80% gain
+	return math.Min(80.0, score*2.0) // Cap at 80% gain
 }
 
 func (pa *PerformanceAnalyzer) getComplexityOptimizationPriority(score float64) string {
@@ -764,27 +764,27 @@ func (pa *PerformanceAnalyzer) getComplexityOptimizationPriority(score float64) 
 // analyzeBundleSize analyzes bundle size impact using AST analysis
 func (pa *PerformanceAnalyzer) analyzeBundleSize(parseResults []*ast.ParseResult, metrics *PerformanceMetrics) {
 	bundleAnalysis := &BundleAnalysis{
-		EstimatedSizeKB:    0,
-		HeavyDependencies:  []HeavyDependency{},
-		OptimizationTips:   []string{},
-		TreeShakingIssues:  []TreeShakingIssue{},
+		EstimatedSizeKB:   0,
+		HeavyDependencies: []HeavyDependency{},
+		OptimizationTips:  []string{},
+		TreeShakingIssues: []TreeShakingIssue{},
 	}
 
 	totalImports := 0
 	heavyLibraries := map[string]int{
-		"lodash": 70,
-		"moment": 67,
-		"jquery": 85,
-		"rxjs": 45,
-		"three": 600,
-		"d3": 250,
-		"chart.js": 60,
-		"bootstrap": 150,
+		"lodash":      70,
+		"moment":      67,
+		"jquery":      85,
+		"rxjs":        45,
+		"three":       600,
+		"d3":          250,
+		"chart.js":    60,
+		"bootstrap":   150,
 		"material-ui": 340,
-		"antd": 2000,
-		"react": 45,
-		"vue": 35,
-		"angular": 130,
+		"antd":        2000,
+		"react":       45,
+		"vue":         35,
+		"angular":     130,
 	}
 
 	for _, result := range parseResults {
@@ -792,18 +792,18 @@ func (pa *PerformanceAnalyzer) analyzeBundleSize(parseResults []*ast.ParseResult
 
 		for _, imp := range result.Imports {
 			sourceLower := strings.ToLower(imp.Source)
-			
+
 			// Check for heavy libraries
 			for lib, sizeKB := range heavyLibraries {
 				if strings.Contains(sourceLower, lib) {
 					heavyDep := HeavyDependency{
-						Name:        lib,
-						Source:      imp.Source,
-						FilePath:    result.FilePath,
+						Name:            lib,
+						Source:          imp.Source,
+						FilePath:        result.FilePath,
 						EstimatedSizeKB: sizeKB,
-						ImportType:  imp.ImportType,
-						Usage:       pa.analyzeImportUsage(imp),
-						Alternatives: pa.suggestAlternatives(lib),
+						ImportType:      imp.ImportType,
+						Usage:           pa.analyzeImportUsage(imp),
+						Alternatives:    pa.suggestAlternatives(lib),
 					}
 					bundleAnalysis.HeavyDependencies = append(bundleAnalysis.HeavyDependencies, heavyDep)
 					bundleAnalysis.EstimatedSizeKB += sizeKB
@@ -813,10 +813,10 @@ func (pa *PerformanceAnalyzer) analyzeBundleSize(parseResults []*ast.ParseResult
 			// Check for tree-shaking issues
 			if imp.ImportType == "default" && pa.isTreeShakingLibrary(imp.Source) {
 				issue := TreeShakingIssue{
-					FilePath:    result.FilePath,
-					ImportSource: imp.Source,
-					Issue:       "Default import prevents tree-shaking",
-					Suggestion:  "Use named imports to enable tree-shaking",
+					FilePath:         result.FilePath,
+					ImportSource:     imp.Source,
+					Issue:            "Default import prevents tree-shaking",
+					Suggestion:       "Use named imports to enable tree-shaking",
 					PotentialSavings: pa.estimateTreeShakingSavings(imp.Source),
 				}
 				bundleAnalysis.TreeShakingIssues = append(bundleAnalysis.TreeShakingIssues, issue)
@@ -854,16 +854,16 @@ func (pa *PerformanceAnalyzer) analyzeImportUsage(imp ast.ImportInfo) string {
 // suggestAlternatives suggests lighter alternatives for heavy libraries
 func (pa *PerformanceAnalyzer) suggestAlternatives(library string) []string {
 	alternatives := map[string][]string{
-		"lodash": {"ramda (functional)", "native ES6+ methods", "individual lodash functions"},
-		"moment": {"date-fns", "dayjs", "luxon"},
-		"jquery": {"native DOM APIs", "vanilla JS", "micro-libraries"},
-		"three": {"babylon.js (for specific use cases)", "custom WebGL"},
-		"d3": {"chart.js (for charts)", "native SVG", "lighter charting libs"},
-		"bootstrap": {"tailwindcss", "bulma", "custom CSS"},
+		"lodash":      {"ramda (functional)", "native ES6+ methods", "individual lodash functions"},
+		"moment":      {"date-fns", "dayjs", "luxon"},
+		"jquery":      {"native DOM APIs", "vanilla JS", "micro-libraries"},
+		"three":       {"babylon.js (for specific use cases)", "custom WebGL"},
+		"d3":          {"chart.js (for charts)", "native SVG", "lighter charting libs"},
+		"bootstrap":   {"tailwindcss", "bulma", "custom CSS"},
 		"material-ui": {"chakra-ui", "mantine", "custom components"},
-		"antd": {"chakra-ui", "mantine", "headless UI"},
+		"antd":        {"chakra-ui", "mantine", "headless UI"},
 	}
-	
+
 	if alts, exists := alternatives[library]; exists {
 		return alts
 	}
@@ -886,12 +886,12 @@ func (pa *PerformanceAnalyzer) isTreeShakingLibrary(source string) bool {
 func (pa *PerformanceAnalyzer) estimateTreeShakingSavings(source string) int {
 	// Rough estimates based on common libraries
 	savings := map[string]int{
-		"lodash": 60, // Can save ~60KB with proper tree-shaking
-		"rxjs": 30,
+		"lodash":      60, // Can save ~60KB with proper tree-shaking
+		"rxjs":        30,
 		"material-ui": 200,
-		"date-fns": 15,
+		"date-fns":    15,
 	}
-	
+
 	sourceLower := strings.ToLower(source)
 	for lib, saving := range savings {
 		if strings.Contains(sourceLower, lib) {
@@ -906,7 +906,7 @@ func (pa *PerformanceAnalyzer) generateBundleOptimizationTips(analysis *BundleAn
 	var tips []string
 
 	if analysis.EstimatedSizeKB > pa.config.BundleSizeThresholdKB {
-		tips = append(tips, fmt.Sprintf("Bundle size (%dKB) exceeds threshold (%dKB)", 
+		tips = append(tips, fmt.Sprintf("Bundle size (%dKB) exceeds threshold (%dKB)",
 			analysis.EstimatedSizeKB, pa.config.BundleSizeThresholdKB))
 	}
 
@@ -919,7 +919,7 @@ func (pa *PerformanceAnalyzer) generateBundleOptimizationTips(analysis *BundleAn
 	}
 
 	// Add general tips
-	tips = append(tips, 
+	tips = append(tips,
 		"Use dynamic imports for code splitting",
 		"Implement lazy loading for non-critical components",
 		"Enable gzip compression on your server",
@@ -932,9 +932,9 @@ func (pa *PerformanceAnalyzer) generateBundleOptimizationTips(analysis *BundleAn
 // analyzeReactPerformance performs React-specific performance analysis
 func (pa *PerformanceAnalyzer) analyzeReactPerformance(parseResults []*ast.ParseResult, metrics *PerformanceMetrics) {
 	reactAnalysis := &ReactPerformanceAnalysis{
-		ComponentIssues:     []ReactComponentIssue{},
-		HookIssues:         []ReactHookIssue{},
-		RenderOptimizations: []RenderOptimization{},
+		ComponentIssues:       []ReactComponentIssue{},
+		HookIssues:            []ReactHookIssue{},
+		RenderOptimizations:   []RenderOptimization{},
 		StateManagementIssues: []StateManagementIssue{},
 	}
 
@@ -979,7 +979,7 @@ func (pa *PerformanceAnalyzer) analyzeReactPerformance(parseResults []*ast.Parse
 func (pa *PerformanceAnalyzer) analyzeReactComponent(function ast.FunctionInfo, result *ast.ParseResult, analysis *ReactPerformanceAnalysis) {
 	// Check for large components
 	componentSize := function.EndLine - function.StartLine + 1
-	if componentSize > pa.config.ComponentComplexityMax * 5 { // 75+ lines for default config
+	if componentSize > pa.config.ComponentComplexityMax*5 { // 75+ lines for default config
 		issue := ReactComponentIssue{
 			ComponentName: function.Name,
 			FilePath:      result.FilePath,
@@ -1010,13 +1010,13 @@ func (pa *PerformanceAnalyzer) analyzeReactComponent(function ast.FunctionInfo, 
 
 	// Suggest render optimization
 	optimization := RenderOptimization{
-		ComponentName: function.Name,
-		FilePath:      result.FilePath,
+		ComponentName:    function.Name,
+		FilePath:         result.FilePath,
 		OptimizationType: "memoization",
-		Description:   "Consider using React.memo for performance optimization",
-		ExpectedGain:  30.0,
-		Implementation: "Wrap component with React.memo if props don't change frequently",
-		Priority:      pa.getOptimizationPriority(componentSize, len(function.Parameters)),
+		Description:      "Consider using React.memo for performance optimization",
+		ExpectedGain:     30.0,
+		Implementation:   "Wrap component with React.memo if props don't change frequently",
+		Priority:         pa.getOptimizationPriority(componentSize, len(function.Parameters)),
 	}
 	analysis.RenderOptimizations = append(analysis.RenderOptimizations, optimization)
 }
@@ -1025,7 +1025,7 @@ func (pa *PerformanceAnalyzer) analyzeReactComponent(function ast.FunctionInfo, 
 func (pa *PerformanceAnalyzer) analyzeReactClassComponent(class ast.ClassInfo, result *ast.ParseResult, analysis *ReactPerformanceAnalysis) {
 	// Check for large class components
 	componentSize := class.EndLine - class.StartLine + 1
-	if componentSize > pa.config.ComponentComplexityMax * 10 { // 150+ lines for default config
+	if componentSize > pa.config.ComponentComplexityMax*10 { // 150+ lines for default config
 		issue := ReactComponentIssue{
 			ComponentName: class.Name,
 			FilePath:      result.FilePath,
@@ -1056,13 +1056,13 @@ func (pa *PerformanceAnalyzer) analyzeReactClassComponent(class ast.ClassInfo, r
 
 	// Suggest modernization
 	optimization := RenderOptimization{
-		ComponentName: class.Name,
-		FilePath:      result.FilePath,
+		ComponentName:    class.Name,
+		FilePath:         result.FilePath,
 		OptimizationType: "modernization",
-		Description:   "Consider converting class component to functional component with hooks",
-		ExpectedGain:  25.0,
-		Implementation: "Use useState, useEffect, and other hooks to replace class lifecycle methods",
-		Priority:      "medium",
+		Description:      "Consider converting class component to functional component with hooks",
+		ExpectedGain:     25.0,
+		Implementation:   "Use useState, useEffect, and other hooks to replace class lifecycle methods",
+		Priority:         "medium",
 	}
 	analysis.RenderOptimizations = append(analysis.RenderOptimizations, optimization)
 }
@@ -1096,14 +1096,14 @@ func (pa *PerformanceAnalyzer) generateOptimizationOpportunities(parseResults []
 	// Generate opportunities from bottlenecks
 	for _, bottleneck := range metrics.Bottlenecks {
 		opportunity := OptimizationOpportunity{
-			Type:         bottleneck.Type + "_optimization",
-			Priority:     bottleneck.Solution.Priority,
-			Description:  bottleneck.Description,
-			Impact:       bottleneck.Solution.Explanation,
-			Effort:       bottleneck.Solution.Effort,
-			ROI:         bottleneck.Solution.ExpectedGain,
+			Type:           bottleneck.Type + "_optimization",
+			Priority:       bottleneck.Solution.Priority,
+			Description:    bottleneck.Description,
+			Impact:         bottleneck.Solution.Explanation,
+			Effort:         bottleneck.Solution.Effort,
+			ROI:            bottleneck.Solution.ExpectedGain,
 			Implementation: bottleneck.Solution.Approach,
-			Evidence:     fmt.Sprintf("Detected in %s (lines %d-%d)", bottleneck.FilePath, bottleneck.StartLine, bottleneck.EndLine),
+			Evidence:       fmt.Sprintf("Detected in %s (lines %d-%d)", bottleneck.FilePath, bottleneck.StartLine, bottleneck.EndLine),
 		}
 		opportunities = append(opportunities, opportunity)
 	}
@@ -1137,14 +1137,14 @@ func (pa *PerformanceAnalyzer) generateOptimizationOpportunities(parseResults []
 // convertAntiPatternToOpportunity converts an anti-pattern to an optimization opportunity
 func (pa *PerformanceAnalyzer) convertAntiPatternToOpportunity(antiPattern AntiPattern) OptimizationOpportunity {
 	return OptimizationOpportunity{
-		Type:         antiPattern.Type + "_fix",
-		Priority:     antiPattern.Severity,
-		Description:  antiPattern.Description,
-		Impact:       antiPattern.Impact.Description,
-		Effort:       pa.getEffortFromSeverity(antiPattern.Severity),
-		ROI:         antiPattern.Impact.Score,
+		Type:           antiPattern.Type + "_fix",
+		Priority:       antiPattern.Severity,
+		Description:    antiPattern.Description,
+		Impact:         antiPattern.Impact.Description,
+		Effort:         pa.getEffortFromSeverity(antiPattern.Severity),
+		ROI:            antiPattern.Impact.Score,
 		Implementation: pa.getImplementationFromAntiPattern(antiPattern),
-		Evidence:     antiPattern.Evidence,
+		Evidence:       antiPattern.Evidence,
 	}
 }
 
@@ -1154,28 +1154,28 @@ func (pa *PerformanceAnalyzer) analyzeFunctionForOptimization(function ast.Funct
 	if function.IsAsync && len(function.Parameters) > 0 {
 		// Async function with parameters might benefit from caching
 		return &OptimizationOpportunity{
-			Type:         "async_caching",
-			Priority:     "medium",
-			Description:  fmt.Sprintf("Async function '%s' might benefit from result caching", function.Name),
-			Impact:       "Reduce redundant async operations",
-			Effort:       "low",
-			ROI:         40.0,
+			Type:           "async_caching",
+			Priority:       "medium",
+			Description:    fmt.Sprintf("Async function '%s' might benefit from result caching", function.Name),
+			Impact:         "Reduce redundant async operations",
+			Effort:         "low",
+			ROI:            40.0,
 			Implementation: "Implement memoization or caching mechanism for frequently called async operations",
-			Evidence:     fmt.Sprintf("Function %s in %s (lines %d-%d)", function.Name, filePath, function.StartLine, function.EndLine),
+			Evidence:       fmt.Sprintf("Function %s in %s (lines %d-%d)", function.Name, filePath, function.StartLine, function.EndLine),
 		}
 	}
 
 	// Check for functions with many parameters that might need refactoring
 	if len(function.Parameters) > 8 {
 		return &OptimizationOpportunity{
-			Type:         "parameter_object",
-			Priority:     "low",
-			Description:  fmt.Sprintf("Function '%s' has too many parameters (%d)", function.Name, len(function.Parameters)),
-			Impact:       "Improve readability and reduce parameter passing overhead",
-			Effort:       "medium",
-			ROI:         30.0,
+			Type:           "parameter_object",
+			Priority:       "low",
+			Description:    fmt.Sprintf("Function '%s' has too many parameters (%d)", function.Name, len(function.Parameters)),
+			Impact:         "Improve readability and reduce parameter passing overhead",
+			Effort:         "medium",
+			ROI:            30.0,
 			Implementation: "Replace multiple parameters with a parameter object or configuration object",
-			Evidence:     fmt.Sprintf("Function %s has %d parameters", function.Name, len(function.Parameters)),
+			Evidence:       fmt.Sprintf("Function %s has %d parameters", function.Name, len(function.Parameters)),
 		}
 	}
 
@@ -1217,19 +1217,19 @@ func (pa *PerformanceAnalyzer) getEffortFromSeverity(severity string) string {
 // getImplementationFromAntiPattern provides implementation guidance based on anti-pattern type
 func (pa *PerformanceAnalyzer) getImplementationFromAntiPattern(antiPattern AntiPattern) string {
 	implementations := map[string]string{
-		"n_plus_one_query": "Implement bulk queries or use data loaders to fetch related data in batches",
-		"sequential_async_queries": "Use Promise.all() to parallelize independent async operations",
-		"sync_in_loop": "Replace sequential processing with Promise.all() for parallel execution",
-		"nested_iteration": "Consider using hash maps or more efficient algorithms to reduce complexity",
-		"potential_memory_leak": "Implement proper cleanup in useEffect cleanup functions or componentWillUnmount",
-		"event_listener_risk": "Ensure addEventListener is paired with removeEventListener",
-		"nested_loops": "Optimize algorithm or use memoization to reduce computational complexity",
-		"large_function": "Break down function into smaller, focused functions",
-		"repeated_dom_queries": "Cache DOM query results or use refs in React components",
+		"n_plus_one_query":             "Implement bulk queries or use data loaders to fetch related data in batches",
+		"sequential_async_queries":     "Use Promise.all() to parallelize independent async operations",
+		"sync_in_loop":                 "Replace sequential processing with Promise.all() for parallel execution",
+		"nested_iteration":             "Consider using hash maps or more efficient algorithms to reduce complexity",
+		"potential_memory_leak":        "Implement proper cleanup in useEffect cleanup functions or componentWillUnmount",
+		"event_listener_risk":          "Ensure addEventListener is paired with removeEventListener",
+		"nested_loops":                 "Optimize algorithm or use memoization to reduce computational complexity",
+		"large_function":               "Break down function into smaller, focused functions",
+		"repeated_dom_queries":         "Cache DOM query results or use refs in React components",
 		"string_concatenation_in_loop": "Use array.join() or template literals instead of string concatenation",
-		"blocking_operation": "Convert to async operation or use web workers for heavy computations",
+		"blocking_operation":           "Convert to async operation or use web workers for heavy computations",
 	}
-	
+
 	if impl, exists := implementations[antiPattern.Type]; exists {
 		return impl
 	}
@@ -1239,28 +1239,28 @@ func (pa *PerformanceAnalyzer) getImplementationFromAntiPattern(antiPattern Anti
 // calculatePerformanceScore calculates overall performance score
 func (pa *PerformanceAnalyzer) calculatePerformanceScore(metrics *PerformanceMetrics) {
 	baseScore := 100.0
-	
+
 	// Deduct points for anti-patterns
 	for _, antiPattern := range metrics.AntiPatterns {
 		penalty := pa.getAntiPatternPenalty(antiPattern.Severity)
 		baseScore -= penalty
 	}
-	
+
 	// Deduct points for bottlenecks
 	for _, bottleneck := range metrics.Bottlenecks {
 		penalty := pa.getBottleneckPenalty(bottleneck.Severity)
 		baseScore -= penalty
 	}
-	
+
 	// Deduct points for bundle size if analysis is available
 	if metrics.BundleAnalysis != nil {
 		if metrics.BundleAnalysis.EstimatedSizeKB > pa.config.BundleSizeThresholdKB {
 			excess := float64(metrics.BundleAnalysis.EstimatedSizeKB - pa.config.BundleSizeThresholdKB)
-			penalty := math.Min(20.0, excess / 50.0) // Max 20 points penalty for bundle size
+			penalty := math.Min(20.0, excess/50.0) // Max 20 points penalty for bundle size
 			baseScore -= penalty
 		}
 	}
-	
+
 	// Ensure score is within bounds
 	if baseScore < 0 {
 		baseScore = 0
@@ -1268,7 +1268,7 @@ func (pa *PerformanceAnalyzer) calculatePerformanceScore(metrics *PerformanceMet
 	if baseScore > 100 {
 		baseScore = 100
 	}
-	
+
 	metrics.OverallScore = baseScore
 	metrics.PerformanceGrade = pa.getPerformanceGrade(baseScore)
 }
@@ -1281,7 +1281,7 @@ func (pa *PerformanceAnalyzer) getAntiPatternPenalty(severity string) float64 {
 		"medium":   5.0,
 		"low":      2.0,
 	}
-	
+
 	if penalty, exists := penalties[severity]; exists {
 		return penalty
 	}
@@ -1296,7 +1296,7 @@ func (pa *PerformanceAnalyzer) getBottleneckPenalty(severity string) float64 {
 		"medium":   4.0,
 		"low":      2.0,
 	}
-	
+
 	if penalty, exists := penalties[severity]; exists {
 		return penalty
 	}
@@ -1323,7 +1323,7 @@ func (pa *PerformanceAnalyzer) getPerformanceGrade(score float64) string {
 func (pa *PerformanceAnalyzer) generateSummaryAndRecommendations(metrics *PerformanceMetrics) {
 	// Generate file analysis summary
 	fileAnalysisMap := make(map[string]*FilePerformanceAnalysis)
-	
+
 	// Aggregate issues by file
 	for _, antiPattern := range metrics.AntiPatterns {
 		if analysis, exists := fileAnalysisMap[antiPattern.FilePath]; exists {
@@ -1331,34 +1331,34 @@ func (pa *PerformanceAnalyzer) generateSummaryAndRecommendations(metrics *Perfor
 			analysis.WorstSeverity = pa.getWorseSeverity(analysis.WorstSeverity, antiPattern.Severity)
 		} else {
 			fileAnalysisMap[antiPattern.FilePath] = &FilePerformanceAnalysis{
-				FilePath:      antiPattern.FilePath,
-				IssueCount:    1,
-				WorstSeverity: antiPattern.Severity,
+				FilePath:        antiPattern.FilePath,
+				IssueCount:      1,
+				WorstSeverity:   antiPattern.Severity,
 				Recommendations: []string{},
 			}
 		}
 	}
-	
+
 	for _, bottleneck := range metrics.Bottlenecks {
 		if analysis, exists := fileAnalysisMap[bottleneck.FilePath]; exists {
 			analysis.IssueCount++
 			analysis.WorstSeverity = pa.getWorseSeverity(analysis.WorstSeverity, bottleneck.Severity)
 		} else {
 			fileAnalysisMap[bottleneck.FilePath] = &FilePerformanceAnalysis{
-				FilePath:      bottleneck.FilePath,
-				IssueCount:    1,
-				WorstSeverity: bottleneck.Severity,
+				FilePath:        bottleneck.FilePath,
+				IssueCount:      1,
+				WorstSeverity:   bottleneck.Severity,
 				Recommendations: []string{},
 			}
 		}
 	}
-	
+
 	// Convert map to slice and add recommendations
 	for filePath, analysis := range fileAnalysisMap {
 		analysis.Recommendations = pa.generateFileRecommendations(filePath, analysis.IssueCount, analysis.WorstSeverity)
 		metrics.FileAnalysis = append(metrics.FileAnalysis, *analysis)
 	}
-	
+
 	// Sort file analysis by issue count
 	sort.Slice(metrics.FileAnalysis, func(i, j int) bool {
 		if metrics.FileAnalysis[i].IssueCount != metrics.FileAnalysis[j].IssueCount {
@@ -1366,7 +1366,7 @@ func (pa *PerformanceAnalyzer) generateSummaryAndRecommendations(metrics *Perfor
 		}
 		return pa.getPriorityScore(metrics.FileAnalysis[i].WorstSeverity) > pa.getPriorityScore(metrics.FileAnalysis[j].WorstSeverity)
 	})
-	
+
 	// Generate summary
 	metrics.Summary = PerformanceSummary{
 		TotalAntiPatterns:     len(metrics.AntiPatterns),
@@ -1375,7 +1375,7 @@ func (pa *PerformanceAnalyzer) generateSummaryAndRecommendations(metrics *Perfor
 		OptimizationPotential: pa.calculateOptimizationPotential(metrics),
 		TopRecommendation:     pa.getTopRecommendation(metrics),
 	}
-	
+
 	// Generate performance recommendations
 	metrics.Recommendations = pa.generatePerformanceRecommendations(metrics)
 }
@@ -1391,20 +1391,20 @@ func (pa *PerformanceAnalyzer) getWorseSeverity(current, new string) string {
 // generateFileRecommendations generates recommendations for a specific file
 func (pa *PerformanceAnalyzer) generateFileRecommendations(filePath string, issueCount int, worstSeverity string) []string {
 	var recommendations []string
-	
+
 	if issueCount > 5 {
 		recommendations = append(recommendations, "Consider refactoring this file - high number of performance issues detected")
 	}
-	
+
 	if worstSeverity == "critical" {
 		recommendations = append(recommendations, "Address critical performance issues immediately")
 	} else if worstSeverity == "high" {
 		recommendations = append(recommendations, "Prioritize fixing high-severity performance issues")
 	}
-	
+
 	recommendations = append(recommendations, "Run performance profiling to identify runtime bottlenecks")
 	recommendations = append(recommendations, "Consider code review with focus on performance best practices")
-	
+
 	return recommendations
 }
 
@@ -1436,13 +1436,13 @@ func (pa *PerformanceAnalyzer) calculateOptimizationPotential(metrics *Performan
 	for _, opportunity := range metrics.OptimizationOpportunities {
 		totalGain += opportunity.ROI
 	}
-	
+
 	// Cap at 100% and take average
 	if len(metrics.OptimizationOpportunities) > 0 {
 		averageGain := totalGain / float64(len(metrics.OptimizationOpportunities))
 		return math.Min(100.0, averageGain)
 	}
-	
+
 	return 0.0
 }
 
@@ -1451,7 +1451,7 @@ func (pa *PerformanceAnalyzer) getTopRecommendation(metrics *PerformanceMetrics)
 	if len(metrics.OptimizationOpportunities) == 0 {
 		return "No specific performance issues detected"
 	}
-	
+
 	topOpportunity := metrics.OptimizationOpportunities[0] // Already sorted by priority and ROI
 	return fmt.Sprintf("Priority: %s - %s", topOpportunity.Priority, topOpportunity.Description)
 }
@@ -1459,70 +1459,70 @@ func (pa *PerformanceAnalyzer) getTopRecommendation(metrics *PerformanceMetrics)
 // generatePerformanceRecommendations generates actionable performance recommendations
 func (pa *PerformanceAnalyzer) generatePerformanceRecommendations(metrics *PerformanceMetrics) []PerformanceRecommendation {
 	var recommendations []PerformanceRecommendation
-	
+
 	// Critical issues first
 	criticalCount := pa.countIssuesBySeverity(metrics.AntiPatterns, "critical") + pa.countBottlenecksBySeverity(metrics.Bottlenecks, "critical")
 	if criticalCount > 0 {
 		recommendations = append(recommendations, PerformanceRecommendation{
-			Priority:    "critical",
-			Category:    "immediate_action",
-			Title:       "Address Critical Performance Issues",
-			Description: fmt.Sprintf("Found %d critical performance issues that need immediate attention", criticalCount),
-			Action:      "Review and fix all critical anti-patterns and bottlenecks",
+			Priority:       "critical",
+			Category:       "immediate_action",
+			Title:          "Address Critical Performance Issues",
+			Description:    fmt.Sprintf("Found %d critical performance issues that need immediate attention", criticalCount),
+			Action:         "Review and fix all critical anti-patterns and bottlenecks",
 			ExpectedImpact: "High",
-			TimeFrame:   "Immediate (within 1-2 days)",
+			TimeFrame:      "Immediate (within 1-2 days)",
 		})
 	}
-	
+
 	// Bundle optimization
 	if metrics.BundleAnalysis != nil && metrics.BundleAnalysis.EstimatedSizeKB > pa.config.BundleSizeThresholdKB {
 		recommendations = append(recommendations, PerformanceRecommendation{
-			Priority:    "high",
-			Category:    "bundle_optimization",
-			Title:       "Optimize Bundle Size",
-			Description: fmt.Sprintf("Bundle size (%dKB) exceeds recommended threshold (%dKB)", metrics.BundleAnalysis.EstimatedSizeKB, pa.config.BundleSizeThresholdKB),
-			Action:      "Implement tree-shaking, code splitting, and consider lighter alternatives for heavy dependencies",
+			Priority:       "high",
+			Category:       "bundle_optimization",
+			Title:          "Optimize Bundle Size",
+			Description:    fmt.Sprintf("Bundle size (%dKB) exceeds recommended threshold (%dKB)", metrics.BundleAnalysis.EstimatedSizeKB, pa.config.BundleSizeThresholdKB),
+			Action:         "Implement tree-shaking, code splitting, and consider lighter alternatives for heavy dependencies",
 			ExpectedImpact: "Medium to High",
-			TimeFrame:   "1-2 weeks",
+			TimeFrame:      "1-2 weeks",
 		})
 	}
-	
+
 	// React optimization
 	if metrics.ReactAnalysis != nil && len(metrics.ReactAnalysis.ComponentIssues) > 0 {
 		recommendations = append(recommendations, PerformanceRecommendation{
-			Priority:    "medium",
-			Category:    "react_optimization",
-			Title:       "Optimize React Components",
-			Description: fmt.Sprintf("Found %d React component issues", len(metrics.ReactAnalysis.ComponentIssues)),
-			Action:      "Implement React.memo, useMemo, useCallback for expensive operations, and break down large components",
+			Priority:       "medium",
+			Category:       "react_optimization",
+			Title:          "Optimize React Components",
+			Description:    fmt.Sprintf("Found %d React component issues", len(metrics.ReactAnalysis.ComponentIssues)),
+			Action:         "Implement React.memo, useMemo, useCallback for expensive operations, and break down large components",
 			ExpectedImpact: "Medium",
-			TimeFrame:   "2-3 weeks",
+			TimeFrame:      "2-3 weeks",
 		})
 	}
-	
+
 	// General optimization
 	if metrics.Summary.OptimizationPotential > 50.0 {
 		recommendations = append(recommendations, PerformanceRecommendation{
-			Priority:    "medium",
-			Category:    "general_optimization",
-			Title:       "Implement Performance Best Practices",
-			Description: fmt.Sprintf("%.1f%% optimization potential identified", metrics.Summary.OptimizationPotential),
-			Action:      "Follow the optimization opportunities listed in the analysis",
+			Priority:       "medium",
+			Category:       "general_optimization",
+			Title:          "Implement Performance Best Practices",
+			Description:    fmt.Sprintf("%.1f%% optimization potential identified", metrics.Summary.OptimizationPotential),
+			Action:         "Follow the optimization opportunities listed in the analysis",
 			ExpectedImpact: "Medium",
-			TimeFrame:   "3-4 weeks",
+			TimeFrame:      "3-4 weeks",
 		})
 	}
-	
+
 	// Monitoring recommendation
 	recommendations = append(recommendations, PerformanceRecommendation{
-		Priority:    "low",
-		Category:    "monitoring",
-		Title:       "Implement Performance Monitoring",
-		Description: "Set up continuous performance monitoring to catch regressions early",
-		Action:      "Integrate performance monitoring tools and establish performance budgets",
+		Priority:       "low",
+		Category:       "monitoring",
+		Title:          "Implement Performance Monitoring",
+		Description:    "Set up continuous performance monitoring to catch regressions early",
+		Action:         "Integrate performance monitoring tools and establish performance budgets",
 		ExpectedImpact: "Long-term",
-		TimeFrame:   "Ongoing",
+		TimeFrame:      "Ongoing",
 	})
-	
+
 	return recommendations
 }

@@ -13,7 +13,7 @@ func (gb *GraphBuilder) detectCircularDependencies() {
 	visited := make(map[string]bool)
 	recursionStack := make(map[string]bool)
 	cycles := make([][]string, 0)
-	
+
 	// DFS for each unvisited node
 	for nodeID := range gb.graph.Nodes {
 		if !visited[nodeID] {
@@ -21,7 +21,7 @@ func (gb *GraphBuilder) detectCircularDependencies() {
 			gb.dfsCircularDetection(nodeID, visited, recursionStack, path, &cycles)
 		}
 	}
-	
+
 	// Convert cycles to CircularDependency structs
 	for _, cycle := range cycles {
 		circularDep := CircularDependency{
@@ -40,11 +40,11 @@ func (gb *GraphBuilder) dfsCircularDetection(node string, visited, recursionStac
 	visited[node] = true
 	recursionStack[node] = true
 	path = append(path, node)
-	
+
 	if edges, exists := gb.graph.Edges[node]; exists {
 		for _, edge := range edges {
 			target := edge.Target
-			
+
 			if recursionStack[target] {
 				// Found a cycle - extract the cycle from the path
 				cycleStart := -1
@@ -54,7 +54,7 @@ func (gb *GraphBuilder) dfsCircularDetection(node string, visited, recursionStac
 						break
 					}
 				}
-				
+
 				if cycleStart != -1 {
 					cycle := make([]string, 0)
 					cycle = append(cycle, path[cycleStart:]...)
@@ -66,7 +66,7 @@ func (gb *GraphBuilder) dfsCircularDetection(node string, visited, recursionStac
 			}
 		}
 	}
-	
+
 	recursionStack[node] = false
 }
 
@@ -86,22 +86,22 @@ func (gb *GraphBuilder) calculateCycleSeverity(cycle []string) string {
 func (gb *GraphBuilder) calculateCycleImpact(cycle []string) float64 {
 	totalWeight := 0.0
 	nodeCount := 0
-	
+
 	for _, nodeID := range cycle {
 		if node, exists := gb.graph.Nodes[nodeID]; exists {
 			totalWeight += node.Weight
 			nodeCount++
 		}
 	}
-	
+
 	if nodeCount == 0 {
 		return 0.0
 	}
-	
+
 	// Impact based on average node weight and cycle length
 	avgWeight := totalWeight / float64(nodeCount)
 	lengthPenalty := 1.0 / float64(len(cycle)) // Shorter cycles are more impactful
-	
+
 	return avgWeight * lengthPenalty * 10.0 // Scale to 0-10 range
 }
 
@@ -111,25 +111,25 @@ func (gb *GraphBuilder) identifyCriticalNodes() {
 		nodeID string
 		score  float64
 	}
-	
+
 	scores := make([]nodeScore, 0)
-	
+
 	for nodeID, node := range gb.graph.Nodes {
 		score := gb.calculateNodeCriticality(nodeID, node)
 		scores = append(scores, nodeScore{nodeID: nodeID, score: score})
 	}
-	
+
 	// Sort by score (descending)
 	sort.Slice(scores, func(i, j int) bool {
 		return scores[i].score > scores[j].score
 	})
-	
+
 	// Take top 10% or at least top 5 as critical nodes
 	criticalCount := int(math.Max(float64(len(scores))*0.1, 5))
 	if criticalCount > len(scores) {
 		criticalCount = len(scores)
 	}
-	
+
 	gb.graph.Stats.CriticalNodes = make([]string, 0, criticalCount)
 	for i := 0; i < criticalCount; i++ {
 		gb.graph.Stats.CriticalNodes = append(gb.graph.Stats.CriticalNodes, scores[i].nodeID)
@@ -144,10 +144,10 @@ func (gb *GraphBuilder) calculateNodeCriticality(nodeID string, node *GraphNode)
 	// 3. Low depth (closer to root dependencies)
 	// 4. High vulnerability count
 	// 5. High risk score
-	
+
 	inDegree := 0
 	outDegree := len(gb.graph.Edges[nodeID])
-	
+
 	// Count incoming edges
 	for _, edges := range gb.graph.Edges {
 		for _, edge := range edges {
@@ -156,35 +156,35 @@ func (gb *GraphBuilder) calculateNodeCriticality(nodeID string, node *GraphNode)
 			}
 		}
 	}
-	
+
 	// Calculate criticality score
 	score := 0.0
-	
+
 	// In-degree factor (0-5 points)
 	score += math.Min(float64(inDegree), 5.0)
-	
+
 	// Out-degree factor (0-3 points)
 	score += math.Min(float64(outDegree)*0.1, 3.0)
-	
+
 	// Depth factor (0-2 points, lower depth = higher score)
 	maxDepth := float64(gb.graph.Stats.MaxDepth)
 	if maxDepth > 0 {
 		depthScore := (maxDepth - float64(node.Depth)) / maxDepth * 2.0
 		score += depthScore
 	}
-	
+
 	// Vulnerability factor (0-3 points)
 	vulnScore := math.Min(float64(node.VulnerabilityCount)*0.5, 3.0)
 	score += vulnScore
-	
+
 	// Risk factor (0-2 points)
 	score += math.Min(node.RiskScore/5.0, 2.0)
-	
+
 	// Production dependency bonus
 	if node.PackageType == "dependencies" {
 		score += 1.0
 	}
-	
+
 	return score
 }
 
@@ -192,14 +192,14 @@ func (gb *GraphBuilder) calculateNodeCriticality(nodeID string, node *GraphNode)
 func (gb *GraphBuilder) performClusterAnalysis() {
 	// Simple clustering based on shared dependencies
 	clusters := make(map[string][]string)
-	
+
 	// Group nodes by their dependency patterns
 	for nodeID, node := range gb.graph.Nodes {
 		clusterKey := gb.generateClusterKey(nodeID)
 		clusters[clusterKey] = append(clusters[clusterKey], nodeID)
 		_ = node // Avoid unused variable warning
 	}
-	
+
 	// Convert to DependencyCluster structs
 	clusterID := 0
 	for clusterKey, nodes := range clusters {
@@ -221,7 +221,7 @@ func (gb *GraphBuilder) performClusterAnalysis() {
 // generateClusterKey generates a key for clustering based on dependencies
 func (gb *GraphBuilder) generateClusterKey(nodeID string) string {
 	dependencies := make([]string, 0)
-	
+
 	if edges, exists := gb.graph.Edges[nodeID]; exists {
 		for _, edge := range edges {
 			if edge.Relationship == "dependencies" {
@@ -229,7 +229,7 @@ func (gb *GraphBuilder) generateClusterKey(nodeID string) string {
 			}
 		}
 	}
-	
+
 	sort.Strings(dependencies)
 	return strings.Join(dependencies, ",")
 }
@@ -239,10 +239,10 @@ func (gb *GraphBuilder) calculateClusterCohesion(nodes []string) float64 {
 	if len(nodes) <= 1 {
 		return 1.0
 	}
-	
+
 	internalEdges := 0
 	possibleEdges := len(nodes) * (len(nodes) - 1)
-	
+
 	for _, sourceNode := range nodes {
 		if edges, exists := gb.graph.Edges[sourceNode]; exists {
 			for _, edge := range edges {
@@ -255,11 +255,11 @@ func (gb *GraphBuilder) calculateClusterCohesion(nodes []string) float64 {
 			}
 		}
 	}
-	
+
 	if possibleEdges == 0 {
 		return 1.0
 	}
-	
+
 	return float64(internalEdges) / float64(possibleEdges)
 }
 
@@ -267,7 +267,7 @@ func (gb *GraphBuilder) calculateClusterCohesion(nodes []string) float64 {
 func (gb *GraphBuilder) calculateClusterCoupling(nodes []string) float64 {
 	externalEdges := 0
 	totalEdges := 0
-	
+
 	for _, sourceNode := range nodes {
 		if edges, exists := gb.graph.Edges[sourceNode]; exists {
 			totalEdges += len(edges)
@@ -285,11 +285,11 @@ func (gb *GraphBuilder) calculateClusterCoupling(nodes []string) float64 {
 			}
 		}
 	}
-	
+
 	if totalEdges == 0 {
 		return 0.0
 	}
-	
+
 	return float64(externalEdges) / float64(totalEdges)
 }
 
@@ -297,7 +297,7 @@ func (gb *GraphBuilder) calculateClusterCoupling(nodes []string) float64 {
 func (gb *GraphBuilder) findMainPackageInCluster(nodes []string) string {
 	maxWeight := 0.0
 	mainPackage := ""
-	
+
 	for _, nodeID := range nodes {
 		if node, exists := gb.graph.Nodes[nodeID]; exists {
 			if node.Weight > maxWeight {
@@ -306,32 +306,32 @@ func (gb *GraphBuilder) findMainPackageInCluster(nodes []string) string {
 			}
 		}
 	}
-	
+
 	return mainPackage
 }
 
 // calculateGraphMetrics calculates various graph metrics
 func (gb *GraphBuilder) calculateGraphMetrics() {
 	metrics := gb.graph.Stats.Metrics
-	
+
 	// Calculate density
 	nodeCount := len(gb.graph.Nodes)
 	edgeCount := gb.graph.Stats.TotalEdges
 	maxPossibleEdges := nodeCount * (nodeCount - 1)
-	
+
 	if maxPossibleEdges > 0 {
 		metrics.Density = float64(edgeCount) / float64(maxPossibleEdges)
 	}
-	
+
 	// Calculate connected components using Union-Find
 	metrics.ConnectedComponents = gb.calculateConnectedComponents()
-	
+
 	// Calculate modularity (simplified version)
 	metrics.Modularity = gb.calculateModularity()
-	
+
 	// Calculate maximum centrality
 	metrics.CentralityMax = gb.calculateMaxCentrality()
-	
+
 	// Calculate average path length and diameter
 	metrics.PathLengthAvg, metrics.Diameter = gb.calculatePathMetrics()
 }
@@ -340,21 +340,21 @@ func (gb *GraphBuilder) calculateGraphMetrics() {
 func (gb *GraphBuilder) calculateConnectedComponents() int {
 	visited := make(map[string]bool)
 	components := 0
-	
+
 	for nodeID := range gb.graph.Nodes {
 		if !visited[nodeID] {
 			gb.dfsComponentSearch(nodeID, visited)
 			components++
 		}
 	}
-	
+
 	return components
 }
 
 // dfsComponentSearch performs DFS for connected component analysis
 func (gb *GraphBuilder) dfsComponentSearch(nodeID string, visited map[string]bool) {
 	visited[nodeID] = true
-	
+
 	// Visit all connected nodes (both directions)
 	if edges, exists := gb.graph.Edges[nodeID]; exists {
 		for _, edge := range edges {
@@ -363,7 +363,7 @@ func (gb *GraphBuilder) dfsComponentSearch(nodeID string, visited map[string]boo
 			}
 		}
 	}
-	
+
 	// Also check incoming edges
 	for _, edges := range gb.graph.Edges {
 		for _, edge := range edges {
@@ -380,26 +380,26 @@ func (gb *GraphBuilder) calculateModularity() float64 {
 	if len(gb.graph.Stats.Clusters) == 0 {
 		return 0.0
 	}
-	
+
 	totalCohesion := 0.0
 	for _, cluster := range gb.graph.Stats.Clusters {
 		totalCohesion += cluster.Cohesion
 	}
-	
+
 	return totalCohesion / float64(len(gb.graph.Stats.Clusters))
 }
 
 // calculateMaxCentrality calculates the maximum centrality score
 func (gb *GraphBuilder) calculateMaxCentrality() float64 {
 	maxCentrality := 0.0
-	
+
 	for nodeID := range gb.graph.Nodes {
 		centrality := gb.calculateNodeCentrality(nodeID)
 		if centrality > maxCentrality {
 			maxCentrality = centrality
 		}
 	}
-	
+
 	return maxCentrality
 }
 
@@ -407,7 +407,7 @@ func (gb *GraphBuilder) calculateMaxCentrality() float64 {
 func (gb *GraphBuilder) calculateNodeCentrality(nodeID string) float64 {
 	inDegree := 0
 	outDegree := len(gb.graph.Edges[nodeID])
-	
+
 	for _, edges := range gb.graph.Edges {
 		for _, edge := range edges {
 			if edge.Target == nodeID {
@@ -415,7 +415,7 @@ func (gb *GraphBuilder) calculateNodeCentrality(nodeID string) float64 {
 			}
 		}
 	}
-	
+
 	return float64(inDegree + outDegree)
 }
 
@@ -423,11 +423,11 @@ func (gb *GraphBuilder) calculateNodeCentrality(nodeID string) float64 {
 func (gb *GraphBuilder) calculatePathMetrics() (avgPath float64, diameter int) {
 	// Simplified calculation - would need proper shortest path algorithm for accuracy
 	// For now, use depth-based approximation
-	
+
 	totalDepth := 0
 	maxDepth := 0
 	nodeCount := 0
-	
+
 	for _, node := range gb.graph.Nodes {
 		totalDepth += node.Depth
 		if node.Depth > maxDepth {
@@ -435,11 +435,11 @@ func (gb *GraphBuilder) calculatePathMetrics() (avgPath float64, diameter int) {
 		}
 		nodeCount++
 	}
-	
+
 	if nodeCount > 0 {
 		avgPath = float64(totalDepth) / float64(nodeCount)
 	}
 	diameter = maxDepth
-	
+
 	return avgPath, diameter
 }

@@ -10,104 +10,104 @@ import (
 // ArchitectureReporter generates comprehensive architecture reports
 type ArchitectureReporter struct {
 	componentIdentifier *ComponentIdentifier
-	dataFlowAnalyzer   *DataFlowAnalyzer
-	patternDetector    *ArchitecturePatternDetector
-	integrationMapper  *IntegrationMapper
-	cycleDetector      *CycleDetector
-	graphGenerator     *GraphGenerator
+	dataFlowAnalyzer    *DataFlowAnalyzer
+	patternDetector     *ArchitecturePatternDetector
+	integrationMapper   *IntegrationMapper
+	cycleDetector       *CycleDetector
+	graphGenerator      *GraphGenerator
 }
 
 // ArchitectureReport represents a comprehensive architecture analysis report
 type ArchitectureReport struct {
-	Metadata       *ReportMetadata          `json:"metadata"`
-	Summary        *ArchitectureSummary     `json:"summary"`
-	Components     *ComponentAnalysis       `json:"components"`
-	DataFlow       *DataFlowSummary         `json:"data_flow"`
-	Patterns       *PatternAnalysis         `json:"patterns"`
-	Integrations   *IntegrationSummary      `json:"integrations"`
-	Dependencies   *DependencyAnalysis      `json:"dependencies"`
-	Graph          *ComponentGraph          `json:"graph"`
-	Recommendations []Recommendation        `json:"recommendations"`
-	Metrics        *ArchitectureMetrics     `json:"metrics"`
-	RiskAssessment *RiskAssessment         `json:"risk_assessment"`
+	Metadata        *ReportMetadata      `json:"metadata"`
+	Summary         *ArchitectureSummary `json:"summary"`
+	Components      *ComponentAnalysis   `json:"components"`
+	DataFlow        *DataFlowSummary     `json:"data_flow"`
+	Patterns        *PatternAnalysis     `json:"patterns"`
+	Integrations    *IntegrationSummary  `json:"integrations"`
+	Dependencies    *DependencyAnalysis  `json:"dependencies"`
+	Graph           *ComponentGraph      `json:"graph"`
+	Recommendations []Recommendation     `json:"recommendations"`
+	Metrics         *ArchitectureMetrics `json:"metrics"`
+	RiskAssessment  *RiskAssessment      `json:"risk_assessment"`
 }
 
 // ReportMetadata contains report generation information
 type ReportMetadata struct {
-	GeneratedAt         time.Time `json:"generated_at"`
-	Version             string    `json:"version"`
-	AnalysisEngine      string    `json:"analysis_engine"`
-	ProjectPath         string    `json:"project_path"`
-	FileCount           int       `json:"file_count"`
-	TotalLOC            int       `json:"total_loc"`
-	AnalyzedExtensions  []string  `json:"analyzed_extensions"`
+	GeneratedAt        time.Time `json:"generated_at"`
+	Version            string    `json:"version"`
+	AnalysisEngine     string    `json:"analysis_engine"`
+	ProjectPath        string    `json:"project_path"`
+	FileCount          int       `json:"file_count"`
+	TotalLOC           int       `json:"total_loc"`
+	AnalyzedExtensions []string  `json:"analyzed_extensions"`
 }
 
 // ArchitectureSummary provides high-level architecture insights
 type ArchitectureSummary struct {
-	TotalFiles          int                    `json:"total_files"`
-	TotalComponents     int                    `json:"total_components"`
-	ArchitecturalStyle  string                 `json:"architectural_style"`
-	PrimaryFrameworks   []string               `json:"primary_frameworks"`
-	TechnologyStack     []string               `json:"technology_stack"`
-	ComponentCount      int                    `json:"component_count"`
-	ComplexityScore     float64                `json:"complexity_score"`
-	MaintainabilityScore float64               `json:"maintainability_score"`
-	SecurityScore       float64                `json:"security_score"`
-	PerformanceScore    float64                `json:"performance_score"`
-	QualityGrade        string                 `json:"quality_grade"`
-	KeyInsights         []string               `json:"key_insights"`
+	TotalFiles           int      `json:"total_files"`
+	TotalComponents      int      `json:"total_components"`
+	ArchitecturalStyle   string   `json:"architectural_style"`
+	PrimaryFrameworks    []string `json:"primary_frameworks"`
+	TechnologyStack      []string `json:"technology_stack"`
+	ComponentCount       int      `json:"component_count"`
+	ComplexityScore      float64  `json:"complexity_score"`
+	MaintainabilityScore float64  `json:"maintainability_score"`
+	SecurityScore        float64  `json:"security_score"`
+	PerformanceScore     float64  `json:"performance_score"`
+	QualityGrade         string   `json:"quality_grade"`
+	KeyInsights          []string `json:"key_insights"`
 }
 
 // ComponentAnalysis provides detailed component breakdown
 type ComponentAnalysis struct {
-	TotalComponents    int                           `json:"total_components"`
-	ComponentsByType   map[ComponentType]int         `json:"components_by_type"`
-	LargestComponents  []ComponentInfo               `json:"largest_components"`
-	MostComplex        []ComponentInfo               `json:"most_complex"`
-	MostConnected      []ComponentInfo               `json:"most_connected"`
-	ComponentHealth    map[string]HealthStatus       `json:"component_health"`
+	TotalComponents   int                     `json:"total_components"`
+	ComponentsByType  map[ComponentType]int   `json:"components_by_type"`
+	LargestComponents []ComponentInfo         `json:"largest_components"`
+	MostComplex       []ComponentInfo         `json:"most_complex"`
+	MostConnected     []ComponentInfo         `json:"most_connected"`
+	ComponentHealth   map[string]HealthStatus `json:"component_health"`
 }
 
 // DataFlowSummary provides data flow analysis results
 type DataFlowSummary struct {
-	TotalDataFlows     int                    `json:"total_data_flows"`
-	FlowsByType        map[string]int         `json:"flows_by_type"`
-	Bottlenecks        []string               `json:"bottlenecks"`
-	StateComplexity    float64                `json:"state_complexity"`
-	PropDrilling       int                    `json:"prop_drilling_instances"`
-	ContextUsage       int                    `json:"context_usage"`
-	Recommendations    []string               `json:"recommendations"`
+	TotalDataFlows  int            `json:"total_data_flows"`
+	FlowsByType     map[string]int `json:"flows_by_type"`
+	Bottlenecks     []string       `json:"bottlenecks"`
+	StateComplexity float64        `json:"state_complexity"`
+	PropDrilling    int            `json:"prop_drilling_instances"`
+	ContextUsage    int            `json:"context_usage"`
+	Recommendations []string       `json:"recommendations"`
 }
 
 // PatternAnalysis provides architecture pattern detection results
 type PatternAnalysis struct {
-	DetectedFrameworks []DetectedFramework    `json:"detected_frameworks"`
+	DetectedFrameworks []DetectedFramework     `json:"detected_frameworks"`
 	DetectedPatterns   []DetectedDesignPattern `json:"detected_patterns"`
-	FrameworkAdoption  map[string]float64     `json:"framework_adoption"`
-	DesignPatterns     []string               `json:"design_patterns"`
-	AntiPatterns       []string               `json:"anti_patterns"`
-	ComplianceScore    float64                `json:"compliance_score"`
-	Recommendations    []string               `json:"recommendations"`
+	FrameworkAdoption  map[string]float64      `json:"framework_adoption"`
+	DesignPatterns     []string                `json:"design_patterns"`
+	AntiPatterns       []string                `json:"anti_patterns"`
+	ComplianceScore    float64                 `json:"compliance_score"`
+	Recommendations    []string                `json:"recommendations"`
 }
 
 // IntegrationSummary provides external integration analysis
 type IntegrationSummary struct {
-	TotalIntegrations  int                           `json:"total_integrations"`
-	IntegrationsByType map[IntegrationType]int       `json:"integrations_by_type"`
-	HighRiskIntegrations []IntegrationInfo           `json:"high_risk_integrations"`
-	SecurityGaps       []string                      `json:"security_gaps"`
-	Recommendations    []string                      `json:"recommendations"`
+	TotalIntegrations    int                     `json:"total_integrations"`
+	IntegrationsByType   map[IntegrationType]int `json:"integrations_by_type"`
+	HighRiskIntegrations []IntegrationInfo       `json:"high_risk_integrations"`
+	SecurityGaps         []string                `json:"security_gaps"`
+	Recommendations      []string                `json:"recommendations"`
 }
 
 // DependencyAnalysis provides dependency and cycle analysis
 type DependencyAnalysis struct {
-	TotalDependencies  int                  `json:"total_dependencies"`
-	CircularDependencies []CycleInfo        `json:"circular_dependencies"`
-	DeepNesting        []string             `json:"deep_nesting"`
-	UnusedDependencies []string             `json:"unused_dependencies"`
-	CriticalPaths      []string             `json:"critical_paths"`
-	Recommendations    []string             `json:"recommendations"`
+	TotalDependencies    int         `json:"total_dependencies"`
+	CircularDependencies []CycleInfo `json:"circular_dependencies"`
+	DeepNesting          []string    `json:"deep_nesting"`
+	UnusedDependencies   []string    `json:"unused_dependencies"`
+	CriticalPaths        []string    `json:"critical_paths"`
+	Recommendations      []string    `json:"recommendations"`
 }
 
 // Recommendation represents an actionable improvement suggestion
@@ -127,25 +127,25 @@ type Recommendation struct {
 
 // ArchitectureMetrics provides quantitative analysis metrics
 type ArchitectureMetrics struct {
-	CyclomaticComplexity float64            `json:"cyclomatic_complexity"`
-	CohesionScore        float64            `json:"cohesion_score"`
-	CouplingScore        float64            `json:"coupling_score"`
-	MaintainabilityIndex float64            `json:"maintainability_index"`
-	TechnicalDebtRatio   float64            `json:"technical_debt_ratio"`
-	TestCoverage         float64            `json:"test_coverage"`
-	CodeDuplication      float64            `json:"code_duplication"`
-	Documentation        float64            `json:"documentation_coverage"`
+	CyclomaticComplexity float64 `json:"cyclomatic_complexity"`
+	CohesionScore        float64 `json:"cohesion_score"`
+	CouplingScore        float64 `json:"coupling_score"`
+	MaintainabilityIndex float64 `json:"maintainability_index"`
+	TechnicalDebtRatio   float64 `json:"technical_debt_ratio"`
+	TestCoverage         float64 `json:"test_coverage"`
+	CodeDuplication      float64 `json:"code_duplication"`
+	Documentation        float64 `json:"documentation_coverage"`
 }
 
 // RiskAssessment provides comprehensive risk analysis
 type RiskAssessment struct {
-	OverallRisk        SecurityRiskLevel              `json:"overall_risk"`
-	SecurityRisks      []RiskItem             `json:"security_risks"`
-	PerformanceRisks   []RiskItem             `json:"performance_risks"`
-	MaintainabilityRisks []RiskItem           `json:"maintainability_risks"`
-	ScalabilityRisks   []RiskItem             `json:"scalability_risks"`
-	RiskMatrix         map[string]SecurityRiskLevel   `json:"risk_matrix"`
-	MitigationPlan     []string               `json:"mitigation_plan"`
+	OverallRisk          SecurityRiskLevel            `json:"overall_risk"`
+	SecurityRisks        []RiskItem                   `json:"security_risks"`
+	PerformanceRisks     []RiskItem                   `json:"performance_risks"`
+	MaintainabilityRisks []RiskItem                   `json:"maintainability_risks"`
+	ScalabilityRisks     []RiskItem                   `json:"scalability_risks"`
+	RiskMatrix           map[string]SecurityRiskLevel `json:"risk_matrix"`
+	MitigationPlan       []string                     `json:"mitigation_plan"`
 }
 
 // Supporting types and enums
@@ -155,49 +155,50 @@ type ImpactLevel string
 type EffortLevel string
 type RecommendationCategory string
 type HealthStatus string
+
 // RiskLevel is defined as SecurityRiskLevel in integration_mapper.go
 
 const (
 	// Recommendation Types
-	ArchitecturalRecommendation RecommendationType = "architectural"
-	SecurityRecommendation      RecommendationType = "security"
-	ReportPerformanceRecommendation   RecommendationType = "performance"
-	ReportQualityRecommendation       RecommendationType = "quality"
-	
+	ArchitecturalRecommendation     RecommendationType = "architectural"
+	SecurityRecommendation          RecommendationType = "security"
+	ReportPerformanceRecommendation RecommendationType = "performance"
+	ReportQualityRecommendation     RecommendationType = "quality"
+
 	// Priority Levels
 	CriticalPriority Priority = "critical"
 	HighPriority     Priority = "high"
 	MediumPriority   Priority = "medium"
 	LowPriority      Priority = "low"
-	
+
 	// Impact Levels
 	HighImpact   ImpactLevel = "high"
 	MediumImpact ImpactLevel = "medium"
 	LowImpact    ImpactLevel = "low"
-	
+
 	// Effort Levels
 	HighEffort   EffortLevel = "high"
 	MediumEffort EffortLevel = "medium"
 	LowEffort    EffortLevel = "low"
-	
+
 	// Categories
 	ArchitectureCategory RecommendationCategory = "architecture"
 	SecurityCategory     RecommendationCategory = "security"
 	PerformanceCategory  RecommendationCategory = "performance"
 	QualityCategory      RecommendationCategory = "quality"
-	
+
 	// Health Status
-	HealthyStatus    HealthStatus = "healthy"
-	WarningStatus    HealthStatus = "warning"
-	CriticalStatus   HealthStatus = "critical"
-	
+	HealthyStatus  HealthStatus = "healthy"
+	WarningStatus  HealthStatus = "warning"
+	CriticalStatus HealthStatus = "critical"
+
 	// Note: Risk levels are defined in integration_mapper.go as SecurityRiskLevel
 )
 
 // Additional types for compatibility
 type DetectedPattern struct {
-	Pattern    string  `json:"pattern"`
-	Confidence float64 `json:"confidence"`
+	Pattern    string   `json:"pattern"`
+	Confidence float64  `json:"confidence"`
 	Evidence   []string `json:"evidence"`
 }
 
@@ -221,18 +222,18 @@ type DetectedDesignPattern struct {
 
 // Supporting data structures
 type ComponentInfo struct {
-	Name       string  `json:"name"`
-	FilePath   string  `json:"file_path"`
-	Type       string  `json:"type"`
-	Size       int     `json:"size"`
-	Complexity float64 `json:"complexity"`
-	Connections int    `json:"connections"`
+	Name        string  `json:"name"`
+	FilePath    string  `json:"file_path"`
+	Type        string  `json:"type"`
+	Size        int     `json:"size"`
+	Complexity  float64 `json:"complexity"`
+	Connections int     `json:"connections"`
 }
 
 type PatternInfo struct {
-	Name       string  `json:"name"`
-	Type       string  `json:"type"`
-	Confidence float64 `json:"confidence"`
+	Name       string   `json:"name"`
+	Type       string   `json:"type"`
+	Confidence float64  `json:"confidence"`
 	Files      []string `json:"files"`
 }
 
@@ -271,11 +272,11 @@ func NewArchitectureReporter(
 ) *ArchitectureReporter {
 	return &ArchitectureReporter{
 		componentIdentifier: ci,
-		dataFlowAnalyzer:   dfa,
-		patternDetector:    pd,
-		integrationMapper:  im,
-		cycleDetector:      cd,
-		graphGenerator:     gg,
+		dataFlowAnalyzer:    dfa,
+		patternDetector:     pd,
+		integrationMapper:   im,
+		cycleDetector:       cd,
+		graphGenerator:      gg,
 	}
 }
 
@@ -374,22 +375,22 @@ func (ar *ArchitectureReporter) generateMetadata(projectPath string, fileCount i
 func (ar *ArchitectureReporter) generateSummary(fileCount int) *ArchitectureSummary {
 	components := ar.componentIdentifier.GetComponents()
 	patterns := ar.patternDetector.GetDesignPatterns()
-	
+
 	// Determine primary architectural style
 	architecturalStyle := ar.determineArchitecturalStyle(patterns)
-	
+
 	// Extract primary frameworks
 	frameworks := ar.extractFrameworks(patterns)
-	
+
 	// Calculate scores
 	complexityScore := ar.calculateComplexityScore()
 	maintainabilityScore := ar.calculateMaintainabilityScore()
 	securityScore := ar.calculateSecurityScore()
 	performanceScore := ar.calculatePerformanceScore()
-	
+
 	// Determine quality grade
 	qualityGrade := ar.calculateQualityGrade(complexityScore, maintainabilityScore, securityScore, performanceScore)
-	
+
 	// Generate key insights
 	insights := ar.generateKeyInsights()
 
@@ -412,7 +413,7 @@ func (ar *ArchitectureReporter) generateSummary(fileCount int) *ArchitectureSumm
 // analyzeComponents provides detailed component analysis
 func (ar *ArchitectureReporter) analyzeComponents() *ComponentAnalysis {
 	components := ar.componentIdentifier.GetComponents()
-	
+
 	// Count components by type
 	componentsByType := make(map[ComponentType]int)
 	for _, component := range components {
@@ -423,7 +424,7 @@ func (ar *ArchitectureReporter) analyzeComponents() *ComponentAnalysis {
 	largest := ar.findLargestComponents(components, 5)
 	mostComplex := ar.findMostComplexComponents(components, 5)
 	mostConnected := ar.findMostConnectedComponents(components, 5)
-	
+
 	// Assess component health
 	health := ar.assessComponentHealth(components)
 
@@ -441,7 +442,7 @@ func (ar *ArchitectureReporter) analyzeComponents() *ComponentAnalysis {
 func (ar *ArchitectureReporter) analyzeDataFlow() *DataFlowSummary {
 	dataFlowGraph := ar.dataFlowAnalyzer.GetDataFlowGraph()
 	bottlenecks := ar.dataFlowAnalyzer.IdentifyStateManagementBottlenecks()
-	
+
 	// Count flows by type
 	flowsByType := make(map[string]int)
 	if dataFlowGraph.Edges != nil {
@@ -465,7 +466,7 @@ func (ar *ArchitectureReporter) analyzeDataFlow() *DataFlowSummary {
 func (ar *ArchitectureReporter) analyzePatterns() *PatternAnalysis {
 	patterns := ar.patternDetector.GetDesignPatterns()
 	frameworks := ar.patternDetector.GetFrameworks()
-	
+
 	// Convert DetectionResult to DetectedDesignPattern
 	detectedPatterns := make([]DetectedDesignPattern, 0)
 	for _, pattern := range patterns {
@@ -475,7 +476,7 @@ func (ar *ArchitectureReporter) analyzePatterns() *PatternAnalysis {
 			Evidence:   pattern.Evidence,
 		})
 	}
-	
+
 	// Convert frameworks to DetectedFramework
 	detectedFrameworks := make([]DetectedFramework, 0)
 	for _, framework := range frameworks {
@@ -501,7 +502,7 @@ func (ar *ArchitectureReporter) analyzePatterns() *PatternAnalysis {
 func (ar *ArchitectureReporter) analyzeIntegrations() *IntegrationSummary {
 	integrations := ar.integrationMapper.GetIntegrationPoints()
 	highRisk := ar.integrationMapper.GetHighRiskIntegrations()
-	
+
 	// Count integrations by type
 	integrationsByType := make(map[IntegrationType]int)
 	for _, integration := range integrations {
@@ -532,7 +533,7 @@ func (ar *ArchitectureReporter) analyzeIntegrations() *IntegrationSummary {
 // analyzeDependencies provides dependency analysis summary
 func (ar *ArchitectureReporter) analyzeDependencies() *DependencyAnalysis {
 	cycles := ar.cycleDetector.GetCycles()
-	
+
 	// Convert cycles to CycleInfo
 	cycleInfos := make([]CycleInfo, 0)
 	for _, cycle := range cycles {
@@ -557,19 +558,19 @@ func (ar *ArchitectureReporter) analyzeDependencies() *DependencyAnalysis {
 // generateRecommendations creates actionable improvement recommendations
 func (ar *ArchitectureReporter) generateRecommendations() []Recommendation {
 	recommendations := make([]Recommendation, 0)
-	
+
 	// Security recommendations
 	recommendations = append(recommendations, ar.generateSecurityRecommendations()...)
-	
+
 	// Performance recommendations
 	recommendations = append(recommendations, ar.generatePerformanceRecommendations()...)
-	
+
 	// Architecture recommendations
 	recommendations = append(recommendations, ar.generateArchitectureRecommendations()...)
-	
+
 	// Quality recommendations
 	recommendations = append(recommendations, ar.generateQualityRecommendations()...)
-	
+
 	return recommendations
 }
 
@@ -593,10 +594,10 @@ func (ar *ArchitectureReporter) assessRisks() *RiskAssessment {
 	performanceRisks := ar.identifyPerformanceRisks()
 	maintainabilityRisks := ar.identifyMaintainabilityRisks()
 	scalabilityRisks := ar.identifyScalabilityRisks()
-	
+
 	// Calculate overall risk
 	overallRisk := ar.calculateOverallRisk(securityRisks, performanceRisks, maintainabilityRisks, scalabilityRisks)
-	
+
 	return &RiskAssessment{
 		OverallRisk:          overallRisk,
 		SecurityRisks:        securityRisks,
@@ -622,26 +623,26 @@ func (ar *ArchitectureReporter) determineArchitecturalStyle(patterns []Detection
 func (ar *ArchitectureReporter) extractFrameworks(patterns []DetectionResult) []string {
 	frameworks := make([]string, 0)
 	seen := make(map[string]bool)
-	
+
 	for _, pattern := range patterns {
 		if pattern.Type == "framework" && !seen[pattern.Name] {
 			frameworks = append(frameworks, pattern.Name)
 			seen[pattern.Name] = true
 		}
 	}
-	
+
 	return frameworks
 }
 
 func (ar *ArchitectureReporter) extractTechnologyStack(patterns []DetectionResult) []string {
 	stack := []string{"JavaScript", "Node.js"} // Default stack
-	
+
 	for _, pattern := range patterns {
 		if pattern.Type == "framework" {
 			stack = append(stack, pattern.Name)
 		}
 	}
-	
+
 	return stack
 }
 
@@ -650,17 +651,17 @@ func (ar *ArchitectureReporter) calculateComplexityScore() float64 {
 	if len(components) == 0 {
 		return 0.5
 	}
-	
+
 	// Simple complexity calculation based on component count and cycles
 	cycles := ar.cycleDetector.GetCycles()
 	baseComplexity := float64(len(components)) / 100.0 // Normalize
 	cycleComplexity := float64(len(cycles)) * 0.1
-	
+
 	complexity := baseComplexity + cycleComplexity
 	if complexity > 1.0 {
 		complexity = 1.0
 	}
-	
+
 	return complexity
 }
 
@@ -668,24 +669,24 @@ func (ar *ArchitectureReporter) calculateMaintainabilityScore() float64 {
 	// Calculate based on cycles, component coupling, and patterns
 	cycles := ar.cycleDetector.GetCycles()
 	cycleImpact := float64(len(cycles)) * 0.1
-	
+
 	score := 1.0 - cycleImpact
 	if score < 0 {
 		score = 0
 	}
-	
+
 	return score
 }
 
 func (ar *ArchitectureReporter) calculateSecurityScore() float64 {
 	highRiskIntegrations := ar.integrationMapper.GetHighRiskIntegrations()
 	riskImpact := float64(len(highRiskIntegrations)) * 0.2
-	
+
 	score := 1.0 - riskImpact
 	if score < 0 {
 		score = 0
 	}
-	
+
 	return score
 }
 
@@ -693,18 +694,18 @@ func (ar *ArchitectureReporter) calculatePerformanceScore() float64 {
 	// Simplified performance calculation
 	bottlenecks := ar.dataFlowAnalyzer.IdentifyStateManagementBottlenecks()
 	bottleneckImpact := float64(len(bottlenecks)) * 0.1
-	
+
 	score := 1.0 - bottleneckImpact
 	if score < 0 {
 		score = 0
 	}
-	
+
 	return score
 }
 
 func (ar *ArchitectureReporter) calculateQualityGrade(complexity, maintainability, security, performance float64) string {
 	average := (complexity + maintainability + security + performance) / 4.0
-	
+
 	if average >= 0.9 {
 		return "A"
 	} else if average >= 0.8 {
@@ -719,23 +720,23 @@ func (ar *ArchitectureReporter) calculateQualityGrade(complexity, maintainabilit
 
 func (ar *ArchitectureReporter) generateKeyInsights() []string {
 	insights := make([]string, 0)
-	
+
 	components := ar.componentIdentifier.GetComponents()
 	cycles := ar.cycleDetector.GetCycles()
 	integrations := ar.integrationMapper.GetIntegrationPoints()
-	
+
 	if len(components) > 0 {
 		insights = append(insights, fmt.Sprintf("Architecture contains %d components across multiple types", len(components)))
 	}
-	
+
 	if len(cycles) > 0 {
 		insights = append(insights, fmt.Sprintf("Found %d circular dependencies requiring attention", len(cycles)))
 	}
-	
+
 	if len(integrations) > 0 {
 		insights = append(insights, fmt.Sprintf("System integrates with %d external services", len(integrations)))
 	}
-	
+
 	return insights
 }
 
@@ -803,8 +804,8 @@ func (ar *ArchitectureReporter) convertBottlenecksToStrings(bottlenecks []StateM
 }
 
 func (ar *ArchitectureReporter) calculateStateComplexity() float64 { return 0.5 }
-func (ar *ArchitectureReporter) countPropDrilling() int { return 2 }
-func (ar *ArchitectureReporter) countContextUsage() int { return 3 }
+func (ar *ArchitectureReporter) countPropDrilling() int            { return 2 }
+func (ar *ArchitectureReporter) countContextUsage() int            { return 3 }
 
 func (ar *ArchitectureReporter) generateDataFlowRecommendations(bottlenecks []StateManagementPattern) []string {
 	if len(bottlenecks) > 0 {
@@ -859,9 +860,9 @@ func (ar *ArchitectureReporter) countTotalDependencies() int {
 	return total
 }
 
-func (ar *ArchitectureReporter) identifyDeepNesting() []string { return []string{} }
+func (ar *ArchitectureReporter) identifyDeepNesting() []string        { return []string{} }
 func (ar *ArchitectureReporter) identifyUnusedDependencies() []string { return []string{} }
-func (ar *ArchitectureReporter) identifyCriticalPaths() []string { return []string{} }
+func (ar *ArchitectureReporter) identifyCriticalPaths() []string      { return []string{} }
 
 func (ar *ArchitectureReporter) generateDependencyRecommendations(cycles []DependencyCycle) []string {
 	if len(cycles) > 0 {
@@ -948,13 +949,13 @@ func (ar *ArchitectureReporter) generateQualityRecommendations() []Recommendatio
 }
 
 // Metric calculation methods (simplified)
-func (ar *ArchitectureReporter) calculateCyclomaticComplexity() float64 { return 3.2 }
-func (ar *ArchitectureReporter) calculateCohesionScore() float64 { return 0.7 }
-func (ar *ArchitectureReporter) calculateCouplingScore() float64 { return 0.4 }
-func (ar *ArchitectureReporter) calculateMaintainabilityIndex() float64 { return 0.75 }
-func (ar *ArchitectureReporter) calculateTechnicalDebtRatio() float64 { return 0.15 }
-func (ar *ArchitectureReporter) calculateTestCoverage() float64 { return 0.65 }
-func (ar *ArchitectureReporter) calculateCodeDuplication() float64 { return 0.05 }
+func (ar *ArchitectureReporter) calculateCyclomaticComplexity() float64  { return 3.2 }
+func (ar *ArchitectureReporter) calculateCohesionScore() float64         { return 0.7 }
+func (ar *ArchitectureReporter) calculateCouplingScore() float64         { return 0.4 }
+func (ar *ArchitectureReporter) calculateMaintainabilityIndex() float64  { return 0.75 }
+func (ar *ArchitectureReporter) calculateTechnicalDebtRatio() float64    { return 0.15 }
+func (ar *ArchitectureReporter) calculateTestCoverage() float64          { return 0.65 }
+func (ar *ArchitectureReporter) calculateCodeDuplication() float64       { return 0.05 }
 func (ar *ArchitectureReporter) calculateDocumentationCoverage() float64 { return 0.6 }
 
 // Risk assessment methods
@@ -1012,7 +1013,7 @@ func (ar *ArchitectureReporter) identifyScalabilityRisks() []RiskItem {
 
 func (ar *ArchitectureReporter) calculateOverallRisk(security, performance, maintainability, scalability []RiskItem) SecurityRiskLevel {
 	totalRisks := len(security) + len(performance) + len(maintainability) + len(scalability)
-	
+
 	if totalRisks > 6 {
 		return CriticalRisk
 	} else if totalRisks > 3 {
@@ -1020,16 +1021,16 @@ func (ar *ArchitectureReporter) calculateOverallRisk(security, performance, main
 	} else if totalRisks > 1 {
 		return MediumRisk
 	}
-	
+
 	return LowRisk
 }
 
 func (ar *ArchitectureReporter) buildRiskMatrix() map[string]SecurityRiskLevel {
 	return map[string]SecurityRiskLevel{
-		"security":       HighRisk,
-		"performance":    MediumRisk,
+		"security":        HighRisk,
+		"performance":     MediumRisk,
 		"maintainability": HighRisk,
-		"scalability":    MediumRisk,
+		"scalability":     MediumRisk,
 	}
 }
 
@@ -1054,26 +1055,26 @@ func (ar *ArchitectureReporter) ExportToJSON(report *ArchitectureReport) (string
 // ExportToMarkdown exports the report to Markdown format
 func (ar *ArchitectureReporter) ExportToMarkdown(report *ArchitectureReport) string {
 	var md strings.Builder
-	
+
 	md.WriteString("# Architecture Analysis Report\n\n")
 	md.WriteString(fmt.Sprintf("**Generated:** %s\n", report.Metadata.GeneratedAt.Format("2006-01-02 15:04:05")))
 	md.WriteString(fmt.Sprintf("**Project:** %s\n", report.Metadata.ProjectPath))
 	md.WriteString(fmt.Sprintf("**Files Analyzed:** %d\n\n", report.Metadata.FileCount))
-	
+
 	// Executive Summary
 	md.WriteString("## Executive Summary\n\n")
 	md.WriteString(fmt.Sprintf("- **Architectural Style:** %s\n", report.Summary.ArchitecturalStyle))
 	md.WriteString(fmt.Sprintf("- **Component Count:** %d\n", report.Summary.ComponentCount))
 	md.WriteString(fmt.Sprintf("- **Quality Grade:** %s\n", report.Summary.QualityGrade))
 	md.WriteString(fmt.Sprintf("- **Overall Risk:** %s\n\n", report.RiskAssessment.OverallRisk))
-	
+
 	// Key Insights
 	md.WriteString("### Key Insights\n\n")
 	for _, insight := range report.Summary.KeyInsights {
 		md.WriteString(fmt.Sprintf("- %s\n", insight))
 	}
 	md.WriteString("\n")
-	
+
 	// Recommendations
 	md.WriteString("## Priority Recommendations\n\n")
 	for _, rec := range report.Recommendations {
@@ -1087,6 +1088,6 @@ func (ar *ArchitectureReporter) ExportToMarkdown(report *ArchitectureReport) str
 			md.WriteString("\n")
 		}
 	}
-	
+
 	return md.String()
 }

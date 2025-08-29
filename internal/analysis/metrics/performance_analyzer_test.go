@@ -11,7 +11,7 @@ import (
 
 func TestNewPerformanceAnalyzer(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
-	
+
 	assert.NotNil(t, analyzer)
 	assert.Equal(t, 2, analyzer.config.NestedLoopThreshold)
 	assert.Equal(t, 3, analyzer.config.QueryPatternThreshold)
@@ -27,20 +27,20 @@ func TestNewPerformanceAnalyzer(t *testing.T) {
 
 func TestNewPerformanceAnalyzerWithConfig(t *testing.T) {
 	config := PerformanceConfig{
-		NestedLoopThreshold:      3,
-		QueryPatternThreshold:    5,
-		DOMAccessThreshold:       7,
-		BundleSizeThresholdKB:    300,
-		ComponentComplexityMax:   20,
-		AlgorithmicWeight:        0.40,
-		MemoryWeight:            0.30,
-		NetworkWeight:           0.20,
-		RenderWeight:            0.10,
-		BundleWeight:            0.00,
+		NestedLoopThreshold:    3,
+		QueryPatternThreshold:  5,
+		DOMAccessThreshold:     7,
+		BundleSizeThresholdKB:  300,
+		ComponentComplexityMax: 20,
+		AlgorithmicWeight:      0.40,
+		MemoryWeight:           0.30,
+		NetworkWeight:          0.20,
+		RenderWeight:           0.10,
+		BundleWeight:           0.00,
 	}
-	
+
 	analyzer := NewPerformanceAnalyzerWithConfig(config)
-	
+
 	assert.NotNil(t, analyzer)
 	assert.Equal(t, config.NestedLoopThreshold, analyzer.config.NestedLoopThreshold)
 	assert.Equal(t, config.BundleSizeThresholdKB, analyzer.config.BundleSizeThresholdKB)
@@ -49,9 +49,9 @@ func TestNewPerformanceAnalyzerWithConfig(t *testing.T) {
 
 func TestAnalyzePerformance_EmptyInput(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
-	
+
 	metrics, err := analyzer.AnalyzePerformance(context.Background(), []*ast.ParseResult{}, nil)
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, metrics)
 	assert.Equal(t, "A", metrics.PerformanceGrade) // Perfect score for no issues
@@ -63,27 +63,27 @@ func TestAnalyzePerformance_EmptyInput(t *testing.T) {
 
 func TestAnalyzePerformance_ValidInput(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
-	
+
 	parseResults := createMockParseResultsForPerformance()
 	complexityMetrics := createMockComplexityMetricsForPerformance()
-	
+
 	metrics, err := analyzer.AnalyzePerformance(context.Background(), parseResults, complexityMetrics)
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, metrics)
-	
+
 	// Verify basic metrics structure
 	assert.GreaterOrEqual(t, metrics.OverallScore, 0.0)
 	assert.LessOrEqual(t, metrics.OverallScore, 100.0)
 	assert.NotEmpty(t, metrics.PerformanceGrade)
-	
+
 	// Verify summary is populated
 	assert.GreaterOrEqual(t, metrics.Summary.TotalAntiPatterns, 0)
 	assert.GreaterOrEqual(t, metrics.Summary.CriticalIssues, 0)
 	assert.GreaterOrEqual(t, metrics.Summary.HighPriorityIssues, 0)
 	assert.GreaterOrEqual(t, metrics.Summary.OptimizationPotential, 0.0)
 	assert.NotEmpty(t, metrics.Summary.TopRecommendation)
-	
+
 	// Verify recommendations are generated
 	assert.Greater(t, len(metrics.Recommendations), 0)
 }
@@ -93,7 +93,7 @@ func TestDetectNPlusOneQueriesAST(t *testing.T) {
 	metrics := &PerformanceMetrics{
 		AntiPatterns: []AntiPattern{},
 	}
-	
+
 	result := &ast.ParseResult{
 		FilePath: "test.js",
 		Functions: []ast.FunctionInfo{
@@ -107,9 +107,9 @@ func TestDetectNPlusOneQueriesAST(t *testing.T) {
 			},
 		},
 	}
-	
+
 	analyzer.detectNPlusOneQueriesAST(result, metrics)
-	
+
 	assert.Greater(t, len(metrics.AntiPatterns), 0)
 	antiPattern := metrics.AntiPatterns[0]
 	assert.Equal(t, "n_plus_one_query", antiPattern.Type)
@@ -123,7 +123,7 @@ func TestDetectSynchronousLoopsAST(t *testing.T) {
 	metrics := &PerformanceMetrics{
 		AntiPatterns: []AntiPattern{},
 	}
-	
+
 	result := &ast.ParseResult{
 		FilePath: "test.js",
 		Functions: []ast.FunctionInfo{
@@ -135,9 +135,9 @@ func TestDetectSynchronousLoopsAST(t *testing.T) {
 			},
 		},
 	}
-	
+
 	analyzer.detectSynchronousLoopsAST(result, metrics)
-	
+
 	assert.Greater(t, len(metrics.AntiPatterns), 0)
 	antiPattern := metrics.AntiPatterns[0]
 	assert.Equal(t, "sync_in_loop", antiPattern.Type)
@@ -150,7 +150,7 @@ func TestDetectMemoryLeaksAST(t *testing.T) {
 	metrics := &PerformanceMetrics{
 		AntiPatterns: []AntiPattern{},
 	}
-	
+
 	result := &ast.ParseResult{
 		FilePath: "test.js",
 		Functions: []ast.FunctionInfo{
@@ -172,13 +172,13 @@ func TestDetectMemoryLeaksAST(t *testing.T) {
 			{Source: "event-emitter", StartLine: 1},
 		},
 	}
-	
+
 	analyzer.detectMemoryLeaksAST(result, metrics)
-	
+
 	assert.Greater(t, len(metrics.AntiPatterns), 0)
 	// Should detect both memory-intensive function and event listener risk
 	assert.GreaterOrEqual(t, len(metrics.AntiPatterns), 2)
-	
+
 	// Check for memory leak patterns
 	foundMemoryLeak := false
 	foundEventRisk := false
@@ -199,7 +199,7 @@ func TestDetectLargeFunctions(t *testing.T) {
 	metrics := &PerformanceMetrics{
 		AntiPatterns: []AntiPattern{},
 	}
-	
+
 	result := &ast.ParseResult{
 		FilePath: "test.js",
 		Functions: []ast.FunctionInfo{
@@ -210,9 +210,9 @@ func TestDetectLargeFunctions(t *testing.T) {
 			},
 		},
 	}
-	
+
 	analyzer.detectLargeFunctions(result, metrics)
-	
+
 	assert.Greater(t, len(metrics.AntiPatterns), 0)
 	antiPattern := metrics.AntiPatterns[0]
 	assert.Equal(t, "large_function", antiPattern.Type)
@@ -224,7 +224,7 @@ func TestDetectLargeFunctions(t *testing.T) {
 func TestAnalyzeBundleSize(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
 	metrics := &PerformanceMetrics{}
-	
+
 	parseResults := []*ast.ParseResult{
 		{
 			FilePath: "app.js",
@@ -235,14 +235,14 @@ func TestAnalyzeBundleSize(t *testing.T) {
 			},
 		},
 	}
-	
+
 	analyzer.analyzeBundleSize(parseResults, metrics)
-	
+
 	require.NotNil(t, metrics.BundleAnalysis)
 	assert.Greater(t, metrics.BundleAnalysis.EstimatedSizeKB, 0)
 	assert.Greater(t, len(metrics.BundleAnalysis.HeavyDependencies), 0)
 	assert.Greater(t, len(metrics.BundleAnalysis.OptimizationTips), 0)
-	
+
 	// Check that heavy libraries are detected
 	foundLodash := false
 	foundMoment := false
@@ -261,7 +261,7 @@ func TestAnalyzeBundleSize(t *testing.T) {
 func TestAnalyzeReactPerformance(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
 	metrics := &PerformanceMetrics{}
-	
+
 	parseResults := []*ast.ParseResult{
 		{
 			FilePath: "Component.jsx",
@@ -287,27 +287,27 @@ func TestAnalyzeReactPerformance(t *testing.T) {
 			},
 			Classes: []ast.ClassInfo{
 				{
-					Name:    "ClassComponent",
-					Extends: "React.Component",
+					Name:      "ClassComponent",
+					Extends:   "React.Component",
 					StartLine: 200,
-					EndLine:   350, // Large class component
-					Methods: make([]ast.FunctionInfo, 20), // Many methods
+					EndLine:   350,                          // Large class component
+					Methods:   make([]ast.FunctionInfo, 20), // Many methods
 				},
 			},
 		},
 	}
-	
+
 	analyzer.analyzeReactPerformance(parseResults, metrics)
-	
+
 	require.NotNil(t, metrics.ReactAnalysis)
 	assert.Greater(t, len(metrics.ReactAnalysis.ComponentIssues), 0)
 	assert.Greater(t, len(metrics.ReactAnalysis.RenderOptimizations), 0)
-	
+
 	// Check for specific issues
 	foundLargeComponent := false
 	foundTooManyProps := false
 	foundLargeClassComponent := false
-	
+
 	for _, issue := range metrics.ReactAnalysis.ComponentIssues {
 		if issue.IssueType == "large_component" {
 			foundLargeComponent = true
@@ -319,7 +319,7 @@ func TestAnalyzeReactPerformance(t *testing.T) {
 			foundLargeClassComponent = true
 		}
 	}
-	
+
 	assert.True(t, foundLargeComponent, "Should detect large component")
 	assert.True(t, foundTooManyProps, "Should detect too many props")
 	assert.True(t, foundLargeClassComponent, "Should detect large class component")
@@ -330,7 +330,7 @@ func TestIdentifyBottlenecks(t *testing.T) {
 	metrics := &PerformanceMetrics{
 		Bottlenecks: []PerformanceBottleneck{},
 	}
-	
+
 	complexityMetrics := &ComplexityMetrics{
 		FunctionMetrics: []FunctionComplexity{
 			{
@@ -342,7 +342,7 @@ func TestIdentifyBottlenecks(t *testing.T) {
 			},
 		},
 	}
-	
+
 	parseResults := []*ast.ParseResult{
 		{
 			FilePath: "test.js",
@@ -350,23 +350,23 @@ func TestIdentifyBottlenecks(t *testing.T) {
 				{
 					Name:      "HugeClass",
 					StartLine: 1,
-					EndLine:   600, // Very large class
+					EndLine:   600,                          // Very large class
 					Methods:   make([]ast.FunctionInfo, 25), // Many methods
 				},
 			},
 			Imports: make([]ast.ImportInfo, 35), // Many imports
 		},
 	}
-	
+
 	analyzer.identifyBottlenecks(parseResults, complexityMetrics, metrics)
-	
+
 	assert.Greater(t, len(metrics.Bottlenecks), 0)
-	
+
 	// Check for different types of bottlenecks
 	foundComplexityBottleneck := false
 	foundLargeClassBottleneck := false
 	foundCouplingBottleneck := false
-	
+
 	for _, bottleneck := range metrics.Bottlenecks {
 		if bottleneck.Type == "high_complexity_function" {
 			foundComplexityBottleneck = true
@@ -378,7 +378,7 @@ func TestIdentifyBottlenecks(t *testing.T) {
 			foundCouplingBottleneck = true
 		}
 	}
-	
+
 	assert.True(t, foundComplexityBottleneck, "Should detect complexity bottleneck")
 	assert.True(t, foundLargeClassBottleneck, "Should detect large class bottleneck")
 	assert.True(t, foundCouplingBottleneck, "Should detect coupling bottleneck")
@@ -386,7 +386,7 @@ func TestIdentifyBottlenecks(t *testing.T) {
 
 func TestPerformanceGrading(t *testing.T) {
 	analyzer := NewPerformanceAnalyzer()
-	
+
 	tests := []struct {
 		score    float64
 		expected string
@@ -397,7 +397,7 @@ func TestPerformanceGrading(t *testing.T) {
 		{65.0, "D"},
 		{45.0, "F"},
 	}
-	
+
 	for _, tt := range tests {
 		grade := analyzer.getPerformanceGrade(tt.score)
 		assert.Equal(t, tt.expected, grade, "Score %.1f should get grade %s", tt.score, tt.expected)
@@ -413,10 +413,10 @@ func createMockParseResultsForPerformance() []*ast.ParseResult {
 			Language: "javascript",
 			Functions: []ast.FunctionInfo{
 				{
-					Name:       "processUser",
-					IsAsync:    true,
-					StartLine:  10,
-					EndLine:    25,
+					Name:      "processUser",
+					IsAsync:   true,
+					StartLine: 10,
+					EndLine:   25,
 					Parameters: []ast.ParameterInfo{
 						{Name: "userId", Type: "string"},
 						{Name: "options", Type: "object"},

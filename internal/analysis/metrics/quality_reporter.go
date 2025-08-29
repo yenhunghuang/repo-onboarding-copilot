@@ -12,25 +12,25 @@ import (
 
 // QualityReporter generates comprehensive quality reports by aggregating all analysis components
 type QualityReporter struct {
-	config            QualityReportConfig
-	complexityAnalyzer *ComplexityAnalyzer
+	config              QualityReportConfig
+	complexityAnalyzer  *ComplexityAnalyzer
 	duplicationDetector *DuplicationDetector
-	debtScorer         *DebtScorer
-	coverageAnalyzer   *CoverageAnalyzer
+	debtScorer          *DebtScorer
+	coverageAnalyzer    *CoverageAnalyzer
 	performanceAnalyzer *PerformanceAnalyzer
 	maintainabilityCalc *MaintainabilityCalculator
 }
 
 // QualityReportConfig defines configuration for quality reporting
 type QualityReportConfig struct {
-	ReportFormat        ReportFormat `yaml:"report_format" json:"report_format"`
-	IncludeExecutiveSummary bool      `yaml:"include_executive_summary" json:"include_executive_summary"`
-	IncludeTrendAnalysis    bool      `yaml:"include_trend_analysis" json:"include_trend_analysis"`
-	MaxRecommendations      int       `yaml:"max_recommendations" json:"max_recommendations"`
-	EffortEstimationModel   string    `yaml:"effort_estimation_model" json:"effort_estimation_model"`
-	RoadmapTimeframe       int       `yaml:"roadmap_timeframe" json:"roadmap_timeframe"` // weeks
-	Thresholds             QualityThresholds `yaml:"thresholds" json:"thresholds"`
-	WeightingFactors       QualityWeights    `yaml:"weighting_factors" json:"weighting_factors"`
+	ReportFormat            ReportFormat      `yaml:"report_format" json:"report_format"`
+	IncludeExecutiveSummary bool              `yaml:"include_executive_summary" json:"include_executive_summary"`
+	IncludeTrendAnalysis    bool              `yaml:"include_trend_analysis" json:"include_trend_analysis"`
+	MaxRecommendations      int               `yaml:"max_recommendations" json:"max_recommendations"`
+	EffortEstimationModel   string            `yaml:"effort_estimation_model" json:"effort_estimation_model"`
+	RoadmapTimeframe        int               `yaml:"roadmap_timeframe" json:"roadmap_timeframe"` // weeks
+	Thresholds              QualityThresholds `yaml:"thresholds" json:"thresholds"`
+	WeightingFactors        QualityWeights    `yaml:"weighting_factors" json:"weighting_factors"`
 }
 
 // QualityThresholds defines quality score thresholds
@@ -43,11 +43,11 @@ type QualityThresholds struct {
 
 // QualityWeights defines weights for different quality aspects
 type QualityWeights struct {
-	Complexity      float64 `yaml:"complexity" json:"complexity"`          // 20%
-	Duplication     float64 `yaml:"duplication" json:"duplication"`        // 15%
-	TechnicalDebt   float64 `yaml:"technical_debt" json:"technical_debt"`  // 25%
-	Coverage        float64 `yaml:"coverage" json:"coverage"`              // 20%
-	Performance     float64 `yaml:"performance" json:"performance"`        // 10%
+	Complexity      float64 `yaml:"complexity" json:"complexity"`           // 20%
+	Duplication     float64 `yaml:"duplication" json:"duplication"`         // 15%
+	TechnicalDebt   float64 `yaml:"technical_debt" json:"technical_debt"`   // 25%
+	Coverage        float64 `yaml:"coverage" json:"coverage"`               // 20%
+	Performance     float64 `yaml:"performance" json:"performance"`         // 10%
 	Maintainability float64 `yaml:"maintainability" json:"maintainability"` // 10%
 }
 
@@ -63,17 +63,17 @@ const (
 
 // QualityReport represents the comprehensive quality analysis report
 type QualityReport struct {
-	GeneratedAt         time.Time             `json:"generated_at"`
-	ProjectName         string                `json:"project_name"`
-	OverallScore        float64               `json:"overall_score"`
-	QualityGrade        string                `json:"quality_grade"`
-	ComponentScores     ComponentScores       `json:"component_scores"`
-	Dashboard           QualityDashboard      `json:"dashboard"`
-	Recommendations     []QualityRecommendation `json:"recommendations"`
-	Roadmap            QualityRoadmap        `json:"roadmap"`
-	ExecutiveSummary   *ExecutiveSummary     `json:"executive_summary,omitempty"`
-	TrendAnalysis      *QualityTrend         `json:"trend_analysis,omitempty"`
-	DetailedMetrics    DetailedMetrics       `json:"detailed_metrics"`
+	GeneratedAt      time.Time               `json:"generated_at"`
+	ProjectName      string                  `json:"project_name"`
+	OverallScore     float64                 `json:"overall_score"`
+	QualityGrade     string                  `json:"quality_grade"`
+	ComponentScores  ComponentScores         `json:"component_scores"`
+	Dashboard        QualityDashboard        `json:"dashboard"`
+	Recommendations  []QualityRecommendation `json:"recommendations"`
+	Roadmap          QualityRoadmap          `json:"roadmap"`
+	ExecutiveSummary *ExecutiveSummary       `json:"executive_summary,omitempty"`
+	TrendAnalysis    *QualityTrend           `json:"trend_analysis,omitempty"`
+	DetailedMetrics  DetailedMetrics         `json:"detailed_metrics"`
 }
 
 // ComponentScores contains scores for each analysis component
@@ -88,38 +88,38 @@ type ComponentScores struct {
 
 // QualityDashboard provides visual indicators and trend analysis
 type QualityDashboard struct {
-	OverallHealth       HealthIndicator       `json:"overall_health"`
-	ComponentHealth     map[string]HealthIndicator `json:"component_health"`
-	TrendIndicators     []TrendIndicator      `json:"trend_indicators"`
-	AlertsAndWarnings   []QualityAlert        `json:"alerts_and_warnings"`
-	KeyMetrics         []KeyMetric           `json:"key_metrics"`
-	ProgressIndicators  []ProgressIndicator   `json:"progress_indicators"`
+	OverallHealth      HealthIndicator            `json:"overall_health"`
+	ComponentHealth    map[string]HealthIndicator `json:"component_health"`
+	TrendIndicators    []TrendIndicator           `json:"trend_indicators"`
+	AlertsAndWarnings  []QualityAlert             `json:"alerts_and_warnings"`
+	KeyMetrics         []KeyMetric                `json:"key_metrics"`
+	ProgressIndicators []ProgressIndicator        `json:"progress_indicators"`
 }
 
 // HealthIndicator represents the health status of a component
 type HealthIndicator struct {
 	Score       float64 `json:"score"`
-	Status      string  `json:"status"`      // excellent, good, fair, poor
-	Color       string  `json:"color"`       // green, yellow, orange, red
-	Icon        string  `json:"icon"`        // visual indicator
+	Status      string  `json:"status"` // excellent, good, fair, poor
+	Color       string  `json:"color"`  // green, yellow, orange, red
+	Icon        string  `json:"icon"`   // visual indicator
 	Description string  `json:"description"`
 }
 
 // TrendIndicator shows trend analysis for quality metrics
 type TrendIndicator struct {
-	Component   string  `json:"component"`
-	Trend       string  `json:"trend"`       // improving, stable, degrading
-	ChangeRate  float64 `json:"change_rate"` // percentage change
-	Direction   string  `json:"direction"`   // up, down, stable
-	Significance string `json:"significance"` // high, medium, low
+	Component    string  `json:"component"`
+	Trend        string  `json:"trend"`        // improving, stable, degrading
+	ChangeRate   float64 `json:"change_rate"`  // percentage change
+	Direction    string  `json:"direction"`    // up, down, stable
+	Significance string  `json:"significance"` // high, medium, low
 }
 
 // QualityAlert represents warnings and critical issues
 type QualityAlert struct {
-	Severity    string `json:"severity"`    // critical, warning, info
-	Component   string `json:"component"`
-	Message     string `json:"message"`
-	Impact      string `json:"impact"`      // high, medium, low
+	Severity       string `json:"severity"` // critical, warning, info
+	Component      string `json:"component"`
+	Message        string `json:"message"`
+	Impact         string `json:"impact"` // high, medium, low
 	ActionRequired string `json:"action_required"`
 }
 
@@ -135,44 +135,44 @@ type KeyMetric struct {
 
 // ProgressIndicator shows progress towards quality goals
 type ProgressIndicator struct {
-	Goal        string  `json:"goal"`
-	Current     float64 `json:"current"`
-	Target      float64 `json:"target"`
-	Progress    float64 `json:"progress"` // percentage
-	Timeline    string  `json:"timeline"`
-	Status      string  `json:"status"`
+	Goal     string  `json:"goal"`
+	Current  float64 `json:"current"`
+	Target   float64 `json:"target"`
+	Progress float64 `json:"progress"` // percentage
+	Timeline string  `json:"timeline"`
+	Status   string  `json:"status"`
 }
 
 // QualityRecommendation represents actionable recommendations
 type QualityRecommendation struct {
-	ID           string           `json:"id"`
-	Title        string           `json:"title"`
-	Description  string           `json:"description"`
+	ID           string                 `json:"id"`
+	Title        string                 `json:"title"`
+	Description  string                 `json:"description"`
 	Category     RecommendationCategory `json:"category"`
-	Priority     Priority         `json:"priority"`
-	Impact       ImpactLevel      `json:"impact"`
-	Effort       EffortLevel      `json:"effort"`
-	EffortHours  float64          `json:"effort_hours"`
-	ROI          float64          `json:"roi"`
-	Component    string           `json:"component"`
-	Files        []string         `json:"files"`
+	Priority     Priority               `json:"priority"`
+	Impact       ImpactLevel            `json:"impact"`
+	Effort       EffortLevel            `json:"effort"`
+	EffortHours  float64                `json:"effort_hours"`
+	ROI          float64                `json:"roi"`
+	Component    string                 `json:"component"`
+	Files        []string               `json:"files"`
 	Actions      []RecommendationAction `json:"actions"`
-	Benefits     []string         `json:"benefits"`
-	Risks        []string         `json:"risks"`
-	Dependencies []string         `json:"dependencies"`
-	Timeline     string           `json:"timeline"`
+	Benefits     []string               `json:"benefits"`
+	Risks        []string               `json:"risks"`
+	Dependencies []string               `json:"dependencies"`
+	Timeline     string                 `json:"timeline"`
 }
 
 // RecommendationCategory categorizes recommendations
 type RecommendationCategory string
 
 const (
-	CategoryQuickWins         RecommendationCategory = "quick_wins"
-	CategoryStrategicImprovements RecommendationCategory = "strategic_improvements"
-	CategoryLongTermGoals     RecommendationCategory = "long_term_goals"
-	CategoryCriticalFixes     RecommendationCategory = "critical_fixes"
+	CategoryQuickWins               RecommendationCategory = "quick_wins"
+	CategoryStrategicImprovements   RecommendationCategory = "strategic_improvements"
+	CategoryLongTermGoals           RecommendationCategory = "long_term_goals"
+	CategoryCriticalFixes           RecommendationCategory = "critical_fixes"
 	CategoryPerformanceOptimization RecommendationCategory = "performance_optimization"
-	CategoryTechnicalDebtReduction RecommendationCategory = "technical_debt_reduction"
+	CategoryTechnicalDebtReduction  RecommendationCategory = "technical_debt_reduction"
 )
 
 // Priority levels for recommendations
@@ -205,22 +205,22 @@ const (
 
 // RecommendationAction represents specific actions to take
 type RecommendationAction struct {
-	Type        string `json:"type"`
-	Description string `json:"description"`
-	Command     string `json:"command,omitempty"`
-	Files       []string `json:"files,omitempty"`
-	EstimatedHours float64 `json:"estimated_hours"`
+	Type           string   `json:"type"`
+	Description    string   `json:"description"`
+	Command        string   `json:"command,omitempty"`
+	Files          []string `json:"files,omitempty"`
+	EstimatedHours float64  `json:"estimated_hours"`
 }
 
 // QualityRoadmap provides improvement planning with milestones
 type QualityRoadmap struct {
-	Overview        string                `json:"overview"`
-	TimeframeWeeks  int                   `json:"timeframe_weeks"`
-	Milestones      []QualityMilestone    `json:"milestones"`
-	Phases          []ImprovementPhase    `json:"phases"`
-	ResourcePlan    ResourcePlan          `json:"resource_plan"`
-	RiskAssessment  []RoadmapRisk         `json:"risk_assessment"`
-	SuccessMetrics  []SuccessMetric       `json:"success_metrics"`
+	Overview       string             `json:"overview"`
+	TimeframeWeeks int                `json:"timeframe_weeks"`
+	Milestones     []QualityMilestone `json:"milestones"`
+	Phases         []ImprovementPhase `json:"phases"`
+	ResourcePlan   ResourcePlan       `json:"resource_plan"`
+	RiskAssessment []RoadmapRisk      `json:"risk_assessment"`
+	SuccessMetrics []SuccessMetric    `json:"success_metrics"`
 }
 
 // QualityMilestone represents a significant quality improvement milestone
@@ -237,31 +237,31 @@ type QualityMilestone struct {
 
 // ImprovementPhase represents phases of quality improvement
 type ImprovementPhase struct {
-	Name           string                   `json:"name"`
-	Duration       string                   `json:"duration"`
-	Focus          []string                 `json:"focus"`
-	Recommendations []string                `json:"recommendations"`
-	ExpectedImpact  map[string]float64      `json:"expected_impact"`
-	ResourceNeeds   PhaseResourceNeeds      `json:"resource_needs"`
+	Name            string             `json:"name"`
+	Duration        string             `json:"duration"`
+	Focus           []string           `json:"focus"`
+	Recommendations []string           `json:"recommendations"`
+	ExpectedImpact  map[string]float64 `json:"expected_impact"`
+	ResourceNeeds   PhaseResourceNeeds `json:"resource_needs"`
 }
 
 // PhaseResourceNeeds represents resource requirements for a phase
 type PhaseResourceNeeds struct {
-	DeveloperHours float64 `json:"developer_hours"`
-	QAHours        float64 `json:"qa_hours"`
-	ReviewHours    float64 `json:"review_hours"`
+	DeveloperHours float64  `json:"developer_hours"`
+	QAHours        float64  `json:"qa_hours"`
+	ReviewHours    float64  `json:"review_hours"`
 	Specialists    []string `json:"specialists"`
 }
 
 // ResourcePlan provides overall resource planning
 type ResourcePlan struct {
-	TotalDeveloperHours float64 `json:"total_developer_hours"`
-	TotalQAHours        float64 `json:"total_qa_hours"`
-	TotalReviewHours    float64 `json:"total_review_hours"`
-	EstimatedCost       float64 `json:"estimated_cost"`
-	TeamSize           int     `json:"team_size"`
-	Duration           string  `json:"duration"`
-	SkillsNeeded       []string `json:"skills_needed"`
+	TotalDeveloperHours float64  `json:"total_developer_hours"`
+	TotalQAHours        float64  `json:"total_qa_hours"`
+	TotalReviewHours    float64  `json:"total_review_hours"`
+	EstimatedCost       float64  `json:"estimated_cost"`
+	TeamSize            int      `json:"team_size"`
+	Duration            string   `json:"duration"`
+	SkillsNeeded        []string `json:"skills_needed"`
 }
 
 // RoadmapRisk represents risks in the improvement roadmap
@@ -285,14 +285,14 @@ type SuccessMetric struct {
 
 // ExecutiveSummary provides high-level overview for stakeholders
 type ExecutiveSummary struct {
-	OverallAssessment   string                 `json:"overall_assessment"`
-	KeyFindings         []string               `json:"key_findings"`
-	CriticalIssues      []string               `json:"critical_issues"`
-	TopRecommendations  []string               `json:"top_recommendations"`
-	BusinessImpact      BusinessImpact         `json:"business_impact"`
-	InvestmentRequired  InvestmentSummary      `json:"investment_required"`
-	ExpectedOutcomes    []ExpectedOutcome      `json:"expected_outcomes"`
-	NextSteps          []string               `json:"next_steps"`
+	OverallAssessment  string            `json:"overall_assessment"`
+	KeyFindings        []string          `json:"key_findings"`
+	CriticalIssues     []string          `json:"critical_issues"`
+	TopRecommendations []string          `json:"top_recommendations"`
+	BusinessImpact     BusinessImpact    `json:"business_impact"`
+	InvestmentRequired InvestmentSummary `json:"investment_required"`
+	ExpectedOutcomes   []ExpectedOutcome `json:"expected_outcomes"`
+	NextSteps          []string          `json:"next_steps"`
 }
 
 // BusinessImpact describes business implications of quality issues
@@ -316,22 +316,22 @@ type InvestmentSummary struct {
 
 // ExpectedOutcome describes expected results from improvements
 type ExpectedOutcome struct {
-	Area        string `json:"area"`
-	Current     string `json:"current"`
-	Improved    string `json:"improved"`
-	Timeline    string `json:"timeline"`
-	Confidence  string `json:"confidence"`
+	Area       string `json:"area"`
+	Current    string `json:"current"`
+	Improved   string `json:"improved"`
+	Timeline   string `json:"timeline"`
+	Confidence string `json:"confidence"`
 }
 
 // QualityTrend provides trend analysis over time
 type QualityTrend struct {
-	Period              string                 `json:"period"`
-	OverallTrend        TrendDirection         `json:"overall_trend"`
-	ComponentTrends     map[string]TrendDirection `json:"component_trends"`
-	HistoricalData      []HistoricalDataPoint  `json:"historical_data"`
-	TrendPredictions    []TrendPrediction      `json:"trend_predictions"`
-	SeasonalPatterns    []SeasonalPattern      `json:"seasonal_patterns"`
-	InflectionPoints    []InflectionPoint      `json:"inflection_points"`
+	Period           string                    `json:"period"`
+	OverallTrend     TrendDirection            `json:"overall_trend"`
+	ComponentTrends  map[string]TrendDirection `json:"component_trends"`
+	HistoricalData   []HistoricalDataPoint     `json:"historical_data"`
+	TrendPredictions []TrendPrediction         `json:"trend_predictions"`
+	SeasonalPatterns []SeasonalPattern         `json:"seasonal_patterns"`
+	InflectionPoints []InflectionPoint         `json:"inflection_points"`
 }
 
 // TrendDirection represents the direction of a trend
@@ -358,11 +358,11 @@ type QualityEvent struct {
 
 // TrendPrediction provides predictions for future quality trends
 type TrendPrediction struct {
-	Component   string    `json:"component"`
-	TimeFrame   string    `json:"time_frame"`
-	Prediction  float64   `json:"prediction"`
-	Confidence  float64   `json:"confidence"`
-	Assumptions []string  `json:"assumptions"`
+	Component   string   `json:"component"`
+	TimeFrame   string   `json:"time_frame"`
+	Prediction  float64  `json:"prediction"`
+	Confidence  float64  `json:"confidence"`
+	Assumptions []string `json:"assumptions"`
 }
 
 // SeasonalPattern represents seasonal quality patterns
@@ -375,11 +375,11 @@ type SeasonalPattern struct {
 
 // InflectionPoint represents significant changes in quality trends
 type InflectionPoint struct {
-	Date        time.Time `json:"date"`
-	Component   string    `json:"component"`
-	Change      float64   `json:"change"`
-	Cause       string    `json:"cause"`
-	Impact      string    `json:"impact"`
+	Date      time.Time `json:"date"`
+	Component string    `json:"component"`
+	Change    float64   `json:"change"`
+	Cause     string    `json:"cause"`
+	Impact    string    `json:"impact"`
 }
 
 // DetailedMetrics contains all detailed metrics from individual analyzers
@@ -556,6 +556,7 @@ func (qr *QualityReporter) parseFiles(fileContents map[string]string) ([]*ast.Pa
 
 	return parseResults, nil
 }
+
 // generateReport creates the comprehensive quality report from all analysis results
 func (qr *QualityReporter) generateReport(
 	complexity *ComplexityMetrics,
@@ -601,16 +602,16 @@ func (qr *QualityReporter) generateReport(
 	}
 
 	return &QualityReport{
-		GeneratedAt:     now,
-		ProjectName:     "Repository Analysis", // Could be made configurable
-		OverallScore:    overallScore,
-		QualityGrade:    qualityGrade,
-		ComponentScores: componentScores,
-		Dashboard:       dashboard,
-		Recommendations: recommendations,
-		Roadmap:        roadmap,
+		GeneratedAt:      now,
+		ProjectName:      "Repository Analysis", // Could be made configurable
+		OverallScore:     overallScore,
+		QualityGrade:     qualityGrade,
+		ComponentScores:  componentScores,
+		Dashboard:        dashboard,
+		Recommendations:  recommendations,
+		Roadmap:          roadmap,
 		ExecutiveSummary: executiveSummary,
-		TrendAnalysis:   trendAnalysis,
+		TrendAnalysis:    trendAnalysis,
 		DetailedMetrics: DetailedMetrics{
 			Complexity:      complexity,
 			Duplication:     duplication,
@@ -655,7 +656,7 @@ func (qr *QualityReporter) normalizeScore(score float64) float64 {
 // calculateOverallScore computes weighted overall quality score
 func (qr *QualityReporter) calculateOverallScore(scores ComponentScores) float64 {
 	weights := qr.config.WeightingFactors
-	
+
 	overallScore := scores.Complexity*weights.Complexity +
 		scores.Duplication*weights.Duplication +
 		scores.TechnicalDebt*weights.TechnicalDebt +
@@ -669,7 +670,7 @@ func (qr *QualityReporter) calculateOverallScore(scores ComponentScores) float64
 // determineQualityGrade assigns a grade based on overall score
 func (qr *QualityReporter) determineQualityGrade(score float64) string {
 	thresholds := qr.config.Thresholds
-	
+
 	switch {
 	case score >= thresholds.Excellent:
 		return "Excellent"
@@ -693,7 +694,7 @@ func (qr *QualityReporter) generateDashboard(
 	maintainability *MaintainabilityMetrics,
 ) QualityDashboard {
 	overallScore := qr.calculateOverallScore(scores)
-	
+
 	// Generate health indicators
 	overallHealth := qr.createHealthIndicator(overallScore, "Overall Quality")
 	componentHealth := map[string]HealthIndicator{
@@ -722,7 +723,7 @@ func (qr *QualityReporter) generateDashboard(
 		ComponentHealth:    componentHealth,
 		TrendIndicators:    trendIndicators,
 		AlertsAndWarnings:  alerts,
-		KeyMetrics:        keyMetrics,
+		KeyMetrics:         keyMetrics,
 		ProgressIndicators: progressIndicators,
 	}
 }
@@ -730,7 +731,7 @@ func (qr *QualityReporter) generateDashboard(
 // createHealthIndicator creates a health indicator for a given score
 func (qr *QualityReporter) createHealthIndicator(score float64, description string) HealthIndicator {
 	var status, color, icon string
-	
+
 	thresholds := qr.config.Thresholds
 	switch {
 	case score >= thresholds.Excellent:
@@ -961,21 +962,21 @@ func (qr *QualityReporter) getMetricStatus(value, target float64, higherIsBetter
 // generateProgressIndicators creates progress indicators for quality goals
 func (qr *QualityReporter) generateProgressIndicators(scores ComponentScores) []ProgressIndicator {
 	targets := map[string]float64{
-		"Overall Quality":   85.0,
-		"Code Complexity":   80.0,
-		"Technical Debt":    75.0,
-		"Test Coverage":     80.0,
-		"Performance":       85.0,
-		"Maintainability":   80.0,
+		"Overall Quality": 85.0,
+		"Code Complexity": 80.0,
+		"Technical Debt":  75.0,
+		"Test Coverage":   80.0,
+		"Performance":     85.0,
+		"Maintainability": 80.0,
 	}
 
 	currentValues := map[string]float64{
-		"Overall Quality":   qr.calculateOverallScore(scores),
-		"Code Complexity":   scores.Complexity,
-		"Technical Debt":    scores.TechnicalDebt,
-		"Test Coverage":     scores.Coverage,
-		"Performance":       scores.Performance,
-		"Maintainability":   scores.Maintainability,
+		"Overall Quality": qr.calculateOverallScore(scores),
+		"Code Complexity": scores.Complexity,
+		"Technical Debt":  scores.TechnicalDebt,
+		"Test Coverage":   scores.Coverage,
+		"Performance":     scores.Performance,
+		"Maintainability": scores.Maintainability,
 	}
 
 	var indicators []ProgressIndicator
@@ -988,7 +989,7 @@ func (qr *QualityReporter) generateProgressIndicators(scores ComponentScores) []
 
 		status := "in_progress"
 		timeline := "4-8 weeks"
-		
+
 		if progress >= 100 {
 			status = "completed"
 			timeline = "achieved"
@@ -1008,7 +1009,7 @@ func (qr *QualityReporter) generateProgressIndicators(scores ComponentScores) []
 	}
 
 	return indicators
-}// generateRecommendations creates actionable recommendations from all analysis results
+} // generateRecommendations creates actionable recommendations from all analysis results
 func (qr *QualityReporter) generateRecommendations(
 	complexity *ComplexityMetrics,
 	duplication *DuplicationMetrics,
@@ -1051,7 +1052,7 @@ func (qr *QualityReporter) generateComplexityRecommendations(complexity *Complex
 			category := qr.categorizeByComplexity(funcMetric.CyclomaticValue)
 			linesOfCode := funcMetric.EndLine - funcMetric.StartLine + 1
 			effort := qr.estimateRefactoringEffort(funcMetric.CyclomaticValue, linesOfCode)
-			
+
 			recommendations = append(recommendations, QualityRecommendation{
 				ID:          fmt.Sprintf("COMPLEX-%d", id),
 				Title:       fmt.Sprintf("Refactor high complexity function: %s", funcMetric.Name),
@@ -1104,7 +1105,7 @@ func (qr *QualityReporter) generateDuplicationRecommendations(duplication *Dupli
 	for _, duplicate := range duplication.ExactDuplicates {
 		if len(duplicate.Instances) > 1 && duplicate.LineCount > 10 {
 			effort := qr.estimateDuplicationFixEffort(duplicate.LineCount, len(duplicate.Instances))
-			
+
 			recommendations = append(recommendations, QualityRecommendation{
 				ID:          fmt.Sprintf("DUP-%d", id),
 				Title:       fmt.Sprintf("Consolidate duplicated code: %d lines", duplicate.LineCount),
@@ -1180,7 +1181,7 @@ func (qr *QualityReporter) generateDebtRecommendations(debt *TechnicalDebtMetric
 		}
 
 		category := qr.categorizeDebtByScore(fd.score)
-		
+
 		recommendations = append(recommendations, QualityRecommendation{
 			ID:          fmt.Sprintf("DEBT-%d", id),
 			Title:       fmt.Sprintf("Reduce technical debt in %s", fd.filename),
@@ -1232,7 +1233,7 @@ func (qr *QualityReporter) generateCoverageRecommendations(coverage *CoverageMet
 	for _, funcAnalysis := range coverage.FunctionAnalysis {
 		if funcAnalysis.TestabilityScore < 70 && funcAnalysis.RiskLevel == "high" {
 			effort := qr.estimateTestingEffort(funcAnalysis.TestingDifficulty, len(funcAnalysis.RequiredMocks))
-			
+
 			recommendations = append(recommendations, QualityRecommendation{
 				ID:          fmt.Sprintf("TEST-%d", id),
 				Title:       fmt.Sprintf("Add tests for %s", funcAnalysis.Name),
@@ -1285,7 +1286,7 @@ func (qr *QualityReporter) generatePerformanceRecommendations(performance *Perfo
 		if antiPattern.Severity == "high" || antiPattern.Severity == "critical" {
 			effort := qr.estimatePerformanceFixEffort(antiPattern.Type, antiPattern.Impact.Score)
 			category := qr.categorizePerformanceIssue(antiPattern.Severity)
-			
+
 			recommendations = append(recommendations, QualityRecommendation{
 				ID:          fmt.Sprintf("PERF-%d", id),
 				Title:       fmt.Sprintf("Fix %s anti-pattern", antiPattern.Type),
@@ -1354,7 +1355,7 @@ func (qr *QualityReporter) generateMaintainabilityRecommendations(maintainabilit
 		}
 
 		effort := qr.estimateMaintainabilityImprovement(fm.index)
-		
+
 		recommendations = append(recommendations, QualityRecommendation{
 			ID:          fmt.Sprintf("MAINT-%d", id),
 			Title:       fmt.Sprintf("Improve maintainability of %s", fm.filename),
@@ -1404,11 +1405,11 @@ func (qr *QualityReporter) rankAndLimitRecommendations(recommendations []Quality
 		if recommendations[i].ROI != recommendations[j].ROI {
 			return recommendations[i].ROI > recommendations[j].ROI
 		}
-		
+
 		if recommendations[i].Impact != recommendations[j].Impact {
 			return qr.impactToScore(recommendations[i].Impact) > qr.impactToScore(recommendations[j].Impact)
 		}
-		
+
 		return qr.priorityToScore(recommendations[i].Priority) > qr.priorityToScore(recommendations[j].Priority)
 	})
 
@@ -1418,7 +1419,7 @@ func (qr *QualityReporter) rankAndLimitRecommendations(recommendations []Quality
 	}
 
 	return recommendations
-}// Helper methods for categorization and estimation
+} // Helper methods for categorization and estimation
 
 // categorizeByComplexity categorizes recommendations based on complexity levels
 func (qr *QualityReporter) categorizeByComplexity(complexity int) RecommendationCategory {
@@ -1466,11 +1467,11 @@ func (qr *QualityReporter) categorizePerformanceIssue(severity string) Recommend
 
 // estimateRefactoringEffort estimates hours needed to refactor complex code
 func (qr *QualityReporter) estimateRefactoringEffort(complexity int, linesOfCode int) float64 {
-	baseHours := float64(complexity-10) * 0.5 // Base time for complexity reduction
+	baseHours := float64(complexity-10) * 0.5                   // Base time for complexity reduction
 	sizeMultiplier := math.Max(1.0, float64(linesOfCode)/100.0) // Size adjustment
-	
+
 	effort := baseHours * sizeMultiplier
-	
+
 	// Apply bounds
 	if effort < 2.0 {
 		effort = 2.0
@@ -1478,17 +1479,17 @@ func (qr *QualityReporter) estimateRefactoringEffort(complexity int, linesOfCode
 	if effort > 40.0 {
 		effort = 40.0
 	}
-	
+
 	return math.Round(effort*4) / 4 // Round to nearest 0.25
 }
 
 // estimateDuplicationFixEffort estimates hours to fix code duplication
 func (qr *QualityReporter) estimateDuplicationFixEffort(lines int, instances int) float64 {
-	baseHours := float64(lines) * 0.1 // Base time per line
+	baseHours := float64(lines) * 0.1                           // Base time per line
 	instanceMultiplier := math.Max(1.0, float64(instances)*0.3) // More instances = more complexity
-	
+
 	effort := baseHours * instanceMultiplier
-	
+
 	// Apply bounds
 	if effort < 1.0 {
 		effort = 1.0
@@ -1496,7 +1497,7 @@ func (qr *QualityReporter) estimateDuplicationFixEffort(lines int, instances int
 	if effort > 24.0 {
 		effort = 24.0
 	}
-	
+
 	return math.Round(effort*4) / 4
 }
 
@@ -1513,22 +1514,22 @@ func (qr *QualityReporter) estimateTestingEffort(complexity string, mocksRequire
 	default:
 		baseHours = 3.0
 	}
-	
+
 	mockMultiplier := 1.0 + (float64(mocksRequired) * 0.5)
 	effort := baseHours * mockMultiplier
-	
+
 	// Apply bounds
 	if effort > 32.0 {
 		effort = 32.0
 	}
-	
+
 	return math.Round(effort*4) / 4
 }
 
 // estimatePerformanceFixEffort estimates hours to fix performance issues
 func (qr *QualityReporter) estimatePerformanceFixEffort(antiPatternType string, impact float64) float64 {
 	var baseHours float64
-	
+
 	switch antiPatternType {
 	case "nested_loops", "sync_in_async":
 		baseHours = 6.0
@@ -1539,14 +1540,14 @@ func (qr *QualityReporter) estimatePerformanceFixEffort(antiPatternType string, 
 	default:
 		baseHours = 5.0
 	}
-	
+
 	impactMultiplier := 1.0 + (impact / 100.0)
 	effort := baseHours * impactMultiplier
-	
+
 	if effort > 24.0 {
 		effort = 24.0
 	}
-	
+
 	return math.Round(effort*4) / 4
 }
 
@@ -1554,14 +1555,14 @@ func (qr *QualityReporter) estimatePerformanceFixEffort(antiPatternType string, 
 func (qr *QualityReporter) estimateMaintainabilityImprovement(index float64) float64 {
 	improvementNeeded := 80.0 - index // Target maintainability index of 80
 	baseHours := improvementNeeded * 0.3
-	
+
 	if baseHours < 2.0 {
 		baseHours = 2.0
 	}
 	if baseHours > 20.0 {
 		baseHours = 20.0
 	}
-	
+
 	return math.Round(baseHours*4) / 4
 }
 
@@ -1627,7 +1628,7 @@ func (qr *QualityReporter) calculateROI(effort, benefit float64) float64 {
 	if effort <= 0 {
 		return 0
 	}
-	
+
 	// Simple ROI calculation: benefit/cost ratio
 	roi := benefit / effort
 	return math.Round(roi*100) / 100
@@ -1703,12 +1704,12 @@ func (qr *QualityReporter) extractFilesFromInstances(instances []DuplicationInst
 	for _, instance := range instances {
 		fileMap[instance.FilePath] = true
 	}
-	
+
 	var files []string
 	for filename := range fileMap {
 		files = append(files, filename)
 	}
-	
+
 	sort.Strings(files)
 	return files
 }
@@ -1716,30 +1717,30 @@ func (qr *QualityReporter) extractFilesFromInstances(instances []DuplicationInst
 // generateRoadmap creates a quality improvement roadmap with milestones
 func (qr *QualityReporter) generateRoadmap(recommendations []QualityRecommendation, scores ComponentScores) QualityRoadmap {
 	timeframeWeeks := qr.config.RoadmapTimeframe
-	
+
 	// Group recommendations into phases
 	phases := qr.createImprovementPhases(recommendations)
-	
+
 	// Create milestones
 	milestones := qr.createMilestones(phases, timeframeWeeks)
-	
+
 	// Calculate resource planning
 	resourcePlan := qr.calculateResourcePlan(recommendations)
-	
+
 	// Generate risk assessment
 	risks := qr.generateRoadmapRisks()
-	
+
 	// Define success metrics
 	successMetrics := qr.defineSuccessMetrics(scores)
-	
+
 	return QualityRoadmap{
-		Overview:        qr.generateRoadmapOverview(recommendations, phases),
-		TimeframeWeeks:  timeframeWeeks,
-		Milestones:      milestones,
-		Phases:          phases,
-		ResourcePlan:    resourcePlan,
-		RiskAssessment:  risks,
-		SuccessMetrics:  successMetrics,
+		Overview:       qr.generateRoadmapOverview(recommendations, phases),
+		TimeframeWeeks: timeframeWeeks,
+		Milestones:     milestones,
+		Phases:         phases,
+		ResourcePlan:   resourcePlan,
+		RiskAssessment: risks,
+		SuccessMetrics: successMetrics,
 	}
 }
 
@@ -1750,9 +1751,9 @@ func (qr *QualityReporter) createImprovementPhases(recommendations []QualityReco
 	for _, rec := range recommendations {
 		categoryMap[rec.Category] = append(categoryMap[rec.Category], rec)
 	}
-	
+
 	var phases []ImprovementPhase
-	
+
 	// Phase 1: Quick Wins (weeks 1-2)
 	if quickWins := categoryMap[CategoryQuickWins]; len(quickWins) > 0 {
 		phases = append(phases, qr.createPhase("Quick Wins", "2 weeks", quickWins, map[string]float64{
@@ -1760,7 +1761,7 @@ func (qr *QualityReporter) createImprovementPhases(recommendations []QualityReco
 			"complexity":  10.0,
 		}))
 	}
-	
+
 	// Phase 2: Critical Fixes (weeks 3-6)
 	if criticalFixes := categoryMap[CategoryCriticalFixes]; len(criticalFixes) > 0 {
 		phases = append(phases, qr.createPhase("Critical Fixes", "4 weeks", criticalFixes, map[string]float64{
@@ -1769,16 +1770,16 @@ func (qr *QualityReporter) createImprovementPhases(recommendations []QualityReco
 			"complexity":     15.0,
 		}))
 	}
-	
+
 	// Phase 3: Strategic Improvements (weeks 7-10)
 	if strategic := categoryMap[CategoryStrategicImprovements]; len(strategic) > 0 {
 		phases = append(phases, qr.createPhase("Strategic Improvements", "4 weeks", strategic, map[string]float64{
-			"coverage":       20.0,
+			"coverage":        20.0,
 			"maintainability": 15.0,
 			"technical_debt":  10.0,
 		}))
 	}
-	
+
 	// Phase 4: Long-term Goals (weeks 11-12)
 	if longTerm := categoryMap[CategoryLongTermGoals]; len(longTerm) > 0 {
 		phases = append(phases, qr.createPhase("Long-term Goals", "2 weeks", longTerm, map[string]float64{
@@ -1786,7 +1787,7 @@ func (qr *QualityReporter) createImprovementPhases(recommendations []QualityReco
 			"coverage":        5.0,
 		}))
 	}
-	
+
 	return phases
 }
 
@@ -1796,17 +1797,17 @@ func (qr *QualityReporter) createPhase(name, duration string, recommendations []
 	var recommendationIds []string
 	var totalHours, devHours, qaHours, reviewHours float64
 	specialistsMap := make(map[string]bool)
-	
+
 	for _, rec := range recommendations {
 		focus = append(focus, rec.Component)
 		recommendationIds = append(recommendationIds, rec.ID)
 		totalHours += rec.EffortHours
-		
+
 		// Distribute hours (rough estimation)
 		devHours += rec.EffortHours * 0.7
 		qaHours += rec.EffortHours * 0.2
 		reviewHours += rec.EffortHours * 0.1
-		
+
 		// Determine specialists needed
 		switch rec.Component {
 		case "performance":
@@ -1817,7 +1818,7 @@ func (qr *QualityReporter) createPhase(name, duration string, recommendations []
 			specialistsMap["QA Engineer"] = true
 		}
 	}
-	
+
 	// Remove duplicates from focus
 	focusMap := make(map[string]bool)
 	var uniqueFocus []string
@@ -1827,12 +1828,12 @@ func (qr *QualityReporter) createPhase(name, duration string, recommendations []
 			uniqueFocus = append(uniqueFocus, f)
 		}
 	}
-	
+
 	var specialists []string
 	for specialist := range specialistsMap {
 		specialists = append(specialists, specialist)
 	}
-	
+
 	return ImprovementPhase{
 		Name:            name,
 		Duration:        duration,
@@ -1846,12 +1847,12 @@ func (qr *QualityReporter) createPhase(name, duration string, recommendations []
 			Specialists:    specialists,
 		},
 	}
-}// createMilestones creates quality improvement milestones
+} // createMilestones creates quality improvement milestones
 func (qr *QualityReporter) createMilestones(phases []ImprovementPhase, timeframeWeeks int) []QualityMilestone {
 	var milestones []QualityMilestone
 	currentWeek := 0
 	now := time.Now()
-	
+
 	for i, phase := range phases {
 		var duration int
 		switch phase.Duration {
@@ -1862,42 +1863,42 @@ func (qr *QualityReporter) createMilestones(phases []ImprovementPhase, timeframe
 		default:
 			duration = 3
 		}
-		
+
 		currentWeek += duration
 		targetDate := now.AddDate(0, 0, currentWeek*7)
-		
+
 		milestone := QualityMilestone{
-			Name:        fmt.Sprintf("Milestone %d: %s Complete", i+1, phase.Name),
-			TargetDate:  targetDate,
-			Description: fmt.Sprintf("Complete all %s initiatives", phase.Name),
-			Goals:       qr.createMilestoneGoals(phase),
-			Deliverables: qr.createMilestoneDeliverables(phase),
+			Name:            fmt.Sprintf("Milestone %d: %s Complete", i+1, phase.Name),
+			TargetDate:      targetDate,
+			Description:     fmt.Sprintf("Complete all %s initiatives", phase.Name),
+			Goals:           qr.createMilestoneGoals(phase),
+			Deliverables:    qr.createMilestoneDeliverables(phase),
 			SuccessCriteria: qr.createSuccessCriteria(phase),
-			Dependencies: qr.createMilestoneDependencies(i, phases),
-			EstimatedHours: phase.ResourceNeeds.DeveloperHours + phase.ResourceNeeds.QAHours + phase.ResourceNeeds.ReviewHours,
+			Dependencies:    qr.createMilestoneDependencies(i, phases),
+			EstimatedHours:  phase.ResourceNeeds.DeveloperHours + phase.ResourceNeeds.QAHours + phase.ResourceNeeds.ReviewHours,
 		}
-		
+
 		milestones = append(milestones, milestone)
 	}
-	
+
 	return milestones
 }
 
 // createMilestoneGoals creates goals for a milestone
 func (qr *QualityReporter) createMilestoneGoals(phase ImprovementPhase) []string {
 	var goals []string
-	
+
 	for component, improvement := range phase.ExpectedImpact {
 		goals = append(goals, fmt.Sprintf("Improve %s score by %.1f points", component, improvement))
 	}
-	
+
 	return goals
 }
 
 // createMilestoneDeliverables creates deliverables for a milestone
 func (qr *QualityReporter) createMilestoneDeliverables(phase ImprovementPhase) []string {
 	var deliverables []string
-	
+
 	switch phase.Name {
 	case "Quick Wins":
 		deliverables = []string{
@@ -1924,33 +1925,33 @@ func (qr *QualityReporter) createMilestoneDeliverables(phase ImprovementPhase) [
 			"Quality gate implementation",
 		}
 	}
-	
+
 	return deliverables
 }
 
 // createSuccessCriteria creates success criteria for a milestone
 func (qr *QualityReporter) createSuccessCriteria(phase ImprovementPhase) []string {
 	var criteria []string
-	
+
 	for component, improvement := range phase.ExpectedImpact {
 		criteria = append(criteria, fmt.Sprintf("%s improvement of %.1f%% achieved", component, improvement))
 	}
-	
+
 	criteria = append(criteria, "All phase recommendations completed")
 	criteria = append(criteria, "No regression in existing quality metrics")
 	criteria = append(criteria, "Code review approval obtained")
-	
+
 	return criteria
 }
 
 // createMilestoneDependencies creates dependencies between milestones
 func (qr *QualityReporter) createMilestoneDependencies(phaseIndex int, phases []ImprovementPhase) []string {
 	var dependencies []string
-	
+
 	if phaseIndex > 0 {
 		dependencies = append(dependencies, fmt.Sprintf("Completion of %s phase", phases[phaseIndex-1].Name))
 	}
-	
+
 	// Add specific dependencies based on phase type
 	switch phases[phaseIndex].Name {
 	case "Critical Fixes":
@@ -1960,7 +1961,7 @@ func (qr *QualityReporter) createMilestoneDependencies(phaseIndex int, phases []
 	case "Long-term Goals":
 		dependencies = append(dependencies, "Stakeholder review and approval")
 	}
-	
+
 	return dependencies
 }
 
@@ -1968,12 +1969,12 @@ func (qr *QualityReporter) createMilestoneDependencies(phaseIndex int, phases []
 func (qr *QualityReporter) calculateResourcePlan(recommendations []QualityRecommendation) ResourcePlan {
 	var totalDeveloperHours, totalQAHours, totalReviewHours float64
 	skillsMap := make(map[string]bool)
-	
+
 	for _, rec := range recommendations {
 		totalDeveloperHours += rec.EffortHours * 0.7
 		totalQAHours += rec.EffortHours * 0.2
 		totalReviewHours += rec.EffortHours * 0.1
-		
+
 		// Determine required skills
 		switch rec.Component {
 		case "complexity":
@@ -1989,33 +1990,33 @@ func (qr *QualityReporter) calculateResourcePlan(recommendations []QualityRecomm
 			skillsMap["Legacy Code Maintenance"] = true
 		}
 	}
-	
+
 	var skillsNeeded []string
 	for skill := range skillsMap {
 		skillsNeeded = append(skillsNeeded, skill)
 	}
-	
+
 	// Estimate team size (assuming 40 hours per week per person)
 	totalHours := totalDeveloperHours + totalQAHours + totalReviewHours
 	teamSize := int(math.Ceil(totalHours / (40.0 * float64(qr.config.RoadmapTimeframe))))
 	if teamSize < 2 {
 		teamSize = 2 // Minimum team size
 	}
-	
+
 	// Estimate cost (rough calculation at $100/hour average)
 	estimatedCost := totalHours * 100.0
-	
+
 	// Calculate duration
 	duration := fmt.Sprintf("%d weeks", qr.config.RoadmapTimeframe)
-	
+
 	return ResourcePlan{
 		TotalDeveloperHours: totalDeveloperHours,
 		TotalQAHours:        totalQAHours,
 		TotalReviewHours:    totalReviewHours,
 		EstimatedCost:       estimatedCost,
-		TeamSize:           teamSize,
-		Duration:           duration,
-		SkillsNeeded:       skillsNeeded,
+		TeamSize:            teamSize,
+		Duration:            duration,
+		SkillsNeeded:        skillsNeeded,
 	}
 }
 
@@ -2118,12 +2119,12 @@ func (qr *QualityReporter) defineSuccessMetrics(scores ComponentScores) []Succes
 func (qr *QualityReporter) generateRoadmapOverview(recommendations []QualityRecommendation, phases []ImprovementPhase) string {
 	totalRecommendations := len(recommendations)
 	totalPhases := len(phases)
-	
+
 	var totalHours float64
 	for _, rec := range recommendations {
 		totalHours += rec.EffortHours
 	}
-	
+
 	return fmt.Sprintf(
 		"Comprehensive quality improvement plan addressing %d recommendations across %d phases. "+
 			"Estimated effort: %.1f hours over %d weeks. "+
@@ -2141,36 +2142,36 @@ func (qr *QualityReporter) generateExecutiveSummary(
 ) *ExecutiveSummary {
 	// Key findings
 	keyFindings := qr.generateKeyFindings(scores, recommendations)
-	
+
 	// Critical issues
 	criticalIssues := qr.identifyCriticalIssues(scores, recommendations)
-	
+
 	// Top recommendations
 	topRecommendations := qr.selectTopRecommendations(recommendations, 5)
-	
+
 	// Business impact
 	businessImpact := qr.assessBusinessImpact(scores, recommendations)
-	
+
 	// Investment summary
 	investment := qr.calculateInvestmentSummary(recommendations)
-	
+
 	// Expected outcomes
 	outcomes := qr.defineExpectedOutcomes(scores)
-	
+
 	// Next steps
 	nextSteps := qr.defineNextSteps(recommendations)
-	
+
 	// Overall assessment
 	assessment := qr.generateOverallAssessment(overallScore, qualityGrade, scores)
-	
+
 	return &ExecutiveSummary{
-		OverallAssessment:   assessment,
-		KeyFindings:         keyFindings,
-		CriticalIssues:      criticalIssues,
-		TopRecommendations:  topRecommendations,
-		BusinessImpact:      businessImpact,
-		InvestmentRequired:  investment,
-		ExpectedOutcomes:    outcomes,
+		OverallAssessment:  assessment,
+		KeyFindings:        keyFindings,
+		CriticalIssues:     criticalIssues,
+		TopRecommendations: topRecommendations,
+		BusinessImpact:     businessImpact,
+		InvestmentRequired: investment,
+		ExpectedOutcomes:   outcomes,
 		NextSteps:          nextSteps,
 	}
 }
@@ -2178,60 +2179,60 @@ func (qr *QualityReporter) generateExecutiveSummary(
 // generateKeyFindings identifies key findings from the analysis
 func (qr *QualityReporter) generateKeyFindings(scores ComponentScores, recommendations []QualityRecommendation) []string {
 	var findings []string
-	
+
 	// Analyze scores for insights
 	if scores.TechnicalDebt < 60 {
 		findings = append(findings, fmt.Sprintf("High technical debt detected (score: %.1f) requiring immediate attention", scores.TechnicalDebt))
 	}
-	
+
 	if scores.Complexity < 70 {
 		findings = append(findings, fmt.Sprintf("Code complexity concerns identified (score: %.1f) affecting maintainability", scores.Complexity))
 	}
-	
+
 	if scores.Coverage < 70 {
 		findings = append(findings, fmt.Sprintf("Test coverage gaps detected (score: %.1f) increasing quality risk", scores.Coverage))
 	}
-	
+
 	if scores.Performance < 75 {
 		findings = append(findings, fmt.Sprintf("Performance issues identified (score: %.1f) impacting user experience", scores.Performance))
 	}
-	
+
 	// Analyze recommendation patterns
 	categoryCount := make(map[RecommendationCategory]int)
 	for _, rec := range recommendations {
 		categoryCount[rec.Category]++
 	}
-	
+
 	if categoryCount[CategoryCriticalFixes] > 3 {
 		findings = append(findings, fmt.Sprintf("%d critical fixes required for system stability", categoryCount[CategoryCriticalFixes]))
 	}
-	
+
 	if categoryCount[CategoryQuickWins] > 5 {
 		findings = append(findings, fmt.Sprintf("%d quick wins available for immediate quality improvements", categoryCount[CategoryQuickWins]))
 	}
-	
+
 	return findings
 }
 
 // identifyCriticalIssues identifies critical issues requiring immediate attention
 func (qr *QualityReporter) identifyCriticalIssues(scores ComponentScores, recommendations []QualityRecommendation) []string {
 	var issues []string
-	
+
 	// Score-based critical issues
 	if scores.TechnicalDebt < 40 {
 		issues = append(issues, "Critical technical debt levels may impact delivery velocity")
 	}
-	
+
 	if scores.Performance < 50 {
 		issues = append(issues, "Severe performance issues affecting user experience")
 	}
-	
+
 	if scores.Complexity > 85 { // High complexity score means low complexity (inverse)
 		// This is good, no issue
 	} else if scores.Complexity < 50 {
 		issues = append(issues, "Extremely high code complexity hindering maintenance")
 	}
-	
+
 	// Recommendation-based critical issues
 	criticalCount := 0
 	for _, rec := range recommendations {
@@ -2239,11 +2240,11 @@ func (qr *QualityReporter) identifyCriticalIssues(scores ComponentScores, recomm
 			criticalCount++
 		}
 	}
-	
+
 	if criticalCount > 5 {
 		issues = append(issues, fmt.Sprintf("%d critical-priority recommendations require immediate action", criticalCount))
 	}
-	
+
 	return issues
 }
 
@@ -2252,17 +2253,17 @@ func (qr *QualityReporter) selectTopRecommendations(recommendations []QualityRec
 	if len(recommendations) > count {
 		recommendations = recommendations[:count] // Already sorted by ROI in rankAndLimitRecommendations
 	}
-	
+
 	var topRecs []string
 	for _, rec := range recommendations {
 		topRecs = append(topRecs, fmt.Sprintf("%s (ROI: %.1fx, %s impact)", rec.Title, rec.ROI, rec.Impact))
 	}
-	
+
 	return topRecs
-}// assessBusinessImpact evaluates business implications of quality issues
+} // assessBusinessImpact evaluates business implications of quality issues
 func (qr *QualityReporter) assessBusinessImpact(scores ComponentScores, recommendations []QualityRecommendation) BusinessImpact {
 	overallScore := qr.calculateOverallScore(scores)
-	
+
 	// Determine risk level
 	var riskLevel string
 	switch {
@@ -2275,10 +2276,10 @@ func (qr *QualityReporter) assessBusinessImpact(scores ComponentScores, recommen
 	default:
 		riskLevel = "Critical"
 	}
-	
+
 	// Calculate maintenance cost impact
 	maintenanceCost := qr.calculateMaintenanceCostImpact(scores)
-	
+
 	// Assess development velocity impact
 	var velocityImpact string
 	if scores.Complexity < 60 || scores.TechnicalDebt < 50 {
@@ -2288,7 +2289,7 @@ func (qr *QualityReporter) assessBusinessImpact(scores ComponentScores, recommen
 	} else {
 		velocityImpact = "Minimal impact on development speed"
 	}
-	
+
 	// Calculate technical debt cost
 	var totalDebtHours float64
 	for _, rec := range recommendations {
@@ -2297,7 +2298,7 @@ func (qr *QualityReporter) assessBusinessImpact(scores ComponentScores, recommen
 		}
 	}
 	technicalDebtCost := totalDebtHours * 100.0 // $100/hour estimate
-	
+
 	// Assess quality risk
 	var qualityRisk string
 	if scores.Coverage < 60 || scores.Performance < 60 {
@@ -2307,7 +2308,7 @@ func (qr *QualityReporter) assessBusinessImpact(scores ComponentScores, recommen
 	} else {
 		qualityRisk = "Low risk with current quality practices"
 	}
-	
+
 	// Assess customer impact
 	var customerImpact string
 	if scores.Performance < 60 {
@@ -2317,7 +2318,7 @@ func (qr *QualityReporter) assessBusinessImpact(scores ComponentScores, recommen
 	} else {
 		customerImpact = "Minimal direct customer impact from current quality issues"
 	}
-	
+
 	return BusinessImpact{
 		RiskLevel:           riskLevel,
 		MaintenanceCost:     maintenanceCost,
@@ -2334,27 +2335,27 @@ func (qr *QualityReporter) calculateMaintenanceCostImpact(scores ComponentScores
 	complexityMultiplier := 1.0 + ((100.0 - scores.Complexity) / 100.0)
 	debtMultiplier := 1.0 + ((100.0 - scores.TechnicalDebt) / 100.0)
 	maintainabilityMultiplier := 1.0 + ((100.0 - scores.Maintainability) / 100.0)
-	
+
 	// Calculate impact as percentage increase in maintenance cost
 	impactPercentage := (complexityMultiplier + debtMultiplier + maintainabilityMultiplier - 3.0) * 100.0
-	
+
 	return math.Round(impactPercentage*10) / 10
 }
 
 // calculateInvestmentSummary provides cost/benefit analysis
 func (qr *QualityReporter) calculateInvestmentSummary(recommendations []QualityRecommendation) InvestmentSummary {
 	var totalHours, totalROI float64
-	
+
 	for _, rec := range recommendations {
 		totalHours += rec.EffortHours
 		totalROI += rec.ROI
 	}
-	
+
 	estimatedCost := totalHours * 100.0 // $100/hour average
-	
+
 	// Calculate expected savings (rough estimate based on maintenance cost reduction)
 	expectedSavings := estimatedCost * 2.0 // Assume 2x return over time
-	
+
 	// Calculate payback period
 	var paybackPeriod string
 	if totalROI > 0 {
@@ -2372,13 +2373,13 @@ func (qr *QualityReporter) calculateInvestmentSummary(recommendations []QualityR
 	} else {
 		paybackPeriod = "Not quantifiable"
 	}
-	
+
 	// Calculate overall ROI
 	overallROI := 0.0
 	if estimatedCost > 0 {
 		overallROI = (expectedSavings - estimatedCost) / estimatedCost * 100.0
 	}
-	
+
 	return InvestmentSummary{
 		TotalInvestmentHours: totalHours,
 		EstimatedCost:        estimatedCost,
@@ -2391,7 +2392,7 @@ func (qr *QualityReporter) calculateInvestmentSummary(recommendations []QualityR
 // defineExpectedOutcomes describes expected results from improvements
 func (qr *QualityReporter) defineExpectedOutcomes(scores ComponentScores) []ExpectedOutcome {
 	var outcomes []ExpectedOutcome
-	
+
 	// Complexity outcomes
 	if scores.Complexity < 75 {
 		outcomes = append(outcomes, ExpectedOutcome{
@@ -2402,7 +2403,7 @@ func (qr *QualityReporter) defineExpectedOutcomes(scores ComponentScores) []Expe
 			Confidence: "High",
 		})
 	}
-	
+
 	// Technical debt outcomes
 	if scores.TechnicalDebt < 70 {
 		outcomes = append(outcomes, ExpectedOutcome{
@@ -2413,7 +2414,7 @@ func (qr *QualityReporter) defineExpectedOutcomes(scores ComponentScores) []Expe
 			Confidence: "Medium",
 		})
 	}
-	
+
 	// Performance outcomes
 	if scores.Performance < 80 {
 		outcomes = append(outcomes, ExpectedOutcome{
@@ -2424,7 +2425,7 @@ func (qr *QualityReporter) defineExpectedOutcomes(scores ComponentScores) []Expe
 			Confidence: "High",
 		})
 	}
-	
+
 	// Coverage outcomes
 	if scores.Coverage < 80 {
 		outcomes = append(outcomes, ExpectedOutcome{
@@ -2435,7 +2436,7 @@ func (qr *QualityReporter) defineExpectedOutcomes(scores ComponentScores) []Expe
 			Confidence: "Medium",
 		})
 	}
-	
+
 	// Overall quality outcome
 	outcomes = append(outcomes, ExpectedOutcome{
 		Area:       "Overall Quality",
@@ -2444,18 +2445,18 @@ func (qr *QualityReporter) defineExpectedOutcomes(scores ComponentScores) []Expe
 		Timeline:   fmt.Sprintf("%d weeks", qr.config.RoadmapTimeframe),
 		Confidence: "High",
 	})
-	
+
 	return outcomes
 }
 
 // defineNextSteps provides immediate next steps
 func (qr *QualityReporter) defineNextSteps(recommendations []QualityRecommendation) []string {
 	var nextSteps []string
-	
+
 	// Priority-based next steps
 	criticalCount := 0
 	quickWinCount := 0
-	
+
 	for _, rec := range recommendations {
 		if rec.Priority == PriorityCritical {
 			criticalCount++
@@ -2464,27 +2465,27 @@ func (qr *QualityReporter) defineNextSteps(recommendations []QualityRecommendati
 			quickWinCount++
 		}
 	}
-	
+
 	if criticalCount > 0 {
 		nextSteps = append(nextSteps, fmt.Sprintf("Address %d critical-priority issues immediately", criticalCount))
 	}
-	
+
 	if quickWinCount > 0 {
 		nextSteps = append(nextSteps, fmt.Sprintf("Implement %d quick wins in the next 2 weeks", quickWinCount))
 	}
-	
+
 	nextSteps = append(nextSteps, "Review and approve the quality improvement roadmap")
 	nextSteps = append(nextSteps, "Allocate development resources for quality improvements")
 	nextSteps = append(nextSteps, "Establish quality gates and monitoring processes")
 	nextSteps = append(nextSteps, "Schedule regular quality assessment reviews")
-	
+
 	return nextSteps
 }
 
 // generateOverallAssessment creates overall quality assessment
 func (qr *QualityReporter) generateOverallAssessment(overallScore float64, qualityGrade string, scores ComponentScores) string {
 	assessment := fmt.Sprintf("The codebase has an overall quality score of %.1f (%s grade). ", overallScore, qualityGrade)
-	
+
 	// Identify strongest and weakest areas
 	componentMap := map[string]float64{
 		"complexity":      scores.Complexity,
@@ -2494,11 +2495,11 @@ func (qr *QualityReporter) generateOverallAssessment(overallScore float64, quali
 		"performance":     scores.Performance,
 		"maintainability": scores.Maintainability,
 	}
-	
+
 	var strongest, weakest string
 	var highestScore, lowestScore float64
 	first := true
-	
+
 	for component, score := range componentMap {
 		if first {
 			strongest = component
@@ -2517,10 +2518,10 @@ func (qr *QualityReporter) generateOverallAssessment(overallScore float64, quali
 			}
 		}
 	}
-	
-	assessment += fmt.Sprintf("The strongest area is %s (%.1f), while %s (%.1f) requires the most attention. ", 
+
+	assessment += fmt.Sprintf("The strongest area is %s (%.1f), while %s (%.1f) requires the most attention. ",
 		strongest, highestScore, weakest, lowestScore)
-	
+
 	// Add recommendation based on grade
 	switch qualityGrade {
 	case "Excellent":
@@ -2532,7 +2533,7 @@ func (qr *QualityReporter) generateOverallAssessment(overallScore float64, quali
 	default: // Poor
 		assessment += "Significant quality improvements required to ensure project success."
 	}
-	
+
 	return assessment
 }
 
@@ -2540,14 +2541,14 @@ func (qr *QualityReporter) generateOverallAssessment(overallScore float64, quali
 func (qr *QualityReporter) generateTrendAnalysis(scores ComponentScores) *QualityTrend {
 	// For MVP implementation, create mock trend data
 	// In production, this would analyze historical data
-	
+
 	now := time.Now()
-	
+
 	// Create sample historical data points (last 4 weeks)
 	var historicalData []HistoricalDataPoint
 	for i := 4; i > 0; i-- {
 		timestamp := now.AddDate(0, 0, -i*7)
-		
+
 		// Simulate slightly improving trends
 		improvement := float64(4-i) * 2.0
 		historicalScores := ComponentScores{
@@ -2558,21 +2559,21 @@ func (qr *QualityReporter) generateTrendAnalysis(scores ComponentScores) *Qualit
 			Performance:     math.Max(0, scores.Performance-improvement),
 			Maintainability: math.Max(0, scores.Maintainability-improvement),
 		}
-		
+
 		historicalData = append(historicalData, HistoricalDataPoint{
 			Timestamp: timestamp,
 			Scores:    historicalScores,
 			Events:    []QualityEvent{},
 		})
 	}
-	
+
 	// Add current data point
 	historicalData = append(historicalData, HistoricalDataPoint{
 		Timestamp: now,
 		Scores:    scores,
 		Events:    []QualityEvent{},
 	})
-	
+
 	// Create component trends
 	componentTrends := map[string]TrendDirection{
 		"complexity":      {Direction: "improving", Velocity: 1.5, Confidence: 0.8, Significance: "medium"},
@@ -2582,7 +2583,7 @@ func (qr *QualityReporter) generateTrendAnalysis(scores ComponentScores) *Qualit
 		"performance":     {Direction: "stable", Velocity: 0.5, Confidence: 0.9, Significance: "low"},
 		"maintainability": {Direction: "improving", Velocity: 1.2, Confidence: 0.7, Significance: "medium"},
 	}
-	
+
 	// Overall trend
 	overallTrend := TrendDirection{
 		Direction:    "improving",
@@ -2590,7 +2591,7 @@ func (qr *QualityReporter) generateTrendAnalysis(scores ComponentScores) *Qualit
 		Confidence:   0.8,
 		Significance: "medium",
 	}
-	
+
 	// Create predictions
 	predictions := []TrendPrediction{
 		{
@@ -2601,14 +2602,14 @@ func (qr *QualityReporter) generateTrendAnalysis(scores ComponentScores) *Qualit
 			Assumptions: []string{"Continued improvement efforts", "No major architectural changes"},
 		},
 	}
-	
+
 	return &QualityTrend{
-		Period:              "4 weeks",
-		OverallTrend:        overallTrend,
-		ComponentTrends:     componentTrends,
-		HistoricalData:      historicalData,
-		TrendPredictions:    predictions,
-		SeasonalPatterns:    []SeasonalPattern{},
-		InflectionPoints:    []InflectionPoint{},
+		Period:           "4 weeks",
+		OverallTrend:     overallTrend,
+		ComponentTrends:  componentTrends,
+		HistoricalData:   historicalData,
+		TrendPredictions: predictions,
+		SeasonalPatterns: []SeasonalPattern{},
+		InflectionPoints: []InflectionPoint{},
 	}
 }

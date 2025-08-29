@@ -99,7 +99,7 @@ func (lc *LicenseChecker) getDefaultCompatibilityRule(license1, license2 string)
 
 	// Strong copyleft conflicts with proprietary
 	if (type1 == "strong-copyleft" && type2 == "proprietary") ||
-	   (type1 == "proprietary" && type2 == "strong-copyleft") {
+		(type1 == "proprietary" && type2 == "strong-copyleft") {
 		return &CompatibilityRule{
 			Compatible: false,
 			RiskLevel:  "critical",
@@ -148,12 +148,12 @@ func (lc *LicenseChecker) getLicenseType(spdx string) string {
 // determineConflictType determines the type of license conflict
 func determineConflictType(type1, type2 string) string {
 	if (type1 == "strong-copyleft" && type2 == "proprietary") ||
-	   (type1 == "proprietary" && type2 == "strong-copyleft") {
+		(type1 == "proprietary" && type2 == "strong-copyleft") {
 		return "copyleft-proprietary"
 	}
 
 	if (type1 == "strong-copyleft" && type2 == "weak-copyleft") ||
-	   (type1 == "weak-copyleft" && type2 == "strong-copyleft") {
+		(type1 == "weak-copyleft" && type2 == "strong-copyleft") {
 		return "copyleft-mismatch"
 	}
 
@@ -223,7 +223,7 @@ func (lc *LicenseChecker) generateLicenseRecommendations(packages []*PackageLice
 
 	for _, pkg := range packages {
 		licenseCounts[pkg.LicenseType]++
-		
+
 		switch pkg.LicenseType {
 		case "unknown":
 			unknownPackages = append(unknownPackages, pkg.PackageName)
@@ -236,9 +236,9 @@ func (lc *LicenseChecker) generateLicenseRecommendations(packages []*PackageLice
 
 	// Generate specific recommendations
 	if len(conflicts) > 0 {
-		recommendations = append(recommendations, 
+		recommendations = append(recommendations,
 			"CRITICAL: License conflicts detected - review incompatible license combinations")
-		
+
 		for _, conflict := range conflicts {
 			if conflict.Severity == "critical" {
 				recommendations = append(recommendations,
@@ -341,7 +341,7 @@ func initializeCommonCompatibilityRules(matrix *CompatibilityMatrix) {
 	matrix.Rules["MIT"]["MIT"] = CompatibilityRule{Compatible: true, RiskLevel: "low"}
 	matrix.Rules["MIT"]["Apache-2.0"] = CompatibilityRule{Compatible: true, RiskLevel: "low"}
 	matrix.Rules["MIT"]["BSD-3-Clause"] = CompatibilityRule{Compatible: true, RiskLevel: "low"}
-	matrix.Rules["MIT"]["GPL-3.0-only"] = CompatibilityRule{Compatible: true, RiskLevel: "medium", 
+	matrix.Rules["MIT"]["GPL-3.0-only"] = CompatibilityRule{Compatible: true, RiskLevel: "medium",
 		Conditions: []string{"Combined work must be GPL-3.0"}}
 	matrix.Rules["MIT"]["LGPL-3.0-only"] = CompatibilityRule{Compatible: true, RiskLevel: "low"}
 
@@ -453,7 +453,7 @@ func (lc *LicenseChecker) ValidateLicenseCompliance(packages []*PackageLicenseIn
 	for _, conflict := range conflicts {
 		if conflict.Severity == "critical" {
 			compliant = false
-			issues = append(issues, fmt.Sprintf("Critical license conflict: %s (%s) vs %s (%s)", 
+			issues = append(issues, fmt.Sprintf("Critical license conflict: %s (%s) vs %s (%s)",
 				conflict.Package1, conflict.License1, conflict.Package2, conflict.License2))
 		}
 	}

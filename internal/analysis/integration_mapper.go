@@ -10,16 +10,16 @@ import (
 type IntegrationType string
 
 const (
-	DatabaseIntegration    IntegrationType = "database"
-	APIIntegration         IntegrationType = "api"
-	ServiceIntegration     IntegrationType = "service"
-	AuthIntegration        IntegrationType = "auth"
-	PaymentIntegration     IntegrationType = "payment"
-	StorageIntegration     IntegrationType = "storage"
-	AnalyticsIntegration   IntegrationType = "analytics"
-	MessagingIntegration   IntegrationType = "messaging"
-	CloudIntegration       IntegrationType = "cloud"
-	UnknownIntegration     IntegrationType = "unknown"
+	DatabaseIntegration  IntegrationType = "database"
+	APIIntegration       IntegrationType = "api"
+	ServiceIntegration   IntegrationType = "service"
+	AuthIntegration      IntegrationType = "auth"
+	PaymentIntegration   IntegrationType = "payment"
+	StorageIntegration   IntegrationType = "storage"
+	AnalyticsIntegration IntegrationType = "analytics"
+	MessagingIntegration IntegrationType = "messaging"
+	CloudIntegration     IntegrationType = "cloud"
+	UnknownIntegration   IntegrationType = "unknown"
 )
 
 // SecurityRiskLevel represents the security risk assessment
@@ -81,19 +81,19 @@ func (im *IntegrationMapper) MapIntegrationPoints(filePath string, content strin
 	if err := im.scanDatabaseConnections(filePath, content); err != nil {
 		return err
 	}
-	
+
 	if err := im.scanAPIEndpoints(filePath, content); err != nil {
 		return err
 	}
-	
+
 	if err := im.scanServiceIntegrations(filePath, content); err != nil {
 		return err
 	}
-	
+
 	if err := im.scanAuthenticationSystems(filePath, content); err != nil {
 		return err
 	}
-	
+
 	if err := im.scanEnvironmentVariables(filePath, content); err != nil {
 		return err
 	}
@@ -104,28 +104,28 @@ func (im *IntegrationMapper) MapIntegrationPoints(filePath string, content strin
 // scanDatabaseConnections identifies database connection patterns
 func (im *IntegrationMapper) scanDatabaseConnections(filePath, content string) error {
 	lines := strings.Split(content, "\n")
-	
+
 	for lineNum, line := range lines {
 		line = strings.TrimSpace(line)
-		
+
 		// MongoDB connections
 		if im.containsMongoConnection(line) {
 			integration := im.createMongoIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// PostgreSQL connections
 		if im.containsPostgreSQLConnection(line) {
 			integration := im.createPostgreSQLIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// MySQL connections
 		if im.containsMySQLConnection(line) {
 			integration := im.createMySQLIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// Redis connections
 		if im.containsRedisConnection(line) {
 			integration := im.createRedisIntegration(filePath, content, line, lineNum)
@@ -139,13 +139,13 @@ func (im *IntegrationMapper) scanDatabaseConnections(filePath, content string) e
 // scanAPIEndpoints identifies external API integrations
 func (im *IntegrationMapper) scanAPIEndpoints(filePath, content string) error {
 	lines := strings.Split(content, "\n")
-	
+
 	for lineNum, line := range lines {
 		line = strings.TrimSpace(line)
-		
+
 		// Priority order: GraphQL > WebSocket > HTTP API
 		// This prevents double-detection when multiple patterns match
-		
+
 		if im.containsGraphQLRequest(line) {
 			// GraphQL endpoints (highest priority)
 			integration := im.createGraphQLIntegration(filePath, content, line, lineNum)
@@ -167,34 +167,34 @@ func (im *IntegrationMapper) scanAPIEndpoints(filePath, content string) error {
 // scanServiceIntegrations identifies third-party service integrations
 func (im *IntegrationMapper) scanServiceIntegrations(filePath, content string) error {
 	lines := strings.Split(content, "\n")
-	
+
 	for lineNum, line := range lines {
 		line = strings.TrimSpace(line)
-		
+
 		// AWS services
 		if im.containsAWSService(line) {
 			integration := im.createAWSIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// Google Cloud services
 		if im.containsGCPService(line) {
 			integration := im.createGCPIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// Payment services (Stripe, PayPal)
 		if im.containsPaymentService(line) {
 			integration := im.createPaymentIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// Analytics services
 		if im.containsAnalyticsService(line) {
 			integration := im.createAnalyticsIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// Messaging services
 		if im.containsMessagingService(line) {
 			integration := im.createMessagingIntegration(filePath, content, line, lineNum)
@@ -208,22 +208,22 @@ func (im *IntegrationMapper) scanServiceIntegrations(filePath, content string) e
 // scanAuthenticationSystems identifies authentication integrations
 func (im *IntegrationMapper) scanAuthenticationSystems(filePath, content string) error {
 	lines := strings.Split(content, "\n")
-	
+
 	for lineNum, line := range lines {
 		line = strings.TrimSpace(line)
-		
+
 		// OAuth providers
 		if im.containsOAuthProvider(line) {
 			integration := im.createOAuthIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// JWT handling
 		if im.containsJWTUsage(line) {
 			integration := im.createJWTIntegration(filePath, content, line, lineNum)
 			im.integrations = append(im.integrations, integration)
 		}
-		
+
 		// LDAP/Active Directory
 		if im.containsLDAPConnection(line) {
 			integration := im.createLDAPIntegration(filePath, content, line, lineNum)
@@ -237,10 +237,10 @@ func (im *IntegrationMapper) scanAuthenticationSystems(filePath, content string)
 // scanEnvironmentVariables identifies environment variable dependencies
 func (im *IntegrationMapper) scanEnvironmentVariables(filePath, content string) error {
 	lines := strings.Split(content, "\n")
-	
+
 	for lineNum, line := range lines {
 		line = strings.TrimSpace(line)
-		
+
 		if strings.Contains(line, "process.env") || strings.Contains(line, "os.Getenv") {
 			envVar := im.extractEnvironmentVariable(line)
 			if envVar != "" {
@@ -256,29 +256,29 @@ func (im *IntegrationMapper) scanEnvironmentVariables(filePath, content string) 
 // Pattern detection methods
 
 func (im *IntegrationMapper) containsMongoConnection(line string) bool {
-	return strings.Contains(line, "mongodb://") || 
-		   strings.Contains(line, "mongodb+srv://") ||
-		   strings.Contains(line, "MongoClient") ||
-		   strings.Contains(line, "mongoose.connect")
+	return strings.Contains(line, "mongodb://") ||
+		strings.Contains(line, "mongodb+srv://") ||
+		strings.Contains(line, "MongoClient") ||
+		strings.Contains(line, "mongoose.connect")
 }
 
 func (im *IntegrationMapper) containsPostgreSQLConnection(line string) bool {
-	return strings.Contains(line, "postgresql://") || 
-		   strings.Contains(line, "postgres://") ||
-		   strings.Contains(line, "pg.Client") ||
-		   strings.Contains(line, "new Pool")
+	return strings.Contains(line, "postgresql://") ||
+		strings.Contains(line, "postgres://") ||
+		strings.Contains(line, "pg.Client") ||
+		strings.Contains(line, "new Pool")
 }
 
 func (im *IntegrationMapper) containsMySQLConnection(line string) bool {
 	return strings.Contains(line, "mysql://") ||
-		   strings.Contains(line, "mysql.createConnection") ||
-		   strings.Contains(line, "mysql2")
+		strings.Contains(line, "mysql.createConnection") ||
+		strings.Contains(line, "mysql2")
 }
 
 func (im *IntegrationMapper) containsRedisConnection(line string) bool {
 	return strings.Contains(line, "redis://") ||
-		   strings.Contains(line, "createClient") ||
-		   strings.Contains(line, "new Redis")
+		strings.Contains(line, "createClient") ||
+		strings.Contains(line, "new Redis")
 }
 
 func (im *IntegrationMapper) containsHTTPRequest(line string) bool {
@@ -287,16 +287,16 @@ func (im *IntegrationMapper) containsHTTPRequest(line string) bool {
 	hasMethod := strings.Contains(line, "fetch") || strings.Contains(line, "axios") ||
 		strings.Contains(line, "request") || strings.Contains(line, "get") ||
 		strings.Contains(line, "post")
-	
+
 	if hasURL && hasMethod {
 		return true
 	}
-	
+
 	// Also detect HTTP method calls that might use variables for URLs
 	// Common patterns: axios.get(url), fetch(url), request.post(url)
 	return (strings.Contains(line, "axios.get(") || strings.Contains(line, "axios.post(") ||
 		strings.Contains(line, "axios.put(") || strings.Contains(line, "axios.delete(") ||
-		strings.Contains(line, "fetch(") || 
+		strings.Contains(line, "fetch(") ||
 		strings.Contains(line, "request.get(") || strings.Contains(line, "request.post(") ||
 		strings.Contains(line, "request.put(") || strings.Contains(line, "request.delete(")) &&
 		!strings.Contains(line, "://") // Avoid double-detection with direct URL patterns
@@ -305,73 +305,73 @@ func (im *IntegrationMapper) containsHTTPRequest(line string) bool {
 func (im *IntegrationMapper) containsGraphQLRequest(line string) bool {
 	// Only detect GraphQL client instantiations with endpoints, not individual queries
 	return (strings.Contains(line, "apollo") && strings.Contains(line, "new ")) ||
-		   (strings.Contains(line, "graphql") && strings.Contains(line, "://"))
+		(strings.Contains(line, "graphql") && strings.Contains(line, "://"))
 }
 
 func (im *IntegrationMapper) containsWebSocketConnection(line string) bool {
 	// Detect actual WebSocket connections and instantiations, not just imports
-	return strings.Contains(line, "ws://") || 
-		   strings.Contains(line, "wss://") ||
-		   (strings.Contains(line, "WebSocket") && strings.Contains(line, "new ")) ||
-		   (strings.Contains(line, "socket.io") && !strings.Contains(line, "import"))
+	return strings.Contains(line, "ws://") ||
+		strings.Contains(line, "wss://") ||
+		(strings.Contains(line, "WebSocket") && strings.Contains(line, "new ")) ||
+		(strings.Contains(line, "socket.io") && !strings.Contains(line, "import"))
 }
 
 func (im *IntegrationMapper) containsAWSService(line string) bool {
 	return strings.Contains(line, "aws-sdk") ||
-		   strings.Contains(line, ".amazonaws.com") ||
-		   strings.Contains(line, "AWS.") ||
-		   strings.Contains(line, "S3") ||
-		   strings.Contains(line, "DynamoDB") ||
-		   strings.Contains(line, "Lambda")
+		strings.Contains(line, ".amazonaws.com") ||
+		strings.Contains(line, "AWS.") ||
+		strings.Contains(line, "S3") ||
+		strings.Contains(line, "DynamoDB") ||
+		strings.Contains(line, "Lambda")
 }
 
 func (im *IntegrationMapper) containsGCPService(line string) bool {
 	return strings.Contains(line, "google-cloud") ||
-		   strings.Contains(line, ".googleapis.com") ||
-		   strings.Contains(line, "firebase") ||
-		   strings.Contains(line, "firestore")
+		strings.Contains(line, ".googleapis.com") ||
+		strings.Contains(line, "firebase") ||
+		strings.Contains(line, "firestore")
 }
 
 func (im *IntegrationMapper) containsPaymentService(line string) bool {
 	return strings.Contains(line, "stripe") ||
-		   strings.Contains(line, "paypal") ||
-		   strings.Contains(line, "payment") ||
-		   strings.Contains(line, "checkout")
+		strings.Contains(line, "paypal") ||
+		strings.Contains(line, "payment") ||
+		strings.Contains(line, "checkout")
 }
 
 func (im *IntegrationMapper) containsAnalyticsService(line string) bool {
 	return strings.Contains(line, "analytics") ||
-		   strings.Contains(line, "google-analytics") ||
-		   strings.Contains(line, "gtag") ||
-		   strings.Contains(line, "ga-gtag") ||
-		   strings.Contains(line, "mixpanel") ||
-		   strings.Contains(line, "amplitude")
+		strings.Contains(line, "google-analytics") ||
+		strings.Contains(line, "gtag") ||
+		strings.Contains(line, "ga-gtag") ||
+		strings.Contains(line, "mixpanel") ||
+		strings.Contains(line, "amplitude")
 }
 
 func (im *IntegrationMapper) containsMessagingService(line string) bool {
 	return strings.Contains(line, "kafka") ||
-		   strings.Contains(line, "rabbitmq") ||
-		   strings.Contains(line, "sqs") ||
-		   strings.Contains(line, "pubsub")
+		strings.Contains(line, "rabbitmq") ||
+		strings.Contains(line, "sqs") ||
+		strings.Contains(line, "pubsub")
 }
 
 func (im *IntegrationMapper) containsOAuthProvider(line string) bool {
 	return strings.Contains(line, "oauth") ||
-		   strings.Contains(line, "google") && strings.Contains(line, "auth") ||
-		   strings.Contains(line, "facebook") && strings.Contains(line, "auth") ||
-		   strings.Contains(line, "github") && strings.Contains(line, "auth")
+		strings.Contains(line, "google") && strings.Contains(line, "auth") ||
+		strings.Contains(line, "facebook") && strings.Contains(line, "auth") ||
+		strings.Contains(line, "github") && strings.Contains(line, "auth")
 }
 
 func (im *IntegrationMapper) containsJWTUsage(line string) bool {
 	return strings.Contains(line, "jwt") ||
-		   strings.Contains(line, "jsonwebtoken") ||
-		   strings.Contains(line, "bearer")
+		strings.Contains(line, "jsonwebtoken") ||
+		strings.Contains(line, "bearer")
 }
 
 func (im *IntegrationMapper) containsLDAPConnection(line string) bool {
 	return strings.Contains(line, "ldap") ||
-		   strings.Contains(line, "active directory") ||
-		   strings.Contains(line, "AD")
+		strings.Contains(line, "active directory") ||
+		strings.Contains(line, "AD")
 }
 
 // Integration creation methods
@@ -379,7 +379,7 @@ func (im *IntegrationMapper) containsLDAPConnection(line string) bool {
 func (im *IntegrationMapper) createMongoIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	endpoint := im.extractConnectionString(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "mongodb", lineNum),
 		Name:         "MongoDB Database",
@@ -402,7 +402,7 @@ func (im *IntegrationMapper) createMongoIntegration(filePath, content, line stri
 func (im *IntegrationMapper) createPostgreSQLIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	endpoint := im.extractConnectionString(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "postgresql", lineNum),
 		Name:         "PostgreSQL Database",
@@ -425,7 +425,7 @@ func (im *IntegrationMapper) createPostgreSQLIntegration(filePath, content, line
 func (im *IntegrationMapper) createMySQLIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	endpoint := im.extractConnectionString(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "mysql", lineNum),
 		Name:         "MySQL Database",
@@ -448,7 +448,7 @@ func (im *IntegrationMapper) createMySQLIntegration(filePath, content, line stri
 func (im *IntegrationMapper) createRedisIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	endpoint := im.extractConnectionString(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "redis", lineNum),
 		Name:         "Redis Cache",
@@ -471,7 +471,7 @@ func (im *IntegrationMapper) createRedisIntegration(filePath, content, line stri
 func (im *IntegrationMapper) createAPIIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	endpoint := im.extractAPIEndpoint(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "api", lineNum),
 		Name:         "External API",
@@ -494,7 +494,7 @@ func (im *IntegrationMapper) createAPIIntegration(filePath, content, line string
 func (im *IntegrationMapper) createGraphQLIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	endpoint := im.extractAPIEndpoint(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "graphql", lineNum),
 		Name:         "GraphQL API",
@@ -517,7 +517,7 @@ func (im *IntegrationMapper) createGraphQLIntegration(filePath, content, line st
 func (im *IntegrationMapper) createWebSocketIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	endpoint := im.extractWebSocketEndpoint(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "websocket", lineNum),
 		Name:         "WebSocket Connection",
@@ -540,7 +540,7 @@ func (im *IntegrationMapper) createWebSocketIntegration(filePath, content, line 
 func (im *IntegrationMapper) createAWSIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	service := im.extractAWSService(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "aws", lineNum),
 		Name:         "AWS " + service,
@@ -564,7 +564,7 @@ func (im *IntegrationMapper) createAWSIntegration(filePath, content, line string
 func (im *IntegrationMapper) createGCPIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	service := im.extractGCPService(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "gcp", lineNum),
 		Name:         "Google Cloud " + service,
@@ -588,7 +588,7 @@ func (im *IntegrationMapper) createGCPIntegration(filePath, content, line string
 func (im *IntegrationMapper) createPaymentIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	provider := im.extractPaymentProvider(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "payment", lineNum),
 		Name:         provider + " Payment",
@@ -611,7 +611,7 @@ func (im *IntegrationMapper) createPaymentIntegration(filePath, content, line st
 func (im *IntegrationMapper) createAnalyticsIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	provider := im.extractAnalyticsProvider(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "analytics", lineNum),
 		Name:         provider + " Analytics",
@@ -634,7 +634,7 @@ func (im *IntegrationMapper) createAnalyticsIntegration(filePath, content, line 
 func (im *IntegrationMapper) createMessagingIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	service := im.extractMessagingService(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "messaging", lineNum),
 		Name:         service + " Messaging",
@@ -657,7 +657,7 @@ func (im *IntegrationMapper) createMessagingIntegration(filePath, content, line 
 func (im *IntegrationMapper) createOAuthIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	provider := im.extractOAuthProvider(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "oauth", lineNum),
 		Name:         provider + " OAuth",
@@ -679,7 +679,7 @@ func (im *IntegrationMapper) createOAuthIntegration(filePath, content, line stri
 
 func (im *IntegrationMapper) createJWTIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "jwt", lineNum),
 		Name:         "JWT Authentication",
@@ -702,7 +702,7 @@ func (im *IntegrationMapper) createJWTIntegration(filePath, content, line string
 func (im *IntegrationMapper) createLDAPIntegration(filePath, content, line string, lineNum int) IntegrationPoint {
 	endpoint := im.extractLDAPEndpoint(line)
 	credentials := im.analyzeCredentials(content)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "ldap", lineNum),
 		Name:         "LDAP/Active Directory",
@@ -724,7 +724,7 @@ func (im *IntegrationMapper) createLDAPIntegration(filePath, content, line strin
 
 func (im *IntegrationMapper) createEnvironmentIntegration(filePath, line string, lineNum int, envVar string) IntegrationPoint {
 	credentials := im.analyzeCredentials(line)
-	
+
 	return IntegrationPoint{
 		ID:           im.generateID(filePath, "env", lineNum),
 		Name:         "Environment Variable: " + envVar,
@@ -760,69 +760,69 @@ func (im *IntegrationMapper) extractConnectionString(line string) string {
 			for lineStart > 0 && line[lineStart-1] != '"' && line[lineStart-1] != '\'' && line[lineStart-1] != '`' {
 				lineStart--
 			}
-			
+
 			// Find the end of the connection string
 			end := start + 3
 			for end < len(line) && line[end] != '"' && line[end] != '\'' && line[end] != '`' && line[end] != ' ' && line[end] != ')' {
 				end++
 			}
-			
+
 			return line[lineStart:end]
 		}
 	}
-	
+
 	return "unknown"
 }
 
 func (im *IntegrationMapper) extractAPIEndpoint(line string) string {
 	// Extract API endpoints from fetch/axios calls
 	patterns := []string{"http://", "https://"}
-	
+
 	for _, pattern := range patterns {
 		if strings.Contains(line, pattern) {
 			start := strings.Index(line, pattern)
 			end := start + len(pattern)
-			
+
 			// Find the end of the URL
 			for end < len(line) && line[end] != '"' && line[end] != '\'' && line[end] != '`' && line[end] != ' ' && line[end] != ')' {
 				end++
 			}
-			
+
 			return line[start:end]
 		}
 	}
-	
+
 	return "unknown"
 }
 
 func (im *IntegrationMapper) extractWebSocketEndpoint(line string) string {
 	patterns := []string{"ws://", "wss://"}
-	
+
 	for _, pattern := range patterns {
 		if strings.Contains(line, pattern) {
 			start := strings.Index(line, pattern)
 			end := start + len(pattern)
-			
+
 			for end < len(line) && line[end] != '"' && line[end] != '\'' && line[end] != ' ' {
 				end++
 			}
-			
+
 			return line[start:end]
 		}
 	}
-	
+
 	return "websocket"
 }
 
 func (im *IntegrationMapper) extractAWSService(line string) string {
 	services := []string{"S3", "DynamoDB", "Lambda", "RDS", "SQS", "SNS", "CloudWatch"}
-	
+
 	for _, service := range services {
 		if strings.Contains(strings.ToUpper(line), service) {
 			return service
 		}
 	}
-	
+
 	return "AWS"
 }
 
@@ -836,7 +836,7 @@ func (im *IntegrationMapper) extractGCPService(line string) string {
 	if strings.Contains(line, "cloud-storage") {
 		return "Cloud Storage"
 	}
-	
+
 	return "Google Cloud"
 }
 
@@ -850,7 +850,7 @@ func (im *IntegrationMapper) extractPaymentProvider(line string) string {
 	if strings.Contains(strings.ToLower(line), "square") {
 		return "Square"
 	}
-	
+
 	return "Payment Provider"
 }
 
@@ -865,7 +865,7 @@ func (im *IntegrationMapper) extractAnalyticsProvider(line string) string {
 	if strings.Contains(lowerLine, "amplitude") {
 		return "Amplitude"
 	}
-	
+
 	return "Analytics"
 }
 
@@ -879,7 +879,7 @@ func (im *IntegrationMapper) extractMessagingService(line string) string {
 	if strings.Contains(strings.ToLower(line), "sqs") {
 		return "AWS SQS"
 	}
-	
+
 	return "Messaging"
 }
 
@@ -893,7 +893,7 @@ func (im *IntegrationMapper) extractOAuthProvider(line string) string {
 	if strings.Contains(strings.ToLower(line), "github") {
 		return "GitHub"
 	}
-	
+
 	return "OAuth Provider"
 }
 
@@ -901,30 +901,30 @@ func (im *IntegrationMapper) extractLDAPEndpoint(line string) string {
 	if strings.Contains(line, "ldap://") {
 		return im.extractConnectionString(line)
 	}
-	
+
 	return "ldap://unknown"
 }
 
 func (im *IntegrationMapper) extractEnvironmentVariable(line string) string {
 	// Extract environment variable names
 	patterns := []string{"process.env.", "os.Getenv("}
-	
+
 	for _, pattern := range patterns {
 		if strings.Contains(line, pattern) {
 			start := strings.Index(line, pattern) + len(pattern)
 			if pattern == "os.Getenv(" {
 				start++ // Skip opening quote
 			}
-			
+
 			end := start
 			for end < len(line) && line[end] != '"' && line[end] != '\'' && line[end] != ')' && line[end] != ']' {
 				end++
 			}
-			
+
 			return line[start:end]
 		}
 	}
-	
+
 	return ""
 }
 
@@ -933,13 +933,13 @@ func (im *IntegrationMapper) analyzeCredentials(content string) CredentialInfo {
 		CredentialTypes: make([]string, 0),
 		SecurityIssues:  make([]string, 0),
 	}
-	
+
 	// Check for environment variables
 	if strings.Contains(content, "process.env") || strings.Contains(content, "os.Getenv") {
 		cred.UsesEnvVars = true
 		cred.CredentialTypes = append(cred.CredentialTypes, "environment_variables")
 	}
-	
+
 	// Check for hardcoded credentials (look for quoted strings with credentials)
 	if strings.Contains(content, "password") && (strings.Contains(content, "'") || strings.Contains(content, "\"")) {
 		if !strings.Contains(content, "process.env") {
@@ -949,8 +949,8 @@ func (im *IntegrationMapper) analyzeCredentials(content string) CredentialInfo {
 				if strings.Contains(line, "password") && !strings.Contains(line, "process.env") {
 					// Look for patterns like: password: 'value', password: "value", password='value', password="value"
 					if (strings.Contains(line, "password:") && (strings.Contains(line, "'") || strings.Contains(line, "\""))) ||
-					   (strings.Contains(line, "password=") && (strings.Contains(line, "'") || strings.Contains(line, "\""))) ||
-					   (strings.Contains(line, "password ") && (strings.Contains(line, "'") || strings.Contains(line, "\""))) {
+						(strings.Contains(line, "password=") && (strings.Contains(line, "'") || strings.Contains(line, "\""))) ||
+						(strings.Contains(line, "password ") && (strings.Contains(line, "'") || strings.Contains(line, "\""))) {
 						cred.UsesHardcoded = true
 						cred.CredentialTypes = append(cred.CredentialTypes, "hardcoded_password")
 						cred.SecurityIssues = append(cred.SecurityIssues, "Hardcoded password detected")
@@ -960,7 +960,7 @@ func (im *IntegrationMapper) analyzeCredentials(content string) CredentialInfo {
 			}
 		}
 	}
-	
+
 	// Check for API keys
 	if strings.Contains(strings.ToLower(content), "apikey") || strings.Contains(strings.ToLower(content), "api_key") {
 		cred.CredentialTypes = append(cred.CredentialTypes, "api_key")
@@ -969,7 +969,7 @@ func (im *IntegrationMapper) analyzeCredentials(content string) CredentialInfo {
 			cred.SecurityIssues = append(cred.SecurityIssues, "Hardcoded API key detected")
 		}
 	}
-	
+
 	// Check for tokens
 	if strings.Contains(strings.ToLower(content), "token") {
 		cred.CredentialTypes = append(cred.CredentialTypes, "token")
@@ -978,7 +978,7 @@ func (im *IntegrationMapper) analyzeCredentials(content string) CredentialInfo {
 			cred.SecurityIssues = append(cred.SecurityIssues, "Hardcoded token detected")
 		}
 	}
-	
+
 	return cred
 }
 
@@ -992,7 +992,7 @@ func (im *IntegrationMapper) detectEnvironment(endpoint string) string {
 	if strings.Contains(endpoint, "prod") || strings.Contains(endpoint, ".com") || strings.Contains(endpoint, ".net") {
 		return "production"
 	}
-	
+
 	return "unknown"
 }
 
@@ -1003,7 +1003,7 @@ func (im *IntegrationMapper) detectAPIProtocol(endpoint string) string {
 	if strings.HasPrefix(endpoint, "http://") {
 		return "HTTP"
 	}
-	
+
 	return "Unknown"
 }
 
@@ -1024,7 +1024,7 @@ func (im *IntegrationMapper) detectMessagingProtocol(service string) string {
 
 func (im *IntegrationMapper) assessDatabaseRisk(credentials CredentialInfo, endpoint string) SecurityRiskLevel {
 	risk := LowRisk
-	
+
 	if credentials.UsesHardcoded {
 		risk = CriticalRisk
 	} else if len(credentials.SecurityIssues) > 0 {
@@ -1034,27 +1034,27 @@ func (im *IntegrationMapper) assessDatabaseRisk(credentials CredentialInfo, endp
 	} else {
 		risk = MediumRisk
 	}
-	
+
 	return risk
 }
 
 func (im *IntegrationMapper) getDatabaseRiskReasons(credentials CredentialInfo, endpoint string) []string {
 	reasons := make([]string, 0)
-	
+
 	if credentials.UsesHardcoded {
 		reasons = append(reasons, "Hardcoded database credentials")
 	}
-	
+
 	if strings.Contains(endpoint, "localhost") {
 		reasons = append(reasons, "Development database")
 	} else {
 		reasons = append(reasons, "External database connection")
 	}
-	
+
 	if len(credentials.SecurityIssues) > 0 {
 		reasons = append(reasons, credentials.SecurityIssues...)
 	}
-	
+
 	return reasons
 }
 
@@ -1068,7 +1068,7 @@ func (im *IntegrationMapper) getCacheRiskReasons(credentials CredentialInfo, end
 
 func (im *IntegrationMapper) assessAPIRisk(credentials CredentialInfo, endpoint string) SecurityRiskLevel {
 	risk := LowRisk
-	
+
 	if credentials.UsesHardcoded {
 		risk = HighRisk
 	} else if strings.HasPrefix(endpoint, "http://") {
@@ -1078,25 +1078,25 @@ func (im *IntegrationMapper) assessAPIRisk(credentials CredentialInfo, endpoint 
 	} else {
 		risk = MediumRisk
 	}
-	
+
 	return risk
 }
 
 func (im *IntegrationMapper) getAPIRiskReasons(credentials CredentialInfo, endpoint string) []string {
 	reasons := make([]string, 0)
-	
+
 	if credentials.UsesHardcoded {
 		reasons = append(reasons, "Hardcoded API credentials")
 	}
-	
+
 	if strings.HasPrefix(endpoint, "http://") {
 		reasons = append(reasons, "Insecure HTTP connection")
 	}
-	
+
 	if len(credentials.SecurityIssues) > 0 {
 		reasons = append(reasons, credentials.SecurityIssues...)
 	}
-	
+
 	return reasons
 }
 
@@ -1104,17 +1104,17 @@ func (im *IntegrationMapper) assessWebSocketRisk(credentials CredentialInfo, end
 	if strings.HasPrefix(endpoint, "ws://") {
 		return MediumRisk // Insecure WebSocket
 	}
-	
+
 	return LowRisk // WSS is secure
 }
 
 func (im *IntegrationMapper) getWebSocketRiskReasons(credentials CredentialInfo, endpoint string) []string {
 	reasons := make([]string, 0)
-	
+
 	if strings.HasPrefix(endpoint, "ws://") {
 		reasons = append(reasons, "Insecure WebSocket connection")
 	}
-	
+
 	return reasons
 }
 
@@ -1122,20 +1122,20 @@ func (im *IntegrationMapper) assessCloudRisk(credentials CredentialInfo, service
 	if credentials.UsesHardcoded {
 		return CriticalRisk
 	}
-	
+
 	return MediumRisk // Cloud services need proper IAM
 }
 
 func (im *IntegrationMapper) getCloudRiskReasons(credentials CredentialInfo, service string) []string {
 	reasons := make([]string, 0)
-	
+
 	if credentials.UsesHardcoded {
 		reasons = append(reasons, "Hardcoded cloud credentials")
 	}
-	
+
 	reasons = append(reasons, "Requires proper IAM configuration")
 	reasons = append(reasons, "Cloud service access")
-	
+
 	return reasons
 }
 
@@ -1149,33 +1149,33 @@ func (im *IntegrationMapper) getMessagingRiskReasons(credentials CredentialInfo,
 
 func (im *IntegrationMapper) assessEnvironmentVarRisk(envVar string) SecurityRiskLevel {
 	sensitive := []string{"password", "secret", "key", "token", "credential"}
-	
+
 	envVarLower := strings.ToLower(envVar)
 	for _, keyword := range sensitive {
 		if strings.Contains(envVarLower, keyword) {
 			return HighRisk
 		}
 	}
-	
+
 	return LowRisk
 }
 
 func (im *IntegrationMapper) getEnvironmentVarRiskReasons(envVar string) []string {
 	reasons := make([]string, 0)
-	
+
 	sensitive := []string{"password", "secret", "key", "token", "credential"}
 	envVarLower := strings.ToLower(envVar)
-	
+
 	for _, keyword := range sensitive {
 		if strings.Contains(envVarLower, keyword) {
 			reasons = append(reasons, "Contains sensitive information: "+keyword)
 		}
 	}
-	
+
 	if len(reasons) == 0 {
 		reasons = append(reasons, "Environment variable dependency")
 	}
-	
+
 	return reasons
 }
 
@@ -1187,58 +1187,58 @@ func (im *IntegrationMapper) GetIntegrationPoints() []IntegrationPoint {
 
 func (im *IntegrationMapper) GetIntegrationsByType(integrationType IntegrationType) []IntegrationPoint {
 	filtered := make([]IntegrationPoint, 0)
-	
+
 	for _, integration := range im.integrations {
 		if integration.Type == integrationType {
 			filtered = append(filtered, integration)
 		}
 	}
-	
+
 	return filtered
 }
 
 func (im *IntegrationMapper) GetHighRiskIntegrations() []IntegrationPoint {
 	highRisk := make([]IntegrationPoint, 0)
-	
+
 	for _, integration := range im.integrations {
 		if integration.SecurityRisk == HighRisk || integration.SecurityRisk == CriticalRisk {
 			highRisk = append(highRisk, integration)
 		}
 	}
-	
+
 	return highRisk
 }
 
 func (im *IntegrationMapper) GetIntegrationStats() map[string]interface{} {
 	stats := make(map[string]interface{})
-	
+
 	// Count by type
 	typeCounts := make(map[IntegrationType]int)
 	riskCounts := make(map[SecurityRiskLevel]int)
-	
+
 	for _, integration := range im.integrations {
 		typeCounts[integration.Type]++
 		riskCounts[integration.SecurityRisk]++
 	}
-	
+
 	stats["total_integrations"] = len(im.integrations)
 	stats["by_type"] = typeCounts
 	stats["by_risk"] = riskCounts
 	stats["high_risk_count"] = riskCounts[HighRisk] + riskCounts[CriticalRisk]
-	
+
 	return stats
 }
 
 func (im *IntegrationMapper) GetSecurityAssessment() map[string]interface{} {
 	assessment := make(map[string]interface{})
-	
+
 	highRiskIntegrations := im.GetHighRiskIntegrations()
 	totalIntegrations := len(im.integrations)
-	
+
 	if totalIntegrations > 0 {
 		riskPercentage := float64(len(highRiskIntegrations)) / float64(totalIntegrations) * 100
 		assessment["high_risk_percentage"] = riskPercentage
-		
+
 		if riskPercentage > 50 {
 			assessment["overall_risk"] = "high"
 		} else if riskPercentage > 25 {
@@ -1250,7 +1250,7 @@ func (im *IntegrationMapper) GetSecurityAssessment() map[string]interface{} {
 		assessment["overall_risk"] = "none"
 		assessment["high_risk_percentage"] = 0.0
 	}
-	
+
 	// Collect all security issues
 	allIssues := make([]string, 0)
 	for _, integration := range im.integrations {
@@ -1258,53 +1258,53 @@ func (im *IntegrationMapper) GetSecurityAssessment() map[string]interface{} {
 			allIssues = append(allIssues, integration.Credentials.SecurityIssues...)
 		}
 	}
-	
+
 	assessment["security_issues"] = allIssues
 	assessment["recommendations"] = im.generateSecurityRecommendations()
-	
+
 	return assessment
 }
 
 func (im *IntegrationMapper) generateSecurityRecommendations() []string {
 	recommendations := make([]string, 0)
-	
+
 	// Check for hardcoded credentials
 	hasHardcoded := false
 	hasInsecureConnections := false
-	
+
 	for _, integration := range im.integrations {
 		if integration.Credentials.UsesHardcoded {
 			hasHardcoded = true
 		}
-		
+
 		if strings.HasPrefix(integration.Endpoint, "http://") {
 			hasInsecureConnections = true
 		}
 	}
-	
+
 	if hasHardcoded {
 		recommendations = append(recommendations, "Move hardcoded credentials to environment variables")
 		recommendations = append(recommendations, "Implement proper secrets management")
 	}
-	
+
 	if hasInsecureConnections {
 		recommendations = append(recommendations, "Replace HTTP connections with HTTPS")
 		recommendations = append(recommendations, "Enable TLS encryption for all external connections")
 	}
-	
+
 	if len(im.integrations) > 10 {
 		recommendations = append(recommendations, "Consider API gateway for managing multiple integrations")
 	}
-	
+
 	return recommendations
 }
 
 func (im *IntegrationMapper) ExportToJSON() ([]byte, error) {
 	result := map[string]interface{}{
-		"integration_points":   im.integrations,
-		"statistics":           im.GetIntegrationStats(),
-		"security_assessment":  im.GetSecurityAssessment(),
+		"integration_points":  im.integrations,
+		"statistics":          im.GetIntegrationStats(),
+		"security_assessment": im.GetSecurityAssessment(),
 	}
-	
+
 	return json.MarshalIndent(result, "", "  ")
 }

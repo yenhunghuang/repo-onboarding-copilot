@@ -21,8 +21,8 @@ func BenchmarkAST_SmallRepository(b *testing.B) {
 		ProjectRoot:                   repoPath,
 		EnableDependency:              true,
 		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
+		MaxConcurrency:                4,
+		MaxFileSize:                   10 * 1024 * 1024, // 10MB
 		EnablePerformanceOptimization: true,
 	}
 	analyzer, err := ast.NewAnalyzer(config)
@@ -35,7 +35,7 @@ func BenchmarkAST_SmallRepository(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		ctx := context.Background()
-	result, err := analyzer.AnalyzeRepository(ctx)
+		result, err := analyzer.AnalyzeRepository(ctx)
 		if err != nil {
 			b.Fatalf("Analysis failed: %v", err)
 		}
@@ -54,8 +54,8 @@ func BenchmarkAST_MediumRepository(b *testing.B) {
 		ProjectRoot:                   repoPath,
 		EnableDependency:              true,
 		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
+		MaxConcurrency:                4,
+		MaxFileSize:                   10 * 1024 * 1024, // 10MB
 		EnablePerformanceOptimization: true,
 	}
 	analyzer, err := ast.NewAnalyzer(config)
@@ -68,7 +68,7 @@ func BenchmarkAST_MediumRepository(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		ctx := context.Background()
-	result, err := analyzer.AnalyzeRepository(ctx)
+		result, err := analyzer.AnalyzeRepository(ctx)
 		if err != nil {
 			b.Fatalf("Analysis failed: %v", err)
 		}
@@ -87,8 +87,8 @@ func BenchmarkAST_LargeRepository(b *testing.B) {
 		ProjectRoot:                   repoPath,
 		EnableDependency:              true,
 		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
+		MaxConcurrency:                4,
+		MaxFileSize:                   10 * 1024 * 1024, // 10MB
 		EnablePerformanceOptimization: true,
 	}
 	analyzer, err := ast.NewAnalyzer(config)
@@ -101,7 +101,7 @@ func BenchmarkAST_LargeRepository(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		ctx := context.Background()
-	result, err := analyzer.AnalyzeRepository(ctx)
+		result, err := analyzer.AnalyzeRepository(ctx)
 		if err != nil {
 			b.Fatalf("Analysis failed: %v", err)
 		}
@@ -120,8 +120,8 @@ func BenchmarkAST_SingleFileJavaScript(b *testing.B) {
 		ProjectRoot:                   tempDir,
 		EnableDependency:              true,
 		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
+		MaxConcurrency:                4,
+		MaxFileSize:                   10 * 1024 * 1024, // 10MB
 		EnablePerformanceOptimization: true,
 	}
 	analyzer, err := ast.NewAnalyzer(config)
@@ -153,8 +153,8 @@ func BenchmarkAST_SingleFileTypeScript(b *testing.B) {
 		ProjectRoot:                   tempDir,
 		EnableDependency:              true,
 		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
+		MaxConcurrency:                4,
+		MaxFileSize:                   10 * 1024 * 1024, // 10MB
 		EnablePerformanceOptimization: true,
 	}
 	analyzer, err := ast.NewAnalyzer(config)
@@ -186,8 +186,8 @@ func BenchmarkAST_MemoryUsage(b *testing.B) {
 		ProjectRoot:                   repoPath,
 		EnableDependency:              true,
 		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
+		MaxConcurrency:                4,
+		MaxFileSize:                   10 * 1024 * 1024, // 10MB
 		EnablePerformanceOptimization: true,
 	}
 	analyzer, err := ast.NewAnalyzer(config)
@@ -204,7 +204,7 @@ func BenchmarkAST_MemoryUsage(b *testing.B) {
 		runtime.ReadMemStats(&memStart)
 
 		ctx := context.Background()
-	result, err := analyzer.AnalyzeRepository(ctx)
+		result, err := analyzer.AnalyzeRepository(ctx)
 		if err != nil {
 			b.Fatalf("Analysis failed: %v", err)
 		}
@@ -229,8 +229,8 @@ func BenchmarkAST_ParsingThroughput(b *testing.B) {
 		ProjectRoot:                   repoPath,
 		EnableDependency:              true,
 		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
+		MaxConcurrency:                4,
+		MaxFileSize:                   10 * 1024 * 1024, // 10MB
 		EnablePerformanceOptimization: true,
 	}
 	analyzer, err := ast.NewAnalyzer(config)
@@ -239,13 +239,13 @@ func BenchmarkAST_ParsingThroughput(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	
+
 	start := time.Now()
 	totalFiles := 0
 
 	for i := 0; i < b.N; i++ {
 		ctx := context.Background()
-	result, err := analyzer.AnalyzeRepository(ctx)
+		result, err := analyzer.AnalyzeRepository(ctx)
 		if err != nil {
 			b.Fatalf("Analysis failed: %v", err)
 		}
@@ -276,24 +276,24 @@ func BenchmarkAST_DifferentFileSizes(b *testing.B) {
 			filePath := createLargeJSFile(b, tempDir, size.size)
 
 			config := ast.AnalyzerConfig{
-		ProjectRoot:                   tempDir,
-		EnableDependency:              true,
-		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
-		EnablePerformanceOptimization: true,
-	}
-	analyzer, err := ast.NewAnalyzer(config)
-	if err != nil {
-		b.Fatalf("Failed to create analyzer: %v", err)
-	}
+				ProjectRoot:                   tempDir,
+				EnableDependency:              true,
+				EnableComponentMap:            true,
+				MaxConcurrency:                4,
+				MaxFileSize:                   10 * 1024 * 1024, // 10MB
+				EnablePerformanceOptimization: true,
+			}
+			analyzer, err := ast.NewAnalyzer(config)
+			if err != nil {
+				b.Fatalf("Failed to create analyzer: %v", err)
+			}
 
 			b.ResetTimer()
 			b.ReportAllocs()
 
 			for i := 0; i < b.N; i++ {
 				ctx := context.Background()
-		result, err := analyzer.AnalyzeFile(ctx, filePath)
+				result, err := analyzer.AnalyzeFile(ctx, filePath)
 				if err != nil {
 					b.Fatalf("Analysis failed: %v", err)
 				}
@@ -308,7 +308,7 @@ func BenchmarkAST_DifferentFileSizes(b *testing.B) {
 // BenchmarkAST_ConcurrentParsing benchmarks concurrent file parsing
 func BenchmarkAST_ConcurrentParsing(b *testing.B) {
 	tempDir := b.TempDir()
-	
+
 	// Create multiple files for concurrent parsing
 	files := make([]string, 20)
 	for i := 0; i < 20; i++ {
@@ -319,8 +319,8 @@ func BenchmarkAST_ConcurrentParsing(b *testing.B) {
 		ProjectRoot:                   tempDir,
 		EnableDependency:              true,
 		EnableComponentMap:            true,
-		MaxConcurrency:               4,
-		MaxFileSize:                  10 * 1024 * 1024, // 10MB
+		MaxConcurrency:                4,
+		MaxFileSize:                   10 * 1024 * 1024, // 10MB
 		EnablePerformanceOptimization: true,
 	}
 	analyzer, err := ast.NewAnalyzer(config)
@@ -527,9 +527,9 @@ func createBenchmarkTSFile(b *testing.B, baseDir string) string {
 
 func createLargeJSFile(b *testing.B, baseDir string, functionCount int) string {
 	filePath := filepath.Join(baseDir, "large.js")
-	
+
 	content := "// Large JavaScript file for benchmarking\n\n"
-	
+
 	// Generate many functions
 	for i := 0; i < functionCount; i++ {
 		content += fmt.Sprintf(`
@@ -630,14 +630,14 @@ func generateBenchmarkFileContent(dir string, index int) string {
 						return this.cache.get(id);
 					}
 
-					const response = await fetch(` + "`${this.baseUrl}/items/${id}`" + `);
+					const response = await fetch(`+"`${this.baseUrl}/items/${id}`"+`);
 					const data = await response.json();
 					this.cache.set(id, data);
 					return data;
 				}
 
 				async create(data) {
-					const response = await fetch(` + "`${this.baseUrl}/items`" + `, {
+					const response = await fetch(`+"`${this.baseUrl}/items`"+`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify(data)

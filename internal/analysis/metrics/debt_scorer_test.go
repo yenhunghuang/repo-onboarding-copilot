@@ -12,7 +12,7 @@ import (
 
 func TestNewDebtScorer(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	assert.NotNil(t, scorer)
 	assert.Equal(t, 0.25, scorer.config.ComplexityWeight)
 	assert.Equal(t, 0.20, scorer.config.DuplicationWeight)
@@ -36,9 +36,9 @@ func TestNewDebtScorerWithConfig(t *testing.T) {
 		PriorityCategories:    5,
 		MinConfidenceScore:    0.70,
 	}
-	
+
 	scorer := NewDebtScorerWithConfig(config)
-	
+
 	assert.NotNil(t, scorer)
 	assert.Equal(t, config, scorer.config)
 }
@@ -46,9 +46,9 @@ func TestNewDebtScorerWithConfig(t *testing.T) {
 func TestAnalyzeDebt_EmptyInput(t *testing.T) {
 	scorer := NewDebtScorer()
 	ctx := context.Background()
-	
+
 	metrics, err := scorer.AnalyzeDebt(ctx, []*ast.ParseResult{}, nil, nil)
-	
+
 	assert.Error(t, err)
 	assert.Nil(t, metrics)
 	assert.Contains(t, err.Error(), "no parse results provided")
@@ -57,15 +57,15 @@ func TestAnalyzeDebt_EmptyInput(t *testing.T) {
 func TestAnalyzeDebt_MissingMetrics(t *testing.T) {
 	scorer := NewDebtScorer()
 	ctx := context.Background()
-	
+
 	parseResults := []*ast.ParseResult{
 		createMockParseResultForDebt("test.js", []ast.FunctionInfo{
 			createMockFunctionForDebt("testFunction", 1, 10),
 		}, []ast.ClassInfo{}),
 	}
-	
+
 	metrics, err := scorer.AnalyzeDebt(ctx, parseResults, nil, nil)
-	
+
 	assert.Error(t, err)
 	assert.Nil(t, metrics)
 	assert.Contains(t, err.Error(), "complexity and duplication metrics are required")
@@ -124,13 +124,13 @@ func TestAnalyzeDebt_ValidInput(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			scorer := NewDebtScorer()
 			ctx := context.Background()
-			
+
 			// Create mock complexity and duplication metrics
 			complexityMetrics := createMockComplexityMetrics()
 			duplicationMetrics := createMockDuplicationMetrics()
-			
+
 			metrics, err := scorer.AnalyzeDebt(ctx, tt.parseResults, complexityMetrics, duplicationMetrics)
-			
+
 			if tt.expectError {
 				assert.Error(t, err)
 				assert.Nil(t, metrics)
@@ -144,7 +144,7 @@ func TestAnalyzeDebt_ValidInput(t *testing.T) {
 					assert.NotNil(t, metrics.Recommendations)
 					assert.NotNil(t, metrics.Dashboard)
 					assert.NotNil(t, metrics.Summary)
-					
+
 					// Verify metrics have reasonable values
 					assert.GreaterOrEqual(t, metrics.OverallScore, 0.0)
 					assert.GreaterOrEqual(t, metrics.TotalDebtHours, 0.0)
@@ -159,7 +159,7 @@ func TestAnalyzeDebt_ValidInput(t *testing.T) {
 
 func TestIsLongMethod(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name     string
 		function ast.FunctionInfo
@@ -181,7 +181,7 @@ func TestIsLongMethod(t *testing.T) {
 
 func TestDetermineLongMethodSeverity(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name     string
 		function ast.FunctionInfo
@@ -202,7 +202,7 @@ func TestDetermineLongMethodSeverity(t *testing.T) {
 
 func TestHasTooManyParameters(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name     string
 		function ast.FunctionInfo
@@ -224,7 +224,7 @@ func TestHasTooManyParameters(t *testing.T) {
 
 func TestIsLargeClass(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name     string
 		class    ast.ClassInfo
@@ -247,27 +247,27 @@ func TestIsLargeClass(t *testing.T) {
 
 func TestHasCircularDependencies(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
-		name         string
-		parseResult  *ast.ParseResult
-		expected     bool
+		name        string
+		parseResult *ast.ParseResult
+		expected    bool
 	}{
 		{
 			name: "few imports and exports",
-			parseResult: createMockParseResultForDebt("simple.js", 
+			parseResult: createMockParseResultForDebt("simple.js",
 				[]ast.FunctionInfo{}, []ast.ClassInfo{}),
 			expected: false,
 		},
 		{
-			name: "many imports and exports",
+			name:        "many imports and exports",
 			parseResult: createMockParseResultWithImportsExports("complex.js", 15, 8),
-			expected: true,
+			expected:    true,
 		},
 		{
-			name: "many imports, few exports",
+			name:        "many imports, few exports",
 			parseResult: createMockParseResultWithImportsExports("imports.js", 15, 2),
-			expected: false,
+			expected:    false,
 		},
 	}
 
@@ -281,7 +281,7 @@ func TestHasCircularDependencies(t *testing.T) {
 
 func TestCalculateConfidenceScore(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name     string
 		item     TechnicalDebtItem
@@ -325,7 +325,7 @@ func TestCalculateConfidenceScore(t *testing.T) {
 
 func TestEstimateChangeFrequency(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name         string
 		item         TechnicalDebtItem
@@ -333,20 +333,20 @@ func TestEstimateChangeFrequency(t *testing.T) {
 		maxFrequency float64
 	}{
 		{
-			name: "service file",
-			item: TechnicalDebtItem{FilePath: "src/services/user.service.js"},
+			name:         "service file",
+			item:         TechnicalDebtItem{FilePath: "src/services/user.service.js"},
 			minFrequency: 0.5,
 			maxFrequency: 1.0,
 		},
 		{
-			name: "component file",
-			item: TechnicalDebtItem{FilePath: "src/components/UserProfile.jsx"},
+			name:         "component file",
+			item:         TechnicalDebtItem{FilePath: "src/components/UserProfile.jsx"},
 			minFrequency: 0.4,
 			maxFrequency: 1.0,
 		},
 		{
-			name: "utility file",
-			item: TechnicalDebtItem{FilePath: "src/utils/helpers.js"},
+			name:         "utility file",
+			item:         TechnicalDebtItem{FilePath: "src/utils/helpers.js"},
 			minFrequency: 0.1,
 			maxFrequency: 0.4,
 		},
@@ -363,7 +363,7 @@ func TestEstimateChangeFrequency(t *testing.T) {
 
 func TestScoreToPriority(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name     string
 		score    float64
@@ -386,7 +386,7 @@ func TestScoreToPriority(t *testing.T) {
 
 func TestCalculateOverallScore(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name     string
 		items    []TechnicalDebtItem
@@ -425,7 +425,7 @@ func TestCalculateOverallScore(t *testing.T) {
 
 func TestCalculateTotalDebtHours(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name     string
 		items    []TechnicalDebtItem
@@ -457,7 +457,7 @@ func TestCalculateTotalDebtHours(t *testing.T) {
 
 func TestCalculateDebtRatio(t *testing.T) {
 	scorer := NewDebtScorer()
-	
+
 	tests := []struct {
 		name         string
 		parseResults []*ast.ParseResult
@@ -497,7 +497,7 @@ func TestCalculateDebtRatio(t *testing.T) {
 func TestDebtScoringIntegration(t *testing.T) {
 	scorer := NewDebtScorer()
 	ctx := context.Background()
-	
+
 	// Create a comprehensive set of test data
 	parseResults := []*ast.ParseResult{
 		// File 1: Code smells (long method, many parameters)
@@ -507,33 +507,33 @@ func TestDebtScoringIntegration(t *testing.T) {
 		}, []ast.ClassInfo{
 			createMockClassForDebt("LargeClass", createManyMethods(25)), // Large class
 		}),
-		
+
 		// File 2: Architecture violations (god object, tight coupling)
 		createMockParseResultWithImportsExports("godObject.js", 20, 8), // Circular deps, god object
-		
+
 		// File 3: Performance issues (nested loops, excessive imports)
 		createMockParseResultWithImportsExports("performance.js", 25, 3), // Excessive imports
 	}
-	
+
 	complexityMetrics := createMockComplexityMetrics()
 	duplicationMetrics := createMockDuplicationMetrics()
-	
+
 	metrics, err := scorer.AnalyzeDebt(ctx, parseResults, complexityMetrics, duplicationMetrics)
-	
+
 	require.NoError(t, err)
 	require.NotNil(t, metrics)
-	
+
 	// Verify overall metrics
 	assert.Greater(t, metrics.OverallScore, 0.0)
 	assert.Greater(t, metrics.TotalDebtHours, 0.0)
 	assert.GreaterOrEqual(t, metrics.DebtRatio, 0.0)
 	assert.LessOrEqual(t, metrics.DebtRatio, 3.0) // Can exceed 1.0 for high debt
-	
+
 	// Verify categories are present
 	assert.Contains(t, metrics.Categories, "Code Smells")
 	assert.Contains(t, metrics.Categories, "Architecture Violations")
 	assert.Contains(t, metrics.Categories, "Performance Issues")
-	
+
 	// Verify file debt scores
 	assert.Greater(t, len(metrics.FileDebtScores), 0)
 	for filePath, fileDebt := range metrics.FileDebtScores {
@@ -543,7 +543,7 @@ func TestDebtScoringIntegration(t *testing.T) {
 		assert.Contains(t, []string{"low", "medium", "high", "critical"}, fileDebt.Priority)
 		assert.Greater(t, fileDebt.RemediationOrder, 0)
 	}
-	
+
 	// Verify remediation plan
 	assert.GreaterOrEqual(t, len(metrics.RemediationPlan), 0)
 	for _, item := range metrics.RemediationPlan {
@@ -554,14 +554,14 @@ func TestDebtScoringIntegration(t *testing.T) {
 		assert.GreaterOrEqual(t, item.ExpectedROI, 0.0)
 		assert.Contains(t, []string{"low", "medium", "high", "critical"}, item.Priority)
 	}
-	
+
 	// Verify dashboard
 	assert.GreaterOrEqual(t, metrics.Dashboard.HealthScore, 0.0)
 	assert.LessOrEqual(t, metrics.Dashboard.HealthScore, 100.0)
 	assert.GreaterOrEqual(t, metrics.Dashboard.CriticalIssues, 0)
 	assert.GreaterOrEqual(t, metrics.Dashboard.HighPriorityIssues, 0)
 	assert.Greater(t, len(metrics.Dashboard.MonthlyTrend), 0)
-	
+
 	// Verify summary
 	assert.Equal(t, len(parseResults), metrics.Summary.TotalFiles)
 	assert.GreaterOrEqual(t, metrics.Summary.FilesWithDebt, 0)
@@ -586,21 +586,21 @@ func TestDebtConfigValidation(t *testing.T) {
 		PriorityCategories:    5,
 		MinConfidenceScore:    0.65,
 	}
-	
+
 	scorer := NewDebtScorerWithConfig(config)
 	ctx := context.Background()
-	
+
 	parseResults := []*ast.ParseResult{
 		createMockParseResultForDebt("test.js", []ast.FunctionInfo{
 			createMockFunctionForDebt("testFunc", 1, 20),
 		}, []ast.ClassInfo{}),
 	}
-	
+
 	complexityMetrics := createMockComplexityMetrics()
 	duplicationMetrics := createMockDuplicationMetrics()
-	
+
 	metrics, err := scorer.AnalyzeDebt(ctx, parseResults, complexityMetrics, duplicationMetrics)
-	
+
 	assert.NoError(t, err)
 	assert.NotNil(t, metrics)
 }
@@ -654,7 +654,7 @@ func createMockFunctionWithParams(name string, paramCount int) ast.FunctionInfo 
 			Type: "any",
 		}
 	}
-	
+
 	return ast.FunctionInfo{
 		Name:       name,
 		Parameters: params,
@@ -743,8 +743,8 @@ func createMockComplexityMetrics() *ComplexityMetrics {
 				Recommendations: []string{},
 			},
 		},
-		ClassMetrics: []ClassComplexity{},
-		TotalFunctions: 2,
+		ClassMetrics:      []ClassComplexity{},
+		TotalFunctions:    2,
 		AverageComplexity: 15.0,
 	}
 }
@@ -755,14 +755,14 @@ func createMockDuplicationMetrics() *DuplicationMetrics {
 		DuplicationRatio: 0.3,
 		ExactDuplicates: []DuplicationCluster{
 			{
-				ID:               "exact_1",
-				Type:             "exact",
-				SimilarityScore:  1.0,
-				LineCount:        10,
-				TokenCount:       50,
+				ID:                "exact_1",
+				Type:              "exact",
+				SimilarityScore:   1.0,
+				LineCount:         10,
+				TokenCount:        50,
 				MaintenanceBurden: 15.0,
-				Priority:         "high",
-				Recommendations:  []string{"Extract to shared utility"},
+				Priority:          "high",
+				Recommendations:   []string{"Extract to shared utility"},
 				Instances: []DuplicationInstance{
 					{
 						FilePath:     "file1.js",
@@ -771,7 +771,7 @@ func createMockDuplicationMetrics() *DuplicationMetrics {
 						EndLine:      10,
 					},
 					{
-						FilePath:     "file2.js", 
+						FilePath:     "file2.js",
 						FunctionName: "duplicatedFunction",
 						StartLine:    1,
 						EndLine:      10,
@@ -780,7 +780,7 @@ func createMockDuplicationMetrics() *DuplicationMetrics {
 			},
 		},
 		StructuralDuplicates: []DuplicationCluster{},
-		TokenDuplicates:     []DuplicationCluster{},
+		TokenDuplicates:      []DuplicationCluster{},
 		TotalDuplicatedLines: 20,
 	}
 }

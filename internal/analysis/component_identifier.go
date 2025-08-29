@@ -19,12 +19,12 @@ const (
 
 // Component represents a single component in the application architecture
 type Component struct {
-	Name         string            `json:"name"`
-	Type         ComponentType     `json:"type"`
-	FilePath     string            `json:"file_path"`
-	Exports      []string          `json:"exports"`
-	Dependencies []string          `json:"dependencies"`
-	Metadata     map[string]any    `json:"metadata"`
+	Name         string         `json:"name"`
+	Type         ComponentType  `json:"type"`
+	FilePath     string         `json:"file_path"`
+	Exports      []string       `json:"exports"`
+	Dependencies []string       `json:"dependencies"`
+	Metadata     map[string]any `json:"metadata"`
 }
 
 // ComponentIdentifier service for identifying and categorizing application components
@@ -67,7 +67,7 @@ func (ci *ComponentIdentifier) IdentifyComponent(filePath string, content string
 
 	// Cache the result
 	ci.cache[filePath] = component
-	
+
 	return &component, nil
 }
 
@@ -108,43 +108,43 @@ func (ci *ComponentIdentifier) analyzeComponentType(filePath string, content str
 // isReactComponent detects React functional and class components
 func (ci *ComponentIdentifier) isReactComponent(content string, metadata map[string]any) bool {
 	// Check for React imports
-	hasReactImport := strings.Contains(content, "import React") || 
-					  strings.Contains(content, "from 'react'") ||
-					  strings.Contains(content, "from \"react\"")
+	hasReactImport := strings.Contains(content, "import React") ||
+		strings.Contains(content, "from 'react'") ||
+		strings.Contains(content, "from \"react\"")
 
 	// More comprehensive JSX patterns
-	hasJSX := (strings.Contains(content, "return <") || 
-			   strings.Contains(content, "? <") ||
-			   (strings.Contains(content, "return (") && 
-			   (strings.Contains(content, "<div") || 
-			    strings.Contains(content, "<span") ||
-			    strings.Contains(content, "<button") ||
-			    strings.Contains(content, "<Component") ||
-			    strings.Contains(content, "{children}") ||
-			    strings.Contains(content, "<>"))))
+	hasJSX := (strings.Contains(content, "return <") ||
+		strings.Contains(content, "? <") ||
+		(strings.Contains(content, "return (") &&
+			(strings.Contains(content, "<div") ||
+				strings.Contains(content, "<span") ||
+				strings.Contains(content, "<button") ||
+				strings.Contains(content, "<Component") ||
+				strings.Contains(content, "{children}") ||
+				strings.Contains(content, "<>"))))
 
 	// Check for functional component patterns (arrow functions returning JSX)
-	hasFunctionalComponent := (strings.Contains(content, "const ") || strings.Contains(content, "function ")) && 
-							  (strings.Contains(content, "=> {") || strings.Contains(content, "() {")) &&
-							  (hasJSX || strings.Contains(content, "return <"))
+	hasFunctionalComponent := (strings.Contains(content, "const ") || strings.Contains(content, "function ")) &&
+		(strings.Contains(content, "=> {") || strings.Contains(content, "() {")) &&
+		(hasJSX || strings.Contains(content, "return <"))
 
-	// Check for class component patterns  
+	// Check for class component patterns
 	hasClassComponent := strings.Contains(content, "class ") &&
-						 strings.Contains(content, "extends ") &&
-						 (strings.Contains(content, "React.Component") || strings.Contains(content, "Component"))
+		strings.Contains(content, "extends ") &&
+		(strings.Contains(content, "React.Component") || strings.Contains(content, "Component"))
 
 	// Check for hooks usage (more comprehensive)
 	hasHooks := strings.Contains(content, "useState") ||
-				strings.Contains(content, "useEffect") ||
-				strings.Contains(content, "useContext") ||
-				strings.Contains(content, "useReducer") ||
-				strings.Contains(content, "useMemo") ||
-				strings.Contains(content, "useCallback") ||
-				strings.Contains(content, "useRef")
+		strings.Contains(content, "useEffect") ||
+		strings.Contains(content, "useContext") ||
+		strings.Contains(content, "useReducer") ||
+		strings.Contains(content, "useMemo") ||
+		strings.Contains(content, "useCallback") ||
+		strings.Contains(content, "useRef")
 
 	// More flexible React component detection
 	isReactComp := hasReactImport && (hasJSX || hasFunctionalComponent || hasClassComponent || hasHooks)
-	
+
 	// Also check for custom hooks (functions starting with 'use' and using hooks)
 	isCustomHook := hasHooks && strings.Contains(content, "const use") && !hasJSX
 
@@ -154,14 +154,14 @@ func (ci *ComponentIdentifier) isReactComponent(content string, metadata map[str
 		metadata["is_class"] = hasClassComponent
 		metadata["uses_hooks"] = hasHooks
 		metadata["detection_confidence"] = "high"
-		
+
 		// Check for HOC patterns
-		if strings.Contains(content, "withAuth") || 
-		   strings.Contains(content, "withRouter") ||
-		   strings.Contains(content, "withStyles") {
+		if strings.Contains(content, "withAuth") ||
+			strings.Contains(content, "withRouter") ||
+			strings.Contains(content, "withStyles") {
 			metadata["is_hoc"] = true
 		}
-		
+
 		// Check for custom hooks
 		if isCustomHook || (hasHooks && !hasJSX && strings.Contains(content, "use")) {
 			metadata["is_custom_hook"] = true
@@ -175,35 +175,35 @@ func (ci *ComponentIdentifier) isReactComponent(content string, metadata map[str
 func (ci *ComponentIdentifier) isService(content string, metadata map[string]any) bool {
 	// Look for service patterns
 	hasServiceKeywords := strings.Contains(content, "Service") ||
-						  strings.Contains(content, "Client") ||
-						  strings.Contains(content, "Repository")
+		strings.Contains(content, "Client") ||
+		strings.Contains(content, "Repository")
 
 	// Check for HTTP client usage
 	hasHTTPClient := strings.Contains(content, "axios") ||
-					 strings.Contains(content, "fetch") ||
-					 strings.Contains(content, "http.") ||
-					 strings.Contains(content, "request")
+		strings.Contains(content, "fetch") ||
+		strings.Contains(content, "http.") ||
+		strings.Contains(content, "request")
 
 	// Check for database operations - be more specific
 	hasDBOperations := (strings.Contains(content, "SELECT") ||
-					   strings.Contains(content, "INSERT") ||
-					   strings.Contains(content, "UPDATE") ||
-					   strings.Contains(content, "DELETE")) &&
-					   (strings.Contains(content, "query") ||
-					   strings.Contains(content, "findOne") ||
-					   strings.Contains(content, "create"))
+		strings.Contains(content, "INSERT") ||
+		strings.Contains(content, "UPDATE") ||
+		strings.Contains(content, "DELETE")) &&
+		(strings.Contains(content, "query") ||
+			strings.Contains(content, "findOne") ||
+			strings.Contains(content, "create"))
 
 	// Check for async patterns (common in services)
 	hasAsyncPatterns := strings.Contains(content, "async ") ||
-						strings.Contains(content, "await ") ||
-						strings.Contains(content, ".then(") ||
-						strings.Contains(content, "Promise")
+		strings.Contains(content, "await ") ||
+		strings.Contains(content, ".then(") ||
+		strings.Contains(content, "Promise")
 
 	// Don't classify as service if it's mostly constants/configuration
 	hasConstantPatterns := strings.Contains(content, "const API_") ||
-						   strings.Contains(content, "const HTTP_") ||
-						   strings.Contains(content, "ENDPOINTS") ||
-						   strings.Contains(content, "STATUS")
+		strings.Contains(content, "const HTTP_") ||
+		strings.Contains(content, "ENDPOINTS") ||
+		strings.Contains(content, "STATUS")
 
 	isServiceType := (hasServiceKeywords || hasHTTPClient || hasDBOperations) && !hasConstantPatterns
 
@@ -221,23 +221,23 @@ func (ci *ComponentIdentifier) isService(content string, metadata map[string]any
 func (ci *ComponentIdentifier) isUtility(content string, metadata map[string]any) bool {
 	// Look for utility patterns - pure functions, no side effects
 	hasUtilKeywords := strings.Contains(content, "util") ||
-					   strings.Contains(content, "helper") ||
-					   strings.Contains(content, "tool") ||
-					   strings.Contains(content, "format") ||
-					   strings.Contains(content, "validate")
+		strings.Contains(content, "helper") ||
+		strings.Contains(content, "tool") ||
+		strings.Contains(content, "format") ||
+		strings.Contains(content, "validate")
 
 	// Check for pure function patterns
 	hasExportedFunctions := strings.Contains(content, "export function") ||
-							strings.Contains(content, "export const") ||
-							strings.Contains(content, "module.exports")
+		strings.Contains(content, "export const") ||
+		strings.Contains(content, "module.exports")
 
 	// Avoid classification as utility if it has side effects
 	hasSideEffects := strings.Contains(content, "console.") ||
-					  strings.Contains(content, "document.") ||
-					  strings.Contains(content, "window.") ||
-					  strings.Contains(content, "localStorage") ||
-					  strings.Contains(content, "fetch") ||
-					  strings.Contains(content, "axios")
+		strings.Contains(content, "document.") ||
+		strings.Contains(content, "window.") ||
+		strings.Contains(content, "localStorage") ||
+		strings.Contains(content, "fetch") ||
+		strings.Contains(content, "axios")
 
 	isUtilityType := (hasUtilKeywords || hasExportedFunctions) && !hasSideEffects
 
@@ -254,32 +254,32 @@ func (ci *ComponentIdentifier) isConfigurationModule(filePath string, content st
 	// Check file patterns
 	fileName := filepath.Base(filePath)
 	hasConfigName := strings.Contains(fileName, "config") ||
-					 strings.Contains(fileName, "setting") ||
-					 strings.Contains(fileName, "constant") ||
-					 strings.Contains(fileName, "env")
+		strings.Contains(fileName, "setting") ||
+		strings.Contains(fileName, "constant") ||
+		strings.Contains(fileName, "env")
 
 	// Check for configuration content patterns
 	hasConfigContent := strings.Contains(content, "export const config") ||
-						strings.Contains(content, "module.exports") ||
-						strings.Contains(content, "process.env") ||
-						strings.Contains(content, "NODE_ENV") ||
-						strings.Contains(content, "API_URL") ||
-						strings.Contains(content, "DATABASE_URL")
+		strings.Contains(content, "module.exports") ||
+		strings.Contains(content, "process.env") ||
+		strings.Contains(content, "NODE_ENV") ||
+		strings.Contains(content, "API_URL") ||
+		strings.Contains(content, "DATABASE_URL")
 
 	// Check for constant patterns - important for constants files
 	hasConstantPatterns := strings.Contains(content, "const API_") ||
-						   strings.Contains(content, "const HTTP_") ||
-						   strings.Contains(content, "ENDPOINTS") ||
-						   strings.Contains(content, "STATUS") ||
-						   strings.Contains(content, "VALIDATION_RULES") ||
-						   (strings.Contains(content, "export const") && 
-						    strings.Contains(content, ": {"))
+		strings.Contains(content, "const HTTP_") ||
+		strings.Contains(content, "ENDPOINTS") ||
+		strings.Contains(content, "STATUS") ||
+		strings.Contains(content, "VALIDATION_RULES") ||
+		(strings.Contains(content, "export const") &&
+			strings.Contains(content, ": {"))
 
 	// Check file extensions commonly used for config
 	hasConfigExt := strings.HasSuffix(fileName, ".config.js") ||
-					strings.HasSuffix(fileName, ".config.ts") ||
-					strings.HasSuffix(fileName, ".env") ||
-					strings.HasSuffix(fileName, ".json")
+		strings.HasSuffix(fileName, ".config.ts") ||
+		strings.HasSuffix(fileName, ".env") ||
+		strings.HasSuffix(fileName, ".json")
 
 	isConfigType := hasConfigName || hasConfigContent || hasConfigExt || hasConstantPatterns
 
@@ -296,24 +296,24 @@ func (ci *ComponentIdentifier) isConfigurationModule(filePath string, content st
 func (ci *ComponentIdentifier) isMiddleware(content string, metadata map[string]any) bool {
 	// Check for middleware keywords and patterns
 	hasMiddlewareKeywords := strings.Contains(content, "middleware") ||
-							 strings.Contains(content, "Middleware") ||
-							 strings.Contains(content, "next()")
+		strings.Contains(content, "Middleware") ||
+		strings.Contains(content, "next()")
 
 	// Check for Express.js middleware patterns - more specific
 	hasExpressPattern := (strings.Contains(content, "(req, res, next)") ||
-						 (strings.Contains(content, "req") &&
-						  strings.Contains(content, "res") &&
-						  strings.Contains(content, "next") &&
-						  (strings.Contains(content, "req.headers") ||
-						   strings.Contains(content, "res.send") ||
-						   strings.Contains(content, "res.status"))))
+		(strings.Contains(content, "req") &&
+			strings.Contains(content, "res") &&
+			strings.Contains(content, "next") &&
+			(strings.Contains(content, "req.headers") ||
+				strings.Contains(content, "res.send") ||
+				strings.Contains(content, "res.status"))))
 
 	// Check for authentication middleware patterns
 	hasAuthPattern := strings.Contains(content, "auth") &&
-					  (strings.Contains(content, "token") ||
-					   strings.Contains(content, "jwt") ||
-					   strings.Contains(content, "bearer")) &&
-					  strings.Contains(content, "req.headers")
+		(strings.Contains(content, "token") ||
+			strings.Contains(content, "jwt") ||
+			strings.Contains(content, "bearer")) &&
+		strings.Contains(content, "req.headers")
 
 	isMiddlewareType := hasMiddlewareKeywords || hasExpressPattern || hasAuthPattern
 
@@ -333,10 +333,10 @@ func (ci *ComponentIdentifier) extractExports(content string) []string {
 	// Simple regex-based extraction for common export patterns
 	// This is a simplified version - in production, you'd use AST parsing
 	lines := strings.Split(content, "\n")
-	
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
-		
+
 		// Export function patterns
 		if strings.HasPrefix(line, "export function ") {
 			parts := strings.Split(line, " ")
@@ -345,7 +345,7 @@ func (ci *ComponentIdentifier) extractExports(content string) []string {
 				exports = append(exports, funcName)
 			}
 		}
-		
+
 		// Export const patterns
 		if strings.HasPrefix(line, "export const ") {
 			parts := strings.Split(line, " ")
@@ -355,12 +355,12 @@ func (ci *ComponentIdentifier) extractExports(content string) []string {
 				exports = append(exports, constName)
 			}
 		}
-		
+
 		// Export default patterns
 		if strings.HasPrefix(line, "export default ") {
 			exports = append(exports, "default")
 		}
-		
+
 		// Module.exports patterns (CommonJS)
 		if strings.Contains(line, "module.exports") {
 			exports = append(exports, "module")
@@ -376,10 +376,10 @@ func (ci *ComponentIdentifier) extractDependencies(content string) []string {
 
 	// Simple regex-based extraction for common import patterns
 	lines := strings.Split(content, "\n")
-	
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
-		
+
 		// ES6 import patterns
 		if strings.HasPrefix(line, "import ") {
 			// Extract module name from import statement
@@ -408,7 +408,7 @@ func (ci *ComponentIdentifier) extractDependencies(content string) []string {
 				}
 			}
 		}
-		
+
 		// CommonJS require patterns
 		if strings.Contains(line, "require(") {
 			start := strings.Index(line, "require(")
@@ -432,17 +432,17 @@ func (ci *ComponentIdentifier) extractDependencies(content string) []string {
 // extractComponentName extracts a meaningful component name from the file path
 func extractComponentName(filePath string) string {
 	fileName := filepath.Base(filePath)
-	
+
 	// Remove file extension
 	name := strings.TrimSuffix(fileName, filepath.Ext(fileName))
-	
+
 	// Remove common suffixes
 	name = strings.TrimSuffix(name, ".component")
 	name = strings.TrimSuffix(name, ".service")
 	name = strings.TrimSuffix(name, ".util")
 	name = strings.TrimSuffix(name, ".config")
 	name = strings.TrimSuffix(name, ".middleware")
-	
+
 	// Handle index files by using parent directory name
 	if name == "index" {
 		parentDir := filepath.Base(filepath.Dir(filePath))
@@ -468,11 +468,11 @@ func (ci *ComponentIdentifier) AddComponent(component Component) {
 // GetComponentStats returns statistics about identified components
 func (ci *ComponentIdentifier) GetComponentStats() map[ComponentType]int {
 	stats := make(map[ComponentType]int)
-	
+
 	for _, component := range ci.components {
 		stats[component.Type]++
 	}
-	
+
 	return stats
 }
 

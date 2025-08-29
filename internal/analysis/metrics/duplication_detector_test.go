@@ -12,7 +12,7 @@ import (
 
 func TestNewDuplicationDetector(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	assert.NotNil(t, detector)
 	assert.Equal(t, 6, detector.config.MinLines)
 	assert.Equal(t, 50, detector.config.MinTokens)
@@ -40,9 +40,9 @@ func TestNewDuplicationDetectorWithConfig(t *testing.T) {
 			TokenSimilarity:      0.7,
 		},
 	}
-	
+
 	detector := NewDuplicationDetectorWithConfig(customConfig)
-	
+
 	assert.NotNil(t, detector)
 	assert.Equal(t, customConfig.MinLines, detector.config.MinLines)
 	assert.Equal(t, customConfig.SimilarityThreshold, detector.config.SimilarityThreshold)
@@ -53,9 +53,9 @@ func TestNewDuplicationDetectorWithConfig(t *testing.T) {
 func TestDetectDuplication_EmptyInput(t *testing.T) {
 	detector := NewDuplicationDetector()
 	ctx := context.Background()
-	
+
 	metrics, err := detector.DetectDuplication(ctx, []*ast.ParseResult{})
-	
+
 	assert.Error(t, err)
 	assert.Nil(t, metrics)
 	assert.Contains(t, err.Error(), "no parse results provided")
@@ -120,9 +120,9 @@ func TestDetectDuplication_ValidInput(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			detector := NewDuplicationDetector()
 			ctx := context.Background()
-			
+
 			metrics, err := detector.DetectDuplication(ctx, tt.parseResults)
-			
+
 			if tt.expectError {
 				assert.Error(t, err)
 				assert.Nil(t, metrics)
@@ -145,7 +145,7 @@ func TestDetectDuplication_ValidInput(t *testing.T) {
 
 func TestIsBlockSizeValid(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name      string
 		startLine int
@@ -227,29 +227,29 @@ func TestTokenizeContent(t *testing.T) {
 
 func TestGenerateStructuralHash(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
-		name     string
-		content1 string
-		content2 string
+		name        string
+		content1    string
+		content2    string
 		shouldMatch bool
 	}{
 		{
-			name:     "identical structure",
-			content1: "if (condition) { return true; } else { return false; }",
-			content2: "if (otherCondition) { return success; } else { return failure; }",
+			name:        "identical structure",
+			content1:    "if (condition) { return true; } else { return false; }",
+			content2:    "if (otherCondition) { return success; } else { return failure; }",
 			shouldMatch: true,
 		},
 		{
-			name:     "different structure",
-			content1: "if (condition) { return true; }",
-			content2: "while (condition) { return true; }",
+			name:        "different structure",
+			content1:    "if (condition) { return true; }",
+			content2:    "while (condition) { return true; }",
 			shouldMatch: false,
 		},
 		{
-			name:     "same structure different variables",
-			content1: "for (let i = 0; i < arr.length; i++) { process(arr[i]); }",
-			content2: "for (let j = 0; j < list.length; j++) { handle(list[j]); }",
+			name:        "same structure different variables",
+			content1:    "for (let i = 0; i < arr.length; i++) { process(arr[i]); }",
+			content2:    "for (let j = 0; j < list.length; j++) { handle(list[j]); }",
 			shouldMatch: true,
 		},
 	}
@@ -258,10 +258,10 @@ func TestGenerateStructuralHash(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			hash1 := detector.generateStructuralHash(tt.content1)
 			hash2 := detector.generateStructuralHash(tt.content2)
-			
+
 			assert.NotEmpty(t, hash1)
 			assert.NotEmpty(t, hash2)
-			
+
 			if tt.shouldMatch {
 				assert.Equal(t, hash1, hash2, "Structural hashes should match for similar structures")
 			} else {
@@ -273,7 +273,7 @@ func TestGenerateStructuralHash(t *testing.T) {
 
 func TestCalculateTokenSimilarity(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name     string
 		content1 string
@@ -322,35 +322,35 @@ func TestCalculateTokenSimilarity(t *testing.T) {
 
 func TestCalculateContentSimilarity(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
-		name     string
-		content1 string
-		content2 string
+		name          string
+		content1      string
+		content2      string
 		minSimilarity float64
 	}{
 		{
-			name:     "identical content",
-			content1: "function test() { return true; }",
-			content2: "function test() { return true; }",
+			name:          "identical content",
+			content1:      "function test() { return true; }",
+			content2:      "function test() { return true; }",
 			minSimilarity: 1.0,
 		},
 		{
-			name:     "very similar content",
-			content1: "function test() { return true; }",
-			content2: "function test() { return false; }",
+			name:          "very similar content",
+			content1:      "function test() { return true; }",
+			content2:      "function test() { return false; }",
 			minSimilarity: 0.8,
 		},
 		{
-			name:     "moderately similar",
-			content1: "function validateInput(data) { return data.valid; }",
-			content2: "function validateOutput(result) { return result.valid; }",
+			name:          "moderately similar",
+			content1:      "function validateInput(data) { return data.valid; }",
+			content2:      "function validateOutput(result) { return result.valid; }",
 			minSimilarity: 0.6,
 		},
 		{
-			name:     "completely different",
-			content1: "function test() {}",
-			content2: "class Example extends Base { constructor() { super(); } }",
+			name:          "completely different",
+			content1:      "function test() {}",
+			content2:      "class Example extends Base { constructor() { super(); } }",
 			minSimilarity: 0.0,
 		},
 	}
@@ -366,7 +366,7 @@ func TestCalculateContentSimilarity(t *testing.T) {
 
 func TestLevenshteinDistance(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name     string
 		s1       string
@@ -393,7 +393,7 @@ func TestLevenshteinDistance(t *testing.T) {
 
 func TestMin3(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name     string
 		a, b, c  int
@@ -416,32 +416,32 @@ func TestMin3(t *testing.T) {
 
 func TestInstancesEqual(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	instance1 := DuplicationInstance{
 		FilePath:  "test.js",
 		StartLine: 10,
 		EndLine:   20,
 	}
-	
+
 	instance2 := DuplicationInstance{
 		FilePath:  "test.js",
 		StartLine: 10,
 		EndLine:   20,
 	}
-	
+
 	instance3 := DuplicationInstance{
 		FilePath:  "other.js",
 		StartLine: 10,
 		EndLine:   20,
 	}
-	
+
 	assert.True(t, detector.instancesEqual(instance1, instance2))
 	assert.False(t, detector.instancesEqual(instance1, instance3))
 }
 
 func TestCalculateClusterSimilarity(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name      string
 		instances []DuplicationInstance
@@ -485,7 +485,7 @@ func TestCalculateClusterSimilarity(t *testing.T) {
 
 func TestEstimateTokenCount(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name     string
 		content  string
@@ -518,7 +518,7 @@ func TestEstimateTokenCount(t *testing.T) {
 
 func TestAssessRefactoringEffort(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name     string
 		cluster  DuplicationCluster
@@ -579,7 +579,7 @@ func TestAssessRefactoringEffort(t *testing.T) {
 
 func TestDeterminePriority(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name     string
 		cluster  DuplicationCluster
@@ -637,7 +637,7 @@ func TestDeterminePriority(t *testing.T) {
 
 func TestCountCrossFileInstances(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	instances := []DuplicationInstance{
 		{FilePath: "file1.js"},
 		{FilePath: "file1.js"},
@@ -645,14 +645,14 @@ func TestCountCrossFileInstances(t *testing.T) {
 		{FilePath: "file3.js"},
 		{FilePath: "file2.js"},
 	}
-	
+
 	result := detector.countCrossFileInstances(instances)
 	assert.Equal(t, 3, result) // file1.js, file2.js, file3.js
 }
 
 func TestIdentifySharedFunctionality(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name     string
 		cluster  DuplicationCluster
@@ -713,7 +713,7 @@ func TestIdentifySharedFunctionality(t *testing.T) {
 
 func TestDetermineRefactoringStrategy(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name     string
 		cluster  DuplicationCluster
@@ -775,11 +775,11 @@ func TestDetermineRefactoringStrategy(t *testing.T) {
 
 func TestDetermineConsolidationTarget(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
-		name      string
+		name       string
 		fileGroups map[string][]DuplicationInstance
-		expected  string
+		expected   string
 	}{
 		{
 			name: "clear winner",
@@ -817,7 +817,7 @@ func TestDetermineConsolidationTarget(t *testing.T) {
 
 func TestEstimateTotalLines(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	parseResult := &ast.ParseResult{
 		Functions: []ast.FunctionInfo{
 			{StartLine: 1, EndLine: 10},
@@ -832,18 +832,18 @@ func TestEstimateTotalLines(t *testing.T) {
 			},
 		},
 	}
-	
+
 	result := detector.estimateTotalLines(parseResult)
 	assert.Equal(t, 60, result) // Should return the maximum line number
 }
 
 func TestCalculateHotspotScore(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
-		name             string
-		fileDuplication  FileDuplication
-		expected         float64
+		name            string
+		fileDuplication FileDuplication
+		expected        float64
 	}{
 		{
 			name: "high duplication",
@@ -878,7 +878,7 @@ func TestCalculateHotspotScore(t *testing.T) {
 
 func TestDetermineFileRefactoringPriority(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	tests := []struct {
 		name            string
 		fileDuplication FileDuplication
@@ -924,16 +924,16 @@ func TestDetermineFileRefactoringPriority(t *testing.T) {
 
 func TestExtractAffectedFiles(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	instances := []DuplicationInstance{
 		{FilePath: "file1.js"},
 		{FilePath: "file2.js"},
 		{FilePath: "file1.js"}, // Duplicate path
 		{FilePath: "file3.js"},
 	}
-	
+
 	result := detector.extractAffectedFiles(instances)
-	
+
 	assert.Len(t, result, 3)
 	assert.Contains(t, result, "file1.js")
 	assert.Contains(t, result, "file2.js")
@@ -942,17 +942,17 @@ func TestExtractAffectedFiles(t *testing.T) {
 
 func TestExtractAffectedFunctions(t *testing.T) {
 	detector := NewDuplicationDetector()
-	
+
 	instances := []DuplicationInstance{
 		{FunctionName: "validate", ClassName: ""},
 		{FunctionName: "process", ClassName: "DataHandler"},
 		{FunctionName: "validate", ClassName: ""}, // Duplicate
 		{FunctionName: "cleanup", ClassName: "DataHandler"},
-		{FunctionName: "", ClassName: ""},         // Empty function name
+		{FunctionName: "", ClassName: ""}, // Empty function name
 	}
-	
+
 	result := detector.extractAffectedFunctions(instances)
-	
+
 	assert.Len(t, result, 3)
 	assert.Contains(t, result, "validate")
 	assert.Contains(t, result, "DataHandler.process")
@@ -964,7 +964,7 @@ func TestExtractAffectedFunctions(t *testing.T) {
 func TestDuplicationDetectionIntegration(t *testing.T) {
 	detector := NewDuplicationDetector()
 	ctx := context.Background()
-	
+
 	// Create realistic scenario with various types of duplication
 	parseResults := []*ast.ParseResult{
 		// File 1 with potential duplicates
@@ -973,14 +973,14 @@ func TestDuplicationDetectionIntegration(t *testing.T) {
 			createMockFunctionForDuplication("validatePhone", 20, 34),
 			createMockFunctionForDuplication("formatDate", 40, 50),
 		}, []ast.ClassInfo{}),
-		
+
 		// File 2 with similar functions
 		createMockParseResultForDuplication("helpers.js", []ast.FunctionInfo{
-			createMockFunctionForDuplication("validateEmail", 1, 15), // Exact duplicate
+			createMockFunctionForDuplication("validateEmail", 1, 15),  // Exact duplicate
 			createMockFunctionForDuplication("validateInput", 20, 35), // Similar structure
 			createMockFunctionForDuplication("formatTime", 40, 50),    // Similar naming
 		}, []ast.ClassInfo{}),
-		
+
 		// File 3 with class methods
 		createMockParseResultForDuplication("validator.js", []ast.FunctionInfo{}, []ast.ClassInfo{
 			createMockClassForDuplication("InputValidator", []ast.FunctionInfo{
@@ -989,19 +989,19 @@ func TestDuplicationDetectionIntegration(t *testing.T) {
 			}),
 		}),
 	}
-	
+
 	metrics, err := detector.DetectDuplication(ctx, parseResults)
-	
+
 	require.NoError(t, err)
 	require.NotNil(t, metrics)
-	
+
 	// Verify overall metrics
 	assert.GreaterOrEqual(t, metrics.OverallScore, 0.0)
 	assert.LessOrEqual(t, metrics.OverallScore, 100.0)
 	assert.GreaterOrEqual(t, metrics.DuplicationRatio, 0.0)
 	// DuplicationRatio can exceed 1.0 when multiple duplicates exist
 	assert.LessOrEqual(t, metrics.DuplicationRatio, 5.0)
-	
+
 	// Verify cluster analysis
 	allClusters := append(append(metrics.ExactDuplicates, metrics.StructuralDuplicates...), metrics.TokenDuplicates...)
 	for _, cluster := range allClusters {
@@ -1014,7 +1014,7 @@ func TestDuplicationDetectionIntegration(t *testing.T) {
 		assert.NotEmpty(t, cluster.Priority)
 		assert.NotEmpty(t, cluster.RefactoringEffort)
 	}
-	
+
 	// Verify file metrics
 	assert.Len(t, metrics.DuplicationByFile, 3)
 	for filePath, fileDuplication := range metrics.DuplicationByFile {
@@ -1024,7 +1024,7 @@ func TestDuplicationDetectionIntegration(t *testing.T) {
 		assert.GreaterOrEqual(t, fileDuplication.HotspotScore, 0.0)
 		assert.NotEmpty(t, fileDuplication.RefactoringPriority)
 	}
-	
+
 	// Verify consolidation opportunities
 	for _, opportunity := range metrics.ConsolidationOps {
 		assert.NotEmpty(t, opportunity.ID)
@@ -1034,13 +1034,13 @@ func TestDuplicationDetectionIntegration(t *testing.T) {
 		assert.Greater(t, opportunity.EstimatedEffort, 0)
 		assert.GreaterOrEqual(t, opportunity.ROIScore, 0.0)
 	}
-	
+
 	// Verify impact analysis
 	assert.GreaterOrEqual(t, metrics.ImpactAnalysis.MaintenanceMultiplier, 1.0)
 	assert.GreaterOrEqual(t, metrics.ImpactAnalysis.TechnicalDebtScore, 0.0)
 	assert.GreaterOrEqual(t, metrics.ImpactAnalysis.ChangeRiskFactor, 0.0)
 	assert.NotEmpty(t, metrics.ImpactAnalysis.CodebaseHealth)
-	
+
 	// Verify recommendations
 	for _, recommendation := range metrics.Recommendations {
 		assert.NotEmpty(t, recommendation.Priority)
@@ -1049,7 +1049,7 @@ func TestDuplicationDetectionIntegration(t *testing.T) {
 		assert.NotEmpty(t, recommendation.Description)
 		assert.Greater(t, recommendation.EstimatedHours, 0)
 	}
-	
+
 	// Verify summary
 	assert.GreaterOrEqual(t, metrics.Summary.HealthScore, 0.0)
 	assert.LessOrEqual(t, metrics.Summary.HealthScore, 100.0)
@@ -1075,22 +1075,22 @@ func TestDuplicationConfigValidation(t *testing.T) {
 			MaintenanceBurden:    1.2,
 		},
 	}
-	
+
 	detector := NewDuplicationDetectorWithConfig(customConfig)
 	ctx := context.Background()
-	
+
 	parseResults := []*ast.ParseResult{
 		createMockParseResultForDuplication("test.js", []ast.FunctionInfo{
 			createMockFunctionForDuplication("test1", 1, 5), // Meets custom MinLines
 			createMockFunctionForDuplication("test2", 10, 14),
 		}, []ast.ClassInfo{}),
 	}
-	
+
 	metrics, err := detector.DetectDuplication(ctx, parseResults)
-	
+
 	assert.NoError(t, err)
 	assert.NotNil(t, metrics)
-	
+
 	// Cross-file analysis should be disabled
 	assert.Empty(t, metrics.CrossFileDuplicates)
 }
@@ -1136,7 +1136,7 @@ func createMockClassForDuplication(name string, methods []ast.FunctionInfo) ast.
 func BenchmarkDetectDuplication(b *testing.B) {
 	detector := NewDuplicationDetector()
 	ctx := context.Background()
-	
+
 	// Create benchmark data
 	parseResults := make([]*ast.ParseResult, 5)
 	for i := 0; i < 5; i++ {
@@ -1148,16 +1148,16 @@ func BenchmarkDetectDuplication(b *testing.B) {
 				j*10+15,
 			)
 		}
-		
+
 		parseResults[i] = createMockParseResultForDuplication(
 			fmt.Sprintf("file_%d.js", i),
 			functions,
 			[]ast.ClassInfo{},
 		)
 	}
-	
+
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		_, err := detector.DetectDuplication(ctx, parseResults)
 		if err != nil {
@@ -1168,12 +1168,12 @@ func BenchmarkDetectDuplication(b *testing.B) {
 
 func BenchmarkTokenSimilarity(b *testing.B) {
 	detector := NewDuplicationDetector()
-	
+
 	content1 := "function validateInput(data, options) { if (data && options) { return data.valid && options.strict; } return false; }"
 	content2 := "function validateOutput(result, config) { if (result && config) { return result.success && config.verbose; } return true; }"
-	
+
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		detector.calculateTokenSimilarity(content1, content2)
 	}
@@ -1181,12 +1181,12 @@ func BenchmarkTokenSimilarity(b *testing.B) {
 
 func BenchmarkLevenshteinDistance(b *testing.B) {
 	detector := NewDuplicationDetector()
-	
+
 	s1 := "function validateInput(data) { return data.valid; }"
 	s2 := "function validateOutput(result) { return result.success; }"
-	
+
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		detector.levenshteinDistance(s1, s2)
 	}

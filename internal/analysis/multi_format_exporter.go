@@ -23,23 +23,23 @@ const (
 
 // ExportOptions configures export behavior
 type ExportOptions struct {
-	Formats         []ExportFormatType        `json:"formats"`
-	OutputDirectory string                    `json:"output_directory"`
-	BaseFilename    string                    `json:"base_filename"`
-	IncludeSections map[string]bool          `json:"include_sections"`
-	Metadata        map[string]interface{}   `json:"metadata"`
-	Template        string                    `json:"template,omitempty"`
+	Formats         []ExportFormatType     `json:"formats"`
+	OutputDirectory string                 `json:"output_directory"`
+	BaseFilename    string                 `json:"base_filename"`
+	IncludeSections map[string]bool        `json:"include_sections"`
+	Metadata        map[string]interface{} `json:"metadata"`
+	Template        string                 `json:"template,omitempty"`
 }
 
 // ExportResult contains the result of an export operation
 type ExportResult struct {
-	Format       ExportFormatType `json:"format"`
-	FilePath     string           `json:"file_path"`
-	FileSize     int64            `json:"file_size"`
-	Success      bool             `json:"success"`
-	Error        string           `json:"error,omitempty"`
-	GeneratedAt  time.Time        `json:"generated_at"`
-	ProcessingTimeMs int64        `json:"processing_time_ms"`
+	Format           ExportFormatType `json:"format"`
+	FilePath         string           `json:"file_path"`
+	FileSize         int64            `json:"file_size"`
+	Success          bool             `json:"success"`
+	Error            string           `json:"error,omitempty"`
+	GeneratedAt      time.Time        `json:"generated_at"`
+	ProcessingTimeMs int64            `json:"processing_time_ms"`
 }
 
 // MultiFormatExporter handles exporting dependency analysis results to multiple formats
@@ -56,12 +56,12 @@ func NewMultiFormatExporter() *MultiFormatExporter {
 			OutputDirectory: "./reports",
 			BaseFilename:    "dependency_analysis",
 			IncludeSections: map[string]bool{
-				"summary":           true,
-				"dependencies":      true,
-				"vulnerabilities":   true,
-				"performance":       true,
-				"recommendations":   true,
-				"metadata":         true,
+				"summary":         true,
+				"dependencies":    true,
+				"vulnerabilities": true,
+				"performance":     true,
+				"recommendations": true,
+				"metadata":        true,
 			},
 		},
 		templates: make(map[ExportFormatType]*template.Template),
@@ -74,26 +74,26 @@ func NewMultiFormatExporter() *MultiFormatExporter {
 
 // ExportData represents the structured data to be exported
 type ExportData struct {
-	Summary         ExportSummary                  `json:"summary"`
-	Dependencies    ExportDependencies             `json:"dependencies"`
-	Vulnerabilities ExportVulnerabilities          `json:"vulnerabilities"`
-	Performance     ExportPerformance              `json:"performance"`
-	Recommendations []ExportRecommendation         `json:"recommendations"`
-	Metadata        map[string]interface{}         `json:"metadata"`
-	GeneratedAt     time.Time                      `json:"generated_at"`
+	Summary         ExportSummary          `json:"summary"`
+	Dependencies    ExportDependencies     `json:"dependencies"`
+	Vulnerabilities ExportVulnerabilities  `json:"vulnerabilities"`
+	Performance     ExportPerformance      `json:"performance"`
+	Recommendations []ExportRecommendation `json:"recommendations"`
+	Metadata        map[string]interface{} `json:"metadata"`
+	GeneratedAt     time.Time              `json:"generated_at"`
 }
 
 // ExportSummary provides high-level analysis summary
 type ExportSummary struct {
-	ProjectName        string            `json:"project_name"`
-	TotalDependencies  int               `json:"total_dependencies"`
-	DirectDependencies int               `json:"direct_dependencies"`
-	CriticalVulns      int               `json:"critical_vulnerabilities"`
-	HighVulns          int               `json:"high_vulnerabilities"`
-	OutdatedPackages   int               `json:"outdated_packages"`
-	LicenseIssues      int               `json:"license_issues"`
-	OverallRiskScore   float64           `json:"overall_risk_score"`
-	QualityGrade       string            `json:"quality_grade"`
+	ProjectName        string             `json:"project_name"`
+	TotalDependencies  int                `json:"total_dependencies"`
+	DirectDependencies int                `json:"direct_dependencies"`
+	CriticalVulns      int                `json:"critical_vulnerabilities"`
+	HighVulns          int                `json:"high_vulnerabilities"`
+	OutdatedPackages   int                `json:"outdated_packages"`
+	LicenseIssues      int                `json:"license_issues"`
+	OverallRiskScore   float64            `json:"overall_risk_score"`
+	QualityGrade       string             `json:"quality_grade"`
 	Metrics            map[string]float64 `json:"metrics"`
 }
 
@@ -144,32 +144,32 @@ type ExportTreeEdge struct {
 
 // ExportDepStats provides dependency statistics
 type ExportDepStats struct {
-	TotalSize        int64   `json:"total_size"`
-	AverageSize      int64   `json:"average_size"`
-	LargestPackage   string  `json:"largest_package"`
-	MostDependencies string  `json:"most_dependencies"`
-	CircularDeps     int     `json:"circular_dependencies"`
+	TotalSize         int64  `json:"total_size"`
+	AverageSize       int64  `json:"average_size"`
+	LargestPackage    string `json:"largest_package"`
+	MostDependencies  string `json:"most_dependencies"`
+	CircularDeps      int    `json:"circular_dependencies"`
 	DuplicatePackages int    `json:"duplicate_packages"`
 }
 
 // ExportVulnerabilities contains vulnerability information
 type ExportVulnerabilities struct {
-	Summary      ExportVulnSummary      `json:"summary"`
-	ByPackage    []ExportPackageVulns   `json:"by_package"`
-	BySeverity   map[string]int         `json:"by_severity"`
-	TopThreat    []ExportVulnerability  `json:"top_threats"`
+	Summary    ExportVulnSummary     `json:"summary"`
+	ByPackage  []ExportPackageVulns  `json:"by_package"`
+	BySeverity map[string]int        `json:"by_severity"`
+	TopThreat  []ExportVulnerability `json:"top_threats"`
 }
 
 // ExportVulnSummary provides vulnerability summary
 type ExportVulnSummary struct {
-	Total          int     `json:"total"`
-	Critical       int     `json:"critical"`
-	High           int     `json:"high"`
-	Medium         int     `json:"medium"`
-	Low            int     `json:"low"`
-	Fixed          int     `json:"fixed"`
-	RiskScore      float64 `json:"risk_score"`
-	LastScanDate   time.Time `json:"last_scan_date"`
+	Total        int       `json:"total"`
+	Critical     int       `json:"critical"`
+	High         int       `json:"high"`
+	Medium       int       `json:"medium"`
+	Low          int       `json:"low"`
+	Fixed        int       `json:"fixed"`
+	RiskScore    float64   `json:"risk_score"`
+	LastScanDate time.Time `json:"last_scan_date"`
 }
 
 // ExportPackageVulns represents vulnerabilities for a specific package
@@ -195,19 +195,19 @@ type ExportVulnerability struct {
 
 // ExportPerformance contains performance analysis information
 type ExportPerformance struct {
-	BundleAnalysis   ExportBundleAnalysis   `json:"bundle_analysis"`
-	LoadTimes        ExportLoadTimes        `json:"load_times"`
+	BundleAnalysis   ExportBundleAnalysis       `json:"bundle_analysis"`
+	LoadTimes        ExportLoadTimes            `json:"load_times"`
 	Recommendations  []ExportPerfRecommendation `json:"recommendations"`
-	PerformanceScore float64                `json:"performance_score"`
+	PerformanceScore float64                    `json:"performance_score"`
 }
 
 // ExportBundleAnalysis represents bundle size analysis
 type ExportBundleAnalysis struct {
-	TotalSize      int64                  `json:"total_size"`
-	GzippedSize    int64                  `json:"gzipped_size"`
-	ByCategory     map[string]int64       `json:"by_category"`
+	TotalSize       int64                 `json:"total_size"`
+	GzippedSize     int64                 `json:"gzipped_size"`
+	ByCategory      map[string]int64      `json:"by_category"`
 	LargestPackages []ExportPackageSize   `json:"largest_packages"`
-	TreeShaking    ExportTreeShakingInfo  `json:"tree_shaking"`
+	TreeShaking     ExportTreeShakingInfo `json:"tree_shaking"`
 }
 
 // ExportPackageSize represents package size information
@@ -220,9 +220,9 @@ type ExportPackageSize struct {
 
 // ExportTreeShakingInfo provides tree-shaking analysis
 type ExportTreeShakingInfo struct {
-	Potential      int64   `json:"potential_savings"`
-	Percentage     float64 `json:"percentage_reduction"`
-	Opportunities  []string `json:"opportunities"`
+	Potential     int64    `json:"potential_savings"`
+	Percentage    float64  `json:"percentage_reduction"`
+	Opportunities []string `json:"opportunities"`
 }
 
 // ExportLoadTimes represents load time analysis
@@ -233,30 +233,30 @@ type ExportLoadTimes struct {
 
 // ExportNetworkTiming represents timing for different networks
 type ExportNetworkTiming struct {
-	Name       string  `json:"name"`
-	Bandwidth  string  `json:"bandwidth"`
-	LoadTime   int64   `json:"load_time_ms"`
-	Grade      string  `json:"grade"`
-	Acceptable bool    `json:"acceptable"`
+	Name       string `json:"name"`
+	Bandwidth  string `json:"bandwidth"`
+	LoadTime   int64  `json:"load_time_ms"`
+	Grade      string `json:"grade"`
+	Acceptable bool   `json:"acceptable"`
 }
 
 // ExportDeviceTiming represents timing for different devices
 type ExportDeviceTiming struct {
-	Name         string  `json:"name"`
+	Name          string  `json:"name"`
 	CPUMultiplier float64 `json:"cpu_multiplier"`
-	ParseTime    int64   `json:"parse_time_ms"`
-	ExecuteTime  int64   `json:"execute_time_ms"`
-	TotalTime    int64   `json:"total_time_ms"`
+	ParseTime     int64   `json:"parse_time_ms"`
+	ExecuteTime   int64   `json:"execute_time_ms"`
+	TotalTime     int64   `json:"total_time_ms"`
 }
 
 // ExportPerfRecommendation represents a performance recommendation
 type ExportPerfRecommendation struct {
-	Type        string  `json:"type"`
-	Priority    string  `json:"priority"`
-	Description string  `json:"description"`
-	Impact      string  `json:"impact"`
-	Effort      string  `json:"effort"`
-	Savings     int64   `json:"potential_savings_bytes,omitempty"`
+	Type        string `json:"type"`
+	Priority    string `json:"priority"`
+	Description string `json:"description"`
+	Impact      string `json:"impact"`
+	Effort      string `json:"effort"`
+	Savings     int64  `json:"potential_savings_bytes,omitempty"`
 }
 
 // ExportRecommendation represents a general recommendation
@@ -316,13 +316,13 @@ func (mfe *MultiFormatExporter) convertPayloadToExportData(payload *DependencyOr
 		if payload.DependencyTree.AllDependencies != nil {
 			totalDeps = len(payload.DependencyTree.AllDependencies)
 		}
-		
+
 		data.Summary = ExportSummary{
 			ProjectName:        projectName,
 			TotalDependencies:  totalDeps,
 			DirectDependencies: mfe.countDirectDeps(payload.DependencyTree),
 			QualityGrade:       "B+", // Default grade
-			Metrics:           make(map[string]float64),
+			Metrics:            make(map[string]float64),
 		}
 	}
 
@@ -341,7 +341,7 @@ func (mfe *MultiFormatExporter) convertPayloadToExportData(payload *DependencyOr
 	// Add metadata
 	data.Metadata["export_version"] = "1.0"
 	data.Metadata["analyzer_version"] = "2.2.0"
-	
+
 	return data, nil
 }
 
@@ -350,7 +350,7 @@ func (mfe *MultiFormatExporter) countDirectDeps(tree *DependencyTree) int {
 	if tree == nil || tree.RootPackage == nil {
 		return 0
 	}
-	
+
 	directCount := 0
 	if tree.RootPackage.Dependencies != nil {
 		directCount += len(tree.RootPackage.Dependencies)
@@ -385,7 +385,7 @@ func (mfe *MultiFormatExporter) convertDependencies(tree *DependencyTree) Export
 				UpdateStatus: "current", // Default status
 				Metadata:     make(map[string]interface{}),
 			}
-			
+
 			// Convert vulnerabilities if present
 			for _, vuln := range depNode.Vulnerabilities {
 				exportVuln := ExportVulnerability{
@@ -399,17 +399,17 @@ func (mfe *MultiFormatExporter) convertDependencies(tree *DependencyTree) Export
 					FixVersion:  "",
 					PublishedAt: time.Now(), // Default timestamp
 				}
-				
+
 				if len(vuln.References) > 0 {
 					exportVuln.URL = vuln.References[0]
 				}
 				if len(vuln.PatchedIn) > 0 {
 					exportVuln.FixVersion = vuln.PatchedIn[0]
 				}
-				
+
 				exportPkg.Vulnerabilities = append(exportPkg.Vulnerabilities, exportVuln)
 			}
-			
+
 			deps.Direct = append(deps.Direct, exportPkg)
 		}
 	}
@@ -420,7 +420,7 @@ func (mfe *MultiFormatExporter) convertDependencies(tree *DependencyTree) Export
 			if !depNode.IsTransitive {
 				continue // Skip direct deps, already processed
 			}
-			
+
 			exportPkg := ExportPackage{
 				Name:         depNode.Name,
 				Version:      depNode.Version,
@@ -430,7 +430,7 @@ func (mfe *MultiFormatExporter) convertDependencies(tree *DependencyTree) Export
 				UpdateStatus: "current", // Default status
 				Metadata:     make(map[string]interface{}),
 			}
-			
+
 			deps.Transitive = append(deps.Transitive, exportPkg)
 		}
 	}
@@ -452,7 +452,7 @@ func (mfe *MultiFormatExporter) getDependencyNames(children map[string]*Dependen
 	if children == nil {
 		return []string{}
 	}
-	
+
 	names := make([]string, 0, len(children))
 	for name := range children {
 		names = append(names, name)
@@ -462,10 +462,10 @@ func (mfe *MultiFormatExporter) getDependencyNames(children map[string]*Dependen
 
 func (mfe *MultiFormatExporter) convertVulnerabilities(report *SecurityReport) ExportVulnerabilities {
 	vulns := ExportVulnerabilities{
-		Summary:   ExportVulnSummary{LastScanDate: time.Now()},
-		ByPackage: []ExportPackageVulns{},
+		Summary:    ExportVulnSummary{LastScanDate: time.Now()},
+		ByPackage:  []ExportPackageVulns{},
 		BySeverity: make(map[string]int),
-		TopThreat: []ExportVulnerability{},
+		TopThreat:  []ExportVulnerability{},
 	}
 
 	if report == nil {
@@ -493,14 +493,14 @@ func (mfe *MultiFormatExporter) convertVulnerabilities(report *SecurityReport) E
 			FixVersion:  "",
 			PublishedAt: time.Now(), // Default timestamp
 		}
-		
+
 		if len(vuln.References) > 0 {
 			exportVuln.URL = vuln.References[0]
 		}
 		if len(vuln.PatchedIn) > 0 {
 			exportVuln.FixVersion = vuln.PatchedIn[0]
 		}
-		
+
 		if vuln.Severity == "critical" || vuln.Severity == "high" {
 			vulns.TopThreat = append(vulns.TopThreat, exportVuln)
 		}
@@ -528,12 +528,12 @@ func (mfe *MultiFormatExporter) convertPerformance(report *PerformanceReport) Ex
 				Name:       network,
 				LoadTime:   int64(loadTime),
 				Acceptable: loadTime < 3000, // 3 second threshold
-				Bandwidth:  network,        // Use network type as bandwidth info
+				Bandwidth:  network,         // Use network type as bandwidth info
 				Grade:      mfe.getLoadTimeGrade(loadTime),
 			}
 		}
 	}
-	
+
 	// Use total impact as performance score
 	perf.PerformanceScore = report.TotalImpact
 
@@ -633,11 +633,11 @@ func (mfe *MultiFormatExporter) exportJSON(data *ExportData, filepath string) er
 // exportMarkdown exports data as Markdown
 func (mfe *MultiFormatExporter) exportMarkdown(data *ExportData, filepath string) error {
 	var buf bytes.Buffer
-	
+
 	// Write markdown content
 	buf.WriteString(fmt.Sprintf("# Dependency Analysis Report\n\n"))
 	buf.WriteString(fmt.Sprintf("**Generated:** %s\n\n", data.GeneratedAt.Format("January 2, 2006 at 3:04 PM")))
-	
+
 	// Summary section
 	buf.WriteString("## Summary\n\n")
 	buf.WriteString(fmt.Sprintf("- **Project:** %s\n", data.Summary.ProjectName))
@@ -692,7 +692,7 @@ func (mfe *MultiFormatExporter) exportHTML(data *ExportData, filepath string) er
 func (mfe *MultiFormatExporter) exportPDF(data *ExportData, filepath string) error {
 	// For now, we'll create a simple text-based PDF representation
 	// In a real implementation, you would use a PDF library like gofpdf
-	
+
 	htmlPath := strings.Replace(filepath, ".pdf", ".html", 1)
 	if err := mfe.exportHTML(data, htmlPath); err != nil {
 		return fmt.Errorf("failed to create HTML for PDF conversion: %w", err)
@@ -787,7 +787,7 @@ func (mfe *MultiFormatExporter) SetTemplate(format ExportFormatType, templateCon
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %w", err)
 	}
-	
+
 	mfe.templates[format] = tmpl
 	return nil
 }
@@ -798,7 +798,7 @@ func (mfe *MultiFormatExporter) LoadTemplateFromFile(format ExportFormatType, fi
 	if err != nil {
 		return fmt.Errorf("failed to read template file: %w", err)
 	}
-	
+
 	return mfe.SetTemplate(format, string(content))
 }
 

@@ -10,10 +10,10 @@ import (
 // DependencySection represents the dependency analysis section for AnalysisResult
 // This matches the expected structure from the story requirements
 type DependencySection struct {
-	Direct       []DependencyNode `json:"direct"`       // Direct dependencies from package.json
-	Transitive   []DependencyNode `json:"transitive"`   // All transitive dependencies
-	Vulnerabilities []Vulnerability `json:"vulnerabilities"` // Security vulnerabilities found
-	Licenses     []LicenseInfo    `json:"licenses"`     // License information for all dependencies
+	Direct          []DependencyNode `json:"direct"`          // Direct dependencies from package.json
+	Transitive      []DependencyNode `json:"transitive"`      // All transitive dependencies
+	Vulnerabilities []Vulnerability  `json:"vulnerabilities"` // Security vulnerabilities found
+	Licenses        []LicenseInfo    `json:"licenses"`        // License information for all dependencies
 }
 
 // IntegrateWithAnalysisResult adds dependency analysis to the existing AnalysisResult
@@ -52,7 +52,7 @@ func (da *DependencyAnalyzer) IntegrateWithAnalysisResult(ctx context.Context, e
 			existingPackage.Metadata["requested_version"] = node.RequestedVersion
 			existingPackage.Metadata["resolved_version"] = node.ResolvedVersion
 			existingPackage.Metadata["depth"] = fmt.Sprintf("%d", node.Depth)
-			
+
 			if node.PackageInfo != nil {
 				existingPackage.Metadata["description"] = node.PackageInfo.Description
 				existingPackage.Metadata["homepage"] = node.PackageInfo.Homepage
@@ -74,13 +74,13 @@ func (da *DependencyAnalyzer) IntegrateWithAnalysisResult(ctx context.Context, e
 	if existingResult.Summary.Languages == nil {
 		existingResult.Summary.Languages = make(map[string]int)
 	}
-	
+
 	// Add dependency-related metrics to summary
 	existingResult.Summary.Complexity.DependencyDepth = dependencyTree.Statistics.MaxDepth
 
 	// Add dependency tree as metadata (could be extended to be a first-class field)
 	// This preserves all our detailed analysis for downstream consumers
-	
+
 	return existingResult, nil
 }
 
@@ -118,7 +118,7 @@ func (da *DependencyAnalyzer) determinePackageType(packageName string) string {
 	if packageName[0] == '@' {
 		return "scoped"
 	}
-	
+
 	// Check if it's a built-in Node.js module (basic check)
 	builtins := map[string]bool{
 		"fs": true, "path": true, "http": true, "https": true, "crypto": true,
@@ -126,11 +126,11 @@ func (da *DependencyAnalyzer) determinePackageType(packageName string) string {
 		"url": true, "querystring": true, "child_process": true, "cluster": true,
 		"dgram": true, "dns": true, "net": true, "tls": true, "zlib": true,
 	}
-	
+
 	if builtins[packageName] {
 		return "built-in"
 	}
-	
+
 	return "npm"
 }
 
@@ -144,7 +144,7 @@ func (da *DependencyAnalyzer) GetDependencyTree(ctx context.Context) (*Dependenc
 // This is the main entry point that other components should use
 func AnalyzeDependenciesForProject(projectRoot string, config DependencyAnalyzerConfig) (*DependencyTree, error) {
 	config.ProjectRoot = projectRoot
-	
+
 	analyzer, err := NewDependencyAnalyzer(config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create dependency analyzer: %w", err)
@@ -159,7 +159,7 @@ func AnalyzeDependenciesForProject(projectRoot string, config DependencyAnalyzer
 // This provides a summary view for reporting and monitoring
 func GetDependencyMetrics(tree *DependencyTree) map[string]interface{} {
 	metrics := make(map[string]interface{})
-	
+
 	stats := tree.Statistics
 	metrics["total_dependencies"] = stats.TotalDependencies
 	metrics["direct_dependencies"] = stats.DirectDependencies
@@ -167,31 +167,31 @@ func GetDependencyMetrics(tree *DependencyTree) map[string]interface{} {
 	metrics["dev_dependencies"] = stats.DevDependencies
 	metrics["max_dependency_depth"] = stats.MaxDepth
 	metrics["estimated_bundle_size"] = stats.TotalSize
-	
+
 	if tree.SecurityReport != nil {
 		metrics["total_vulnerabilities"] = tree.SecurityReport.TotalVulnerabilities
 		metrics["critical_vulnerabilities"] = tree.SecurityReport.CriticalCount
 		metrics["high_vulnerabilities"] = tree.SecurityReport.HighCount
 		metrics["risk_score"] = tree.SecurityReport.RiskScore
 	}
-	
+
 	if tree.LicenseReport != nil {
 		metrics["license_issues"] = len(tree.LicenseReport.CompatibilityIssues)
 		metrics["unknown_licenses"] = len(tree.LicenseReport.UnknownLicenses)
 		metrics["proprietary_packages"] = len(tree.LicenseReport.ProprietaryPackages)
 	}
-	
+
 	if tree.UpdateReport != nil {
 		metrics["outdated_packages"] = tree.UpdateReport.OutdatedPackages
 		metrics["security_updates_available"] = tree.UpdateReport.SecurityUpdates
 		metrics["breaking_updates_available"] = tree.UpdateReport.BreakingUpdates
 	}
-	
+
 	if tree.BundleAnalysis != nil {
 		metrics["estimated_load_time_3g"] = tree.BundleAnalysis.LoadTimeEstimate["3g"]
 		metrics["estimated_load_time_wifi"] = tree.BundleAnalysis.LoadTimeEstimate["wifi"]
 		metrics["performance_score"] = tree.BundleAnalysis.PerformanceScore
 	}
-	
+
 	return metrics
 }

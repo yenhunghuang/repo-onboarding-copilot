@@ -78,7 +78,7 @@ test-coverage: ## Run tests with coverage report
 .PHONY: lint
 lint: ## Run linter
 	@which golangci-lint > /dev/null || (echo "Installing golangci-lint..." && go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest)
-	golangci-lint run
+	@export PATH="$(shell go env GOPATH)/bin:$$PATH"; golangci-lint run
 
 .PHONY: fmt
 fmt: ## Format code
@@ -93,7 +93,7 @@ vet: ## Run go vet
 .PHONY: security
 security: ## Run security checks
 	@which gosec > /dev/null || (echo "Installing gosec..." && go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest)
-	gosec ./...
+	@export PATH="$(shell go env GOPATH)/bin:$$PATH"; gosec ./...
 
 # Full quality check
 .PHONY: check

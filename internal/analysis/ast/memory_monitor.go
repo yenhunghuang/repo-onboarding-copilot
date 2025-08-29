@@ -370,7 +370,7 @@ func (mm *MemoryMonitor) GetLatestSamples(count int) []MemorySample {
 	for i := 0; i < count; i++ {
 		idx := (mm.sampleIndex - count + i + mm.maxSamples) % mm.maxSamples
 		sample := mm.samples[idx]
-		
+
 		// Only include initialized samples (non-zero timestamp)
 		if !sample.Timestamp.IsZero() {
 			samples = append(samples, sample)

@@ -14,7 +14,7 @@ func TestNewBundleAnalyzer(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
 	assert.NotNil(t, analyzer)
 	assert.NotNil(t, analyzer.performanceAnalyzer)
-	
+
 	// Test default budgets are set
 	assert.Greater(t, analyzer.budgets.MaxBundleSize, int64(0))
 	assert.Greater(t, analyzer.budgets.MaxInitialLoadTime, float64(0))
@@ -39,7 +39,7 @@ func TestAnalyzeBundle(t *testing.T) {
 				},
 				{
 					Name:    "is-array",
-					Version: "1.0.1", 
+					Version: "1.0.1",
 					Type:    "dependencies",
 				},
 			},
@@ -60,7 +60,7 @@ func TestAnalyzeBundle(t *testing.T) {
 					Type:    "dependencies",
 				},
 				{
-					Name:    "lodash", 
+					Name:    "lodash",
 					Version: "4.17.21",
 					Type:    "dependencies",
 				},
@@ -124,7 +124,7 @@ func TestAnalyzeBundle(t *testing.T) {
 
 			require.NoError(t, err)
 			assert.NotNil(t, result)
-			
+
 			// Verify basic result structure
 			assert.NotNil(t, result.SizeAnalysis)
 			assert.NotNil(t, result.BudgetAnalysis)
@@ -148,12 +148,12 @@ func TestAnalyzeBundle(t *testing.T) {
 
 func TestPerformBudgetAnalysis(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	tests := []struct {
-		name              string
-		sizeAnalysis      *SizeAnalysis
-		budgets           PerformanceBudgets
-		expectedViolations int
+		name                string
+		sizeAnalysis        *SizeAnalysis
+		budgets             PerformanceBudgets
+		expectedViolations  int
 		expectedMaxSeverity string
 	}{
 		{
@@ -164,11 +164,11 @@ func TestPerformBudgetAnalysis(t *testing.T) {
 				InitialBundle:  200000, // 200KB
 			},
 			budgets: PerformanceBudgets{
-				TotalSize:   524288,  // 512KB
-				InitialSize: 262144,  // 256KB
-				AssetSize:   131072,  // 128KB
+				TotalSize:   524288, // 512KB
+				InitialSize: 262144, // 256KB
+				AssetSize:   131072, // 128KB
 			},
-			expectedViolations:   0,
+			expectedViolations:  0,
 			expectedMaxSeverity: "",
 		},
 		{
@@ -179,11 +179,11 @@ func TestPerformBudgetAnalysis(t *testing.T) {
 				InitialBundle:  400000, // 400KB
 			},
 			budgets: PerformanceBudgets{
-				TotalSize:   524288,  // 512KB
-				InitialSize: 262144,  // 256KB
-				AssetSize:   131072,  // 128KB
+				TotalSize:   524288, // 512KB
+				InitialSize: 262144, // 256KB
+				AssetSize:   131072, // 128KB
 			},
-			expectedViolations:   3, // All budgets exceeded
+			expectedViolations:  3, // All budgets exceeded
 			expectedMaxSeverity: "critical",
 		},
 		{
@@ -194,11 +194,11 @@ func TestPerformBudgetAnalysis(t *testing.T) {
 				InitialBundle:  300000, // 300KB - exceeds initial budget
 			},
 			budgets: PerformanceBudgets{
-				TotalSize:   524288,  // 512KB
-				InitialSize: 262144,  // 256KB
-				AssetSize:   131072,  // 128KB
+				TotalSize:   524288, // 512KB
+				InitialSize: 262144, // 256KB
+				AssetSize:   131072, // 128KB
 			},
-			expectedViolations:   1,
+			expectedViolations:  1,
 			expectedMaxSeverity: "high",
 		},
 	}
@@ -207,13 +207,13 @@ func TestPerformBudgetAnalysis(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			analyzer.budgets = tt.budgets
 			budgetAnalysis := analyzer.performBudgetAnalysis(tt.sizeAnalysis)
-			
+
 			assert.NotNil(t, budgetAnalysis)
 			assert.Len(t, budgetAnalysis.Violations, tt.expectedViolations)
-			
+
 			if tt.expectedViolations > 0 {
 				assert.Equal(t, tt.expectedMaxSeverity, budgetAnalysis.MaxSeverity)
-				
+
 				// Verify violation details
 				for _, violation := range budgetAnalysis.Violations {
 					assert.NotEmpty(t, violation.BudgetType)
@@ -231,12 +231,12 @@ func TestPerformBudgetAnalysis(t *testing.T) {
 
 func TestAnalyzeTreeShakingPotential(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	tests := []struct {
-		name                    string
-		dependencies            []Dependency
-		expectedTreeShakable    int
-		expectedSavingsPercent  float64
+		name                   string
+		dependencies           []Dependency
+		expectedTreeShakable   int
+		expectedSavingsPercent float64
 	}{
 		{
 			name: "highly tree-shakable packages",
@@ -251,9 +251,9 @@ func TestAnalyzeTreeShakingPotential(t *testing.T) {
 		{
 			name: "mixed tree-shaking potential",
 			dependencies: []Dependency{
-				{Name: "react", Version: "18.2.0", Type: "dependencies"},      // Limited tree-shaking
-				{Name: "lodash", Version: "4.17.21", Type: "dependencies"},    // High tree-shaking
-				{Name: "moment", Version: "2.29.4", Type: "dependencies"},     // No tree-shaking
+				{Name: "react", Version: "18.2.0", Type: "dependencies"},   // Limited tree-shaking
+				{Name: "lodash", Version: "4.17.21", Type: "dependencies"}, // High tree-shaking
+				{Name: "moment", Version: "2.29.4", Type: "dependencies"},  // No tree-shaking
 			},
 			expectedTreeShakable:   2,
 			expectedSavingsPercent: 15.0,
@@ -272,7 +272,7 @@ func TestAnalyzeTreeShakingPotential(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			analysis := analyzer.analyzeTreeShakingPotential(tt.dependencies)
-			
+
 			assert.NotNil(t, analysis)
 			treeShakableCount := 0
 			for _, pkg := range analysis.PackageAnalysis {
@@ -282,7 +282,7 @@ func TestAnalyzeTreeShakingPotential(t *testing.T) {
 			}
 			assert.GreaterOrEqual(t, treeShakableCount, tt.expectedTreeShakable)
 			assert.GreaterOrEqual(t, analysis.PotentialSavings, tt.expectedSavingsPercent)
-			
+
 			// Verify tree-shakable packages have valid data
 			for _, pkg := range analysis.PackageAnalysis {
 				if pkg.IsTreeShakable {
@@ -297,12 +297,12 @@ func TestAnalyzeTreeShakingPotential(t *testing.T) {
 
 func TestGenerateBundleRecommendations(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	tests := []struct {
-		name                    string
-		sizeAnalysis            *SizeAnalysis
-		budgetAnalysis          *BudgetAnalysis
-		treeShakingAnalysis     *TreeShakingAnalysis
+		name                       string
+		sizeAnalysis               *SizeAnalysis
+		budgetAnalysis             *BudgetAnalysis
+		treeShakingAnalysis        *TreeShakingAnalysis
 		expectedMinRecommendations int
 	}{
 		{
@@ -353,9 +353,9 @@ func TestGenerateBundleRecommendations(t *testing.T) {
 				tt.budgetAnalysis,
 				tt.treeShakingAnalysis,
 			)
-			
+
 			assert.GreaterOrEqual(t, len(recommendations), tt.expectedMinRecommendations)
-			
+
 			for _, rec := range recommendations {
 				assert.NotEmpty(t, rec.Type)
 				assert.NotEmpty(t, rec.Description)
@@ -363,7 +363,7 @@ func TestGenerateBundleRecommendations(t *testing.T) {
 				assert.Greater(t, rec.ImpactScore, 0.0)
 				assert.LessOrEqual(t, rec.ImpactScore, 100.0)
 			}
-			
+
 			// Verify priority values are valid
 			validPriorities := map[string]bool{
 				"critical": true, "high": true, "medium": true, "low": true,
@@ -377,25 +377,25 @@ func TestGenerateBundleRecommendations(t *testing.T) {
 
 func TestCalculateSizeBreakdown(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	dependencies := []Dependency{
 		{Name: "react", Version: "18.2.0", Type: "dependencies"},
 		{Name: "lodash", Version: "4.17.21", Type: "dependencies"},
 		{Name: "moment", Version: "2.29.4", Type: "dependencies"},
 		{Name: "webpack", Version: "5.88.2", Type: "devDependencies"}, // Should be excluded
 	}
-	
+
 	ctx := context.Background()
 	breakdown := analyzer.calculateSizeBreakdown(ctx, dependencies)
-	
+
 	assert.NotNil(t, breakdown)
 	assert.Greater(t, breakdown.TotalSize, int64(0))
 	assert.Greater(t, breakdown.ProductionSize, int64(0))
 	assert.LessOrEqual(t, breakdown.ProductionSize, breakdown.TotalSize)
-	
+
 	// Should have categorized packages
 	assert.NotEmpty(t, breakdown.ByCategory)
-	
+
 	// Verify categories sum to total (within estimation error)
 	var categoryTotal int64
 	for _, size := range breakdown.ByCategory {
@@ -407,7 +407,7 @@ func TestCalculateSizeBreakdown(t *testing.T) {
 
 func TestPackageCategorization(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	tests := []struct {
 		packageName      string
 		expectedCategory string
@@ -434,12 +434,12 @@ func TestPackageCategorization(t *testing.T) {
 
 func TestBudgetViolationSeverity(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	tests := []struct {
-		name               string
-		actualSize         int64
-		budgetSize         int64
-		expectedSeverity   string
+		name             string
+		actualSize       int64
+		budgetSize       int64
+		expectedSeverity string
 	}{
 		{
 			name:             "minor overage",
@@ -448,7 +448,7 @@ func TestBudgetViolationSeverity(t *testing.T) {
 			expectedSeverity: "medium",
 		},
 		{
-			name:             "significant overage", 
+			name:             "significant overage",
 			actualSize:       150000, // 50% over
 			budgetSize:       100000,
 			expectedSeverity: "high",
@@ -461,7 +461,7 @@ func TestBudgetViolationSeverity(t *testing.T) {
 		},
 		{
 			name:             "within budget",
-			actualSize:       90000,   // 10% under
+			actualSize:       90000, // 10% under
 			budgetSize:       100000,
 			expectedSeverity: "none", // No violation
 		},
@@ -473,7 +473,7 @@ func TestBudgetViolationSeverity(t *testing.T) {
 				ActualSize: tt.actualSize,
 				BudgetSize: tt.budgetSize,
 			}
-			
+
 			severity := analyzer.calculateViolationSeverityFromSize(violation.ActualSize, violation.BudgetSize)
 			assert.Equal(t, tt.expectedSeverity, severity)
 		})
@@ -482,26 +482,26 @@ func TestBudgetViolationSeverity(t *testing.T) {
 
 func TestTreeShakingTechniques(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	tests := []struct {
-		packageName         string
-		expectedTechniques  []string
-		minTechniques       int
+		packageName        string
+		expectedTechniques []string
+		minTechniques      int
 	}{
 		{
-			packageName:    "lodash",
+			packageName:        "lodash",
 			expectedTechniques: []string{"Import specific functions", "Use lodash-es", "Use babel-plugin-lodash"},
-			minTechniques:  3,
+			minTechniques:      3,
 		},
 		{
-			packageName:    "rxjs",
+			packageName:        "rxjs",
 			expectedTechniques: []string{"Import operators individually", "Use custom builds"},
-			minTechniques:  2,
+			minTechniques:      2,
 		},
 		{
-			packageName:    "moment",
+			packageName:        "moment",
 			expectedTechniques: []string{}, // Not tree-shakable
-			minTechniques:  0,
+			minTechniques:      0,
 		},
 	}
 
@@ -509,7 +509,7 @@ func TestTreeShakingTechniques(t *testing.T) {
 		t.Run(tt.packageName, func(t *testing.T) {
 			techniques := analyzer.getTreeShakingTechniques(tt.packageName)
 			assert.GreaterOrEqual(t, len(techniques), tt.minTechniques)
-			
+
 			if len(tt.expectedTechniques) > 0 {
 				for _, expected := range tt.expectedTechniques {
 					assert.Contains(t, techniques, expected)
@@ -521,20 +521,20 @@ func TestTreeShakingTechniques(t *testing.T) {
 
 func TestBundleConfigurationDefaults(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	assert.NotNil(t, analyzer.bundlerConfigs)
-	
+
 	// Test that default bundler configs are set
 	webpack := analyzer.bundlerConfigs["webpack"]
 	assert.NotNil(t, webpack)
 	assert.True(t, webpack.TreeShakingEnabled)
 	assert.True(t, webpack.MinificationEnabled)
 	assert.NotEmpty(t, webpack.OutputFormats)
-	
-	rollup := analyzer.bundlerConfigs["rollup"] 
+
+	rollup := analyzer.bundlerConfigs["rollup"]
 	assert.NotNil(t, rollup)
 	assert.True(t, rollup.TreeShakingEnabled)
-	
+
 	esbuild := analyzer.bundlerConfigs["esbuild"]
 	assert.NotNil(t, esbuild)
 	assert.True(t, esbuild.MinificationEnabled)
@@ -542,22 +542,22 @@ func TestBundleConfigurationDefaults(t *testing.T) {
 
 func TestPerformanceBudgetDefaults(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	// Test that default budgets are reasonable
-	assert.Equal(t, int64(2097152), analyzer.budgets.TotalSize)    // 2MB
-	assert.Equal(t, int64(524288), analyzer.budgets.InitialSize)  // 512KB
-	assert.Equal(t, int64(262144), analyzer.budgets.AssetSize)    // 256KB
-	
+	assert.Equal(t, int64(2097152), analyzer.budgets.TotalSize)  // 2MB
+	assert.Equal(t, int64(524288), analyzer.budgets.InitialSize) // 512KB
+	assert.Equal(t, int64(262144), analyzer.budgets.AssetSize)   // 256KB
+
 	assert.Greater(t, analyzer.budgets.TotalSize, analyzer.budgets.InitialSize)
 	assert.Greater(t, analyzer.budgets.InitialSize, analyzer.budgets.AssetSize)
 }
 
 func TestBundleAnalysisWithEmptyDependencies(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	ctx := context.Background()
 	result, err := analyzer.AnalyzeBundle(ctx, []Dependency{})
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, int64(0), result.SizeAnalysis.TotalSize)
@@ -568,14 +568,14 @@ func TestBundleAnalysisWithEmptyDependencies(t *testing.T) {
 
 func TestRecommendationPrioritization(t *testing.T) {
 	analyzer := NewBundleAnalyzer()
-	
+
 	// Generate recommendations for a problematic bundle
 	sizeAnalysis := &SizeAnalysis{
 		TotalSize:      5000000, // 5MB - very large
 		ProductionSize: 4500000,
 		InitialBundle:  2000000,
 	}
-	
+
 	budgetAnalysis := &BudgetAnalysis{
 		MaxSeverity: "critical",
 		Violations: []BudgetViolation{
@@ -583,23 +583,23 @@ func TestRecommendationPrioritization(t *testing.T) {
 			{BudgetType: "initial", Severity: "critical"},
 		},
 	}
-	
+
 	treeShakingAnalysis := &TreeShakingAnalysis{
 		PotentialSavings: 40.0,
 		PackageAnalysis: []PackageTreeShakingInfo{
 			{PackageName: "lodash", TreeShakableSize: 50000, IsTreeShakable: true},
 		},
 	}
-	
+
 	recommendations := analyzer.generateBundleRecommendations(
 		sizeAnalysis,
-		budgetAnalysis, 
+		budgetAnalysis,
 		treeShakingAnalysis,
 	)
-	
+
 	// Should have high-priority recommendations first
 	assert.True(t, len(recommendations) > 0)
-	
+
 	// Check that high-impact recommendations are prioritized
 	highPriorityFound := false
 	for _, rec := range recommendations {

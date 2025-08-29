@@ -11,11 +11,11 @@ func TestArchitecturePatternDetector_DetectReact(t *testing.T) {
 	apd := NewArchitecturePatternDetector(ci, dfa)
 
 	tests := []struct {
-		name             string
-		filePath         string
-		content          string
-		packageJSON      string
-		expectedMinConf  float64
+		name              string
+		filePath          string
+		content           string
+		packageJSON       string
+		expectedMinConf   float64
 		expectedFramework string
 	}{
 		{
@@ -774,9 +774,9 @@ func TestArchitecturePatternDetector_GetPrimaryFramework(t *testing.T) {
 		Name:       "react",
 		Confidence: 0.9,
 	})
-	
+
 	apd.frameworks = append(apd.frameworks, DetectionResult{
-		Type:       "framework", 
+		Type:       "framework",
 		Name:       "express",
 		Confidence: 0.7,
 	})
@@ -806,13 +806,13 @@ func TestArchitecturePatternDetector_PatternComplianceAssessment(t *testing.T) {
 		Name:       "react",
 		Confidence: 0.9,
 	})
-	
+
 	apd.architectural = append(apd.architectural, DetectionResult{
 		Type:       "architectural_style",
 		Name:       "component_based",
 		Confidence: 0.8,
 	})
-	
+
 	apd.designPatterns = append(apd.designPatterns, DetectionResult{
 		Type:       "design_pattern",
 		Name:       "hooks",
@@ -963,7 +963,7 @@ export default EnhancedCounter;
 	// Should detect design patterns
 	patterns := apd.GetDesignPatterns()
 	expectedPatterns := []string{"hooks", "hoc"}
-	
+
 	for _, expectedPattern := range expectedPatterns {
 		found := false
 		for _, pattern := range patterns {

@@ -284,7 +284,7 @@ func (po *PerformanceOptimizer) processWorkItem(workerID int, item WorkItem, par
 		// Check if it was a timeout
 		if fileCtx.Err() == context.DeadlineExceeded {
 			// Timeout events are tracked internally by the timeout manager
-			// Log timeout event through timeout manager
+			//nolint:staticcheck // Empty branch is intentional - timeout handling is done elsewhere
 		}
 		return
 	}

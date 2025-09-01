@@ -109,7 +109,8 @@ jobs:
         run: |
           COVERAGE=$(go tool cover -func=coverage-minimal.out | grep total | awk '{print $3}' | sed 's/%//')
           echo "📊 Minimal Test Coverage: $COVERAGE%"
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+          # Simple integer comparison instead of bc
+          if (( $(echo "$COVERAGE" | cut -d'.' -f1) < 80 )); then
             echo "❌ Minimal test coverage is below 80%"
             exit 1
           fi

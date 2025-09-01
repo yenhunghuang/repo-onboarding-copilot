@@ -68,11 +68,51 @@ build-windows: deps ## Build for Windows
 test: ## Run tests
 	go test -v -race -cover ./...
 
+.PHONY: test-unit
+test-unit: ## Run unit tests only (fast, excludes integration tests and benchmarks)
+	go test -v -parallel 4 -short -cover ./... -run '^Test[^_]*$$' || go test -v -parallel 4 -short -cover ./pkg/... ./internal/... -run '^Test'
+
+.PHONY: test-unit-ci
+test-unit-ci: ## Run unit tests optimized for CI (excludes integration/benchmark tests)
+	go test -parallel 6 -short -timeout=3m -coverprofile=coverage-unit.out -v ./pkg/config ./pkg/logger ./pkg/utils -run '^Test(?!.*Integration|.*Benchmark)' -bench=^$$
+
+.PHONY: test-unit-ci-fast
+test-unit-ci-fast: ## Run fastest essential unit tests for immediate feedback (under 1 minute)
+	go test -parallel 2 -short -timeout=30s -run '^Test' -bench='^$$' -coverprofile=coverage-fast.out ./pkg/logger ./pkg/utils
+
+.PHONY: test-unit-ci-ultra
+test-unit-ci-ultra: ## Ultra minimal tests for immediate CI feedback (under 15 seconds)
+	go test -short -timeout=15s -coverprofile=coverage-ultra.out ./pkg/utils -v
+
+.PHONY: test-ci-instant
+test-ci-instant: ## Instant CI feedback - zero dependencies, maximum speed
+	@echo "🚀 Starting instant CI tests..."
+	@time go test -timeout=10s ./pkg/utils -v -count=1
+	@echo "✅ Instant tests completed successfully"
+
+.PHONY: test-ci-minimal
+test-ci-minimal: ## Minimal CI tests with smart caching
+	go test -timeout=20s -coverprofile=coverage-minimal.out -count=1 ./pkg/utils ./pkg/logger
+
+.PHONY: test-integration
+test-integration: ## Run integration tests only
+	go test -v -timeout 15m ./test/integration/...
+
+.PHONY: test-benchmark
+test-benchmark: ## Run benchmark tests only
+	go test -v -run='^$$' -bench=. -benchtime=5s ./...
+
 .PHONY: test-coverage
 test-coverage: ## Run tests with coverage report
 	go test -v -race -coverprofile=coverage.out ./...
 	go tool cover -html=coverage.out -o coverage.html
 	@echo "Coverage report generated: coverage.html"
+
+.PHONY: test-coverage-unit
+test-coverage-unit: ## Run unit tests with coverage (fast)
+	go test -parallel 4 -short -coverprofile=coverage-unit.out ./pkg/... ./internal/... -run '^Test'
+	go tool cover -html=coverage-unit.out -o coverage-unit.html
+	@echo "Unit test coverage report generated: coverage-unit.html"
 
 # Quality checks
 .PHONY: lint
@@ -98,6 +138,9 @@ security: ## Run security checks
 # Full quality check
 .PHONY: check
 check: fmt vet lint test security ## Run all quality checks
+
+.PHONY: check-fast
+check-fast: fmt vet lint test-unit-ci security ## Run fast quality checks (CI optimized)
 
 # Development
 .PHONY: run

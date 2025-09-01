@@ -111,7 +111,7 @@ func TestErrorHandlingValidation(t *testing.T) {
 				}
 
 				// Try to make the file unreadable (may not work on all systems)
-				os.Chmod(packageJSONPath, 0000)
+				_ = os.Chmod(packageJSONPath, 0000)
 
 				config := analysis.DependencyAnalyzerConfig{
 					ProjectRoot:         testDir,
@@ -277,7 +277,7 @@ func TestErrorHandlingValidation(t *testing.T) {
 				if tt.name == "InsufficientPermissions" {
 					// Try to restore permissions for cleanup
 					testDir, _ := tt.setupFunc(t)
-					os.Chmod(filepath.Join(testDir, "package.json"), 0644)
+					_ = os.Chmod(filepath.Join(testDir, "package.json"), 0644)
 				}
 			}()
 
@@ -543,10 +543,12 @@ func TestRecoveryMechanisms(t *testing.T) {
 				if err != nil {
 					return err
 				}
-				return os.Chmod(filePath, 0000)
+				_ = os.Chmod(filePath, 0000)
+				return nil
 			},
 			cleanupFunc: func(testDir string) error {
-				return os.Chmod(filepath.Join(testDir, "package.json"), 0644)
+				_ = os.Chmod(filepath.Join(testDir, "package.json"), 0644)
+				return nil
 			},
 			shouldRecover: true,
 		},

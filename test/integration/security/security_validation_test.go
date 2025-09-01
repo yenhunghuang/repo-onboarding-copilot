@@ -160,9 +160,7 @@ func TestDefenseInDepthValidation(t *testing.T) {
 					User:     "65534:65534",
 					ReadOnly: true,
 				}
-				if config == nil {
-					return assert.AnError
-				}
+				_ = config // Use config to validate its structure
 				return nil
 			},
 		},

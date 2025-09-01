@@ -383,7 +383,7 @@ func TestRegisterHandlers(t *testing.T) {
 	basicLogger := logger.New()
 	gitHandler, err := NewGitHandler(basicLogger)
 	require.NoError(t, err)
-	defer gitHandler.Cleanup()
+	defer func() { _ = gitHandler.Cleanup() }()
 
 	co.RegisterGitHandler(gitHandler)
 	assert.Equal(t, gitHandler, co.gitHandler)

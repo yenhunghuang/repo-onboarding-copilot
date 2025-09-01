@@ -61,7 +61,7 @@ func testGitHandlerPerformance(t *testing.T, basicLogger *logger.Logger, auditLo
 	// Initialize Git handler
 	gitHandler, err := sandbox.NewGitHandler(basicLogger)
 	require.NoError(t, err)
-	defer gitHandler.Cleanup()
+	defer func() { _ = gitHandler.Cleanup() }()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
@@ -254,7 +254,7 @@ func testResourceUtilizationMonitoring(t *testing.T, basicLogger *logger.Logger,
 	// Initialize all components
 	gitHandler, err := sandbox.NewGitHandler(basicLogger)
 	require.NoError(t, err)
-	defer gitHandler.Cleanup()
+	defer func() { _ = gitHandler.Cleanup() }()
 
 	containerOrch, err := sandbox.NewContainerOrchestrator(basicLogger)
 	require.NoError(t, err)
@@ -368,7 +368,7 @@ func testMemoryLeakDetection(t *testing.T, basicLogger *logger.Logger, auditLogg
 		// Create and cleanup Git handler
 		gitHandler, err := sandbox.NewGitHandler(basicLogger)
 		require.NoError(t, err)
-		gitHandler.Cleanup()
+		_ = gitHandler.Cleanup()
 
 		// Create and cleanup Cleanup orchestrator
 		cleanupOrch, err := sandbox.NewCleanupOrchestrator(auditLogger)

@@ -237,8 +237,8 @@ func TestGetNetworkStatistics(t *testing.T) {
 	require.NoError(t, err)
 
 	// Perform some network access validations to generate statistics
-	nm.ValidateNetworkAccess("https://github.com/user/repo.git", "git-clone") // Should be allowed
-	nm.ValidateNetworkAccess("http://github.com/user/repo.git", "git-clone")  // Should be blocked
+	_, _ = nm.ValidateNetworkAccess("https://github.com/user/repo.git", "git-clone") // Should be allowed
+	_, _ = nm.ValidateNetworkAccess("http://github.com/user/repo.git", "git-clone")  // Should be blocked
 
 	stats := nm.GetNetworkStatistics()
 

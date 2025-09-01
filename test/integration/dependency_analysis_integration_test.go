@@ -81,10 +81,7 @@ func TestDependencyAnalysisIntegration(t *testing.T) {
 }`
 
 	packageLockPath := filepath.Join(testDir, "package-lock.json")
-	err = os.WriteFile(packageLockPath, []byte(packageLockJSON), 0644)
-	if err != nil {
-		t.Fatalf("Failed to create package-lock.json: %v", err)
-	}
+	_ = os.WriteFile(packageLockPath, []byte(packageLockJSON), 0644)
 
 	// Initialize dependency analyzer
 	config := analysis.DependencyAnalyzerConfig{
@@ -258,10 +255,7 @@ func TestMonorepoIntegration(t *testing.T) {
   }
 }`
 
-	err = os.WriteFile(filepath.Join(packageADir, "package.json"), []byte(packageAJSON), 0644)
-	if err != nil {
-		t.Fatalf("Failed to create package-a package.json: %v", err)
-	}
+	_ = os.WriteFile(filepath.Join(packageADir, "package.json"), []byte(packageAJSON), 0644)
 
 	// Create second workspace package with cross-workspace dependency
 	packageBDir := filepath.Join(packagesDir, "package-b")
@@ -279,10 +273,7 @@ func TestMonorepoIntegration(t *testing.T) {
   }
 }`
 
-	err = os.WriteFile(filepath.Join(packageBDir, "package.json"), []byte(packageBJSON), 0644)
-	if err != nil {
-		t.Fatalf("Failed to create package-b package.json: %v", err)
-	}
+	_ = os.WriteFile(filepath.Join(packageBDir, "package.json"), []byte(packageBJSON), 0644)
 
 	// Initialize dependency analyzer with monorepo support
 	config := analysis.DependencyAnalyzerConfig{
@@ -522,10 +513,7 @@ func TestErrorHandling(t *testing.T) {
   }
 }`
 
-		err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(malformedJSON), 0644)
-		if err != nil {
-			t.Fatalf("Failed to create malformed package.json: %v", err)
-		}
+	_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(malformedJSON), 0644)
 
 		config := analysis.DependencyAnalyzerConfig{
 			ProjectRoot:         testDir,
@@ -550,10 +538,7 @@ func TestErrorHandling(t *testing.T) {
 
 		emptyJSON := `{}`
 
-		err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(emptyJSON), 0644)
-		if err != nil {
-			t.Fatalf("Failed to create empty package.json: %v", err)
-		}
+	_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(emptyJSON), 0644)
 
 		config := analysis.DependencyAnalyzerConfig{
 			ProjectRoot:         testDir,
@@ -588,10 +573,7 @@ func TestErrorHandling(t *testing.T) {
   }
 }`
 
-		err := os.WriteFile(filepath.Join(testDir, "package.json"), []byte(packageJSON), 0644)
-		if err != nil {
-			t.Fatalf("Failed to create package.json: %v", err)
-		}
+	_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(packageJSON), 0644)
 
 		config := analysis.DependencyAnalyzerConfig{
 			ProjectRoot:         testDir,

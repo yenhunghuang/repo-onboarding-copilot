@@ -268,7 +268,7 @@ func TestParser_ShouldContinueParsing(t *testing.T) {
 
 	// Parse some files with errors
 	for i := 0; i < 5; i++ {
-		parser.ParseFile(context.Background(), "unsupported.py", []byte("invalid"))
+		_, _ = parser.ParseFile(context.Background(), "unsupported.py", []byte("invalid"))
 	}
 
 	// Should not continue after too many errors

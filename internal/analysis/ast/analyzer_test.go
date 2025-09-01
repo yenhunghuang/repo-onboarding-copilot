@@ -480,7 +480,7 @@ function Component${i}() {
 export default Component${i};
 `
 		fileName := filepath.Join(tempDir, "component"+string(rune(i))+"_test.js")
-		os.WriteFile(fileName, []byte(content), 0644)
+		_ = os.WriteFile(fileName, []byte(content), 0644)
 	}
 
 	config := AnalyzerConfig{
@@ -492,7 +492,7 @@ export default Component${i};
 
 	for i := 0; i < b.N; i++ {
 		analyzer, _ := NewAnalyzer(config)
-		analyzer.AnalyzeRepository(context.Background())
+		_, _ = analyzer.AnalyzeRepository(context.Background())
 		analyzer.Close()
 	}
 }

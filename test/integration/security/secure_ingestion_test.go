@@ -57,7 +57,7 @@ func (suite *SecureIngestionIntegrationTestSuite) SetupSuite() {
 // TearDownSuite cleans up after all tests
 func (suite *SecureIngestionIntegrationTestSuite) TearDownSuite() {
 	if suite.gitHandler != nil {
-		suite.gitHandler.Cleanup()
+		_ = suite.gitHandler.Cleanup()
 	}
 	if suite.tempDir != "" {
 		os.RemoveAll(suite.tempDir)
@@ -414,6 +414,7 @@ func (suite *SecureIngestionIntegrationTestSuite) TestSecurityPolicyValidation()
 }
 
 // Helper function to check if string contains sensitive information
+//nolint:unused // Helper function reserved for future security tests
 func containsSensitiveInfo(data string) bool {
 	sensitivePatterns := []string{
 		"password", "secret", "token", "key", "credential",

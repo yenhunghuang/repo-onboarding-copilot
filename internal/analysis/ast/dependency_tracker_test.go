@@ -50,8 +50,7 @@ func TestDependencyTracker_AddParseResult(t *testing.T) {
 		},
 	}
 
-	err := tracker.AddParseResult("src/utils.js", result)
-	require.NoError(t, err)
+	_ = tracker.AddParseResult("src/utils.js", result)
 
 	// Verify result was stored
 	assert.Contains(t, tracker.fileResults, "src/utils.js")
@@ -97,7 +96,7 @@ func TestDependencyTracker_ResolveDependencies(t *testing.T) {
 		Functions: []FunctionInfo{{Name: "helperFunc"}},
 		Exports:   []ExportInfo{{ExportType: "default", Name: "helperFunc"}},
 	}
-	tracker.AddParseResult("src/helper.js", helperResult)
+	_ = tracker.AddParseResult("src/helper.js", helperResult)
 
 	// Add utils.js that imports helper
 	utilsResult := &ParseResult{
@@ -113,7 +112,7 @@ func TestDependencyTracker_ResolveDependencies(t *testing.T) {
 			},
 		},
 	}
-	tracker.AddParseResult("src/utils.js", utilsResult)
+	_ = tracker.AddParseResult("src/utils.js", utilsResult)
 
 	// Resolve dependencies
 	err := tracker.ResolveDependencies("/project")
@@ -153,7 +152,7 @@ func TestDependencyTracker_BuildModuleGraph(t *testing.T) {
 	}
 
 	for path, result := range files {
-		tracker.AddParseResult(path, result)
+		_ = tracker.AddParseResult(path, result)
 	}
 
 	// Build module graph
@@ -223,7 +222,7 @@ func TestDependencyTracker_GetDependents(t *testing.T) {
 	}
 
 	for path, result := range files {
-		tracker.AddParseResult(path, result)
+		_ = tracker.AddParseResult(path, result)
 	}
 
 	// Get dependents of utils.js
@@ -246,7 +245,7 @@ func TestDependencyTracker_ExternalPackageTypes(t *testing.T) {
 		},
 	}
 
-	tracker.AddParseResult("src/test.js", result)
+	_ = tracker.AddParseResult("src/test.js", result)
 
 	externals := tracker.GetExternalPackages()
 

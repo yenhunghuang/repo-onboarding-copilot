@@ -176,7 +176,7 @@ func TestCloneRepositoryValidation(t *testing.T) {
 	auditLogger := logger.New()
 	gh, err := NewGitHandler(auditLogger)
 	require.NoError(t, err)
-	defer gh.Cleanup()
+	defer func() { _ = gh.Cleanup() }()
 
 	ctx := context.Background()
 
@@ -219,7 +219,7 @@ func TestCloneRepositoryTimeout(t *testing.T) {
 	auditLogger := logger.New()
 	gh, err := NewGitHandler(auditLogger)
 	require.NoError(t, err)
-	defer gh.Cleanup()
+	defer func() { _ = gh.Cleanup() }()
 
 	// Set very short timeout for testing
 	gh.CloneTimeout = 1 * time.Nanosecond
@@ -236,7 +236,7 @@ func TestGetRepositoryInfo(t *testing.T) {
 	auditLogger := logger.New()
 	gh, err := NewGitHandler(auditLogger)
 	require.NoError(t, err)
-	defer gh.Cleanup()
+	defer func() { _ = gh.Cleanup() }()
 
 	// Create test directory structure
 	testDir := filepath.Join(gh.TempDir, "test-repo")
@@ -262,7 +262,7 @@ func TestGitHandlerDefaults(t *testing.T) {
 	auditLogger := logger.New()
 	gh, err := NewGitHandler(auditLogger)
 	require.NoError(t, err)
-	defer gh.Cleanup()
+	defer func() { _ = gh.Cleanup() }()
 
 	// Verify default values
 	assert.Equal(t, 30*time.Minute, gh.CloneTimeout)

@@ -151,7 +151,7 @@ func validateDependencyAnalysisResults(t *testing.T, result *analysis.Dependency
 			t.Errorf("Expected direct dependency '%s' not found", depName)
 		}
 	}
-	
+
 	// Verify we have most of our expected dependencies
 	foundCount := 0
 	for _, expected := range expectedDirectDeps {
@@ -513,7 +513,7 @@ func TestErrorHandling(t *testing.T) {
   }
 }`
 
-	_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(malformedJSON), 0644)
+		_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(malformedJSON), 0644)
 
 		config := analysis.DependencyAnalyzerConfig{
 			ProjectRoot:         testDir,
@@ -538,7 +538,7 @@ func TestErrorHandling(t *testing.T) {
 
 		emptyJSON := `{}`
 
-	_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(emptyJSON), 0644)
+		_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(emptyJSON), 0644)
 
 		config := analysis.DependencyAnalyzerConfig{
 			ProjectRoot:         testDir,
@@ -573,7 +573,7 @@ func TestErrorHandling(t *testing.T) {
   }
 }`
 
-	_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(packageJSON), 0644)
+		_ = os.WriteFile(filepath.Join(testDir, "package.json"), []byte(packageJSON), 0644)
 
 		config := analysis.DependencyAnalyzerConfig{
 			ProjectRoot:         testDir,

@@ -164,6 +164,7 @@ func (ba *BundleAnalyzer) estimatePackageImpactFromDependency(dep Dependency) *P
 }
 
 // estimatePackageImpact provides fallback impact estimation
+//
 //nolint:unused // Future implementation for bundle optimization
 func (ba *BundleAnalyzer) estimatePackageImpact(pkg *GraphPackageInfo) *PerformanceImpact {
 	// Basic estimation logic
@@ -293,6 +294,7 @@ func (ba *BundleAnalyzer) performBudgetAnalysis(sizeAnalysis *SizeAnalysis) *Bud
 }
 
 // performBudgetAnalysisLegacy compares actual metrics against performance budgets (legacy BundleAnalysisResult version)
+//
 //nolint:unused // Legacy implementation for backward compatibility
 func (ba *BundleAnalyzer) performBudgetAnalysisLegacy(result *BundleAnalysisResult) *BudgetAnalysis {
 	analysis := &BudgetAnalysis{
@@ -346,6 +348,7 @@ func (ba *BundleAnalyzer) performBudgetAnalysisLegacy(result *BundleAnalysisResu
 }
 
 // calculateViolationSeverity determines the severity of a budget violation
+//
 //nolint:unused // Future implementation for budget violation reporting
 func (ba *BundleAnalyzer) calculateViolationSeverity(utilizationPercent float64) string {
 	if utilizationPercent > 200 {
@@ -360,6 +363,7 @@ func (ba *BundleAnalyzer) calculateViolationSeverity(utilizationPercent float64)
 }
 
 // describeBundleSizeImpact describes the user impact of bundle size violations
+//
 //nolint:unused // Future implementation for impact descriptions
 func (ba *BundleAnalyzer) describeBundleSizeImpact(actual, budget int64) string {
 	overBy := actual - budget
@@ -377,6 +381,7 @@ func (ba *BundleAnalyzer) describeBundleSizeImpact(actual, budget int64) string 
 }
 
 // describeLoadTimeImpact describes the user impact of load time violations
+//
 //nolint:unused // Future implementation for load time descriptions
 func (ba *BundleAnalyzer) describeLoadTimeImpact(actual, budget float64) string {
 	overBy := actual - budget

@@ -13,6 +13,7 @@ import (
 )
 
 // Helper function to get map keys for debugging
+//
 //nolint:unused // Test helper for debugging dependency maps
 func getKeys(m map[string]*DependencyNode) []string {
 	keys := make([]string, 0, len(m))

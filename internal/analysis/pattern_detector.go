@@ -609,7 +609,7 @@ func (apd *ArchitecturePatternDetector) detectHOC(content string) float64 {
 		score += 0.3
 	}
 
-	// Higher-order function evidence  
+	// Higher-order function evidence
 	if strings.Contains(content, "=>") { // Arrow functions
 		score += 0.2
 	}

@@ -414,6 +414,7 @@ func (suite *SecureIngestionIntegrationTestSuite) TestSecurityPolicyValidation()
 }
 
 // Helper function to check if string contains sensitive information
+//
 //nolint:unused // Helper function reserved for future security tests
 func containsSensitiveInfo(data string) bool {
 	sensitivePatterns := []string{

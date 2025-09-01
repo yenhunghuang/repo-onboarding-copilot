@@ -174,6 +174,7 @@ func (pa *PerformanceAnalyzer) analyzeImportPerformanceImpact(imports []ast.Impo
 }
 
 // calculateComplexityBasedScore calculates performance score based on function complexity
+//
 //nolint:unused // Future implementation for complexity-based performance scoring
 func (pa *PerformanceAnalyzer) calculateComplexityBasedScore(functions []ast.FunctionInfo) float64 {
 	if len(functions) == 0 {

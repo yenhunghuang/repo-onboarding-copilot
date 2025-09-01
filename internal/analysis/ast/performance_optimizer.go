@@ -282,7 +282,7 @@ func (po *PerformanceOptimizer) processWorkItem(workerID int, item WorkItem, par
 		atomic.AddInt64(&po.failedFiles, 1)
 
 		// Check if it was a timeout
-		//nolint:staticcheck // Empty branch is intentional - timeout handling is done elsewhere  
+		//nolint:staticcheck // Empty branch is intentional - timeout handling is done elsewhere
 		if fileCtx.Err() == context.DeadlineExceeded {
 			// Timeout events are tracked internally by the timeout manager
 		}

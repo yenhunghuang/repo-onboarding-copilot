@@ -635,7 +635,7 @@ func (mfe *MultiFormatExporter) exportMarkdown(data *ExportData, filepath string
 	var buf bytes.Buffer
 
 	// Write markdown content
-	buf.WriteString(fmt.Sprintf("# Dependency Analysis Report\n\n"))
+	buf.WriteString("# Dependency Analysis Report\n\n")
 	buf.WriteString(fmt.Sprintf("**Generated:** %s\n\n", data.GeneratedAt.Format("January 2, 2006 at 3:04 PM")))
 
 	// Summary section

@@ -279,7 +279,7 @@ func (gg *GraphGenerator) analyzeDataFlowRelationships(filePath, content, curren
 
 	// Get data flow graph and create edges
 	flowGraph := gg.dataFlowAnalyzer.GetDataFlowGraph()
-	if flowGraph.Nodes != nil && len(flowGraph.Nodes) > 0 {
+	if len(flowGraph.Nodes) > 0 {
 		for _, edge := range flowGraph.Edges {
 			// Create data flow edge if it's between different files
 			if gg.isDifferentFile(edge.From, edge.To, filePath) {

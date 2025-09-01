@@ -443,6 +443,7 @@ export { benchmarkFunction, BenchmarkClass };
 }
 
 // Test helper function to verify file processing results
+//nolint:unused // Test helper for future parse result validation
 func validateParseResults(t *testing.T, results map[string]*ParseResult, expectedFiles []string) {
 	if len(results) != len(expectedFiles) {
 		t.Errorf("Expected %d results, got %d", len(expectedFiles), len(results))

@@ -98,7 +98,7 @@ type ContainerLifecycle struct {
 	HealthCheckCount          int        `json:"health_check_count"`
 
 	// Monitoring
-	healthMonitorActive bool          `json:"health_monitor_active"`
+	healthMonitorActive bool          `json:"-"` // Not exported for JSON
 	stopChan            chan struct{} `json:"-"`
 
 	// Metadata

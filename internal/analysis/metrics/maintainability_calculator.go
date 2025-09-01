@@ -256,9 +256,7 @@ func (mc *MaintainabilityCalculator) AnalyzeMaintainability(
 		totalFunctionCount += fileMetrics.FunctionCount
 
 		// Aggregate function metrics
-		for _, funcMetrics := range fileMetrics.Functions {
-			metrics.FunctionMetrics = append(metrics.FunctionMetrics, funcMetrics)
-		}
+		metrics.FunctionMetrics = append(metrics.FunctionMetrics, fileMetrics.Functions...)
 	}
 
 	metrics.TotalFunctions = totalFunctionCount

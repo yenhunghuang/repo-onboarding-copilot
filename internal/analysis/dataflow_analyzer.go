@@ -500,7 +500,7 @@ func (dfa *DataFlowAnalyzer) extractAxiosPattern(filePath, line string, lineNum 
 func (dfa *DataFlowAnalyzer) extractEventHandlerPattern(filePath, line string, lineNum int, eventType string) *DataFlowNode {
 	return &DataFlowNode{
 		ID:       filePath + ":" + eventType + ":" + string(rune(lineNum)),
-		Name:     "on" + strings.Title(eventType),
+		Name:     "on" + strings.ToUpper(eventType[:1]) + eventType[1:],
 		Type:     EventFlow,
 		FilePath: filePath,
 		Location: DataFlowLocation{Line: lineNum + 1, Column: 0},

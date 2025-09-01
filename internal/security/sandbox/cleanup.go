@@ -302,9 +302,9 @@ func (co *CleanupOrchestrator) cleanupContainer(ctx context.Context, containerID
 func (co *CleanupOrchestrator) cleanupContainerDirect(ctx context.Context, containerID string) error {
 	// Stop the container
 	stopCmd := exec.CommandContext(ctx, "docker", "stop", containerID)
+	//nolint:staticcheck // Empty branch is intentional - container stop errors are expected
 	if _, err := stopCmd.CombinedOutput(); err != nil {
 		// Container might already be stopped, continue with removal
-		//nolint:staticcheck // Empty branch is intentional - container stop errors are expected
 	}
 
 	// Remove the container

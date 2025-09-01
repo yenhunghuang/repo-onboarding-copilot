@@ -4,7 +4,6 @@ package analysis
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,7 +15,7 @@ import (
 
 func TestPerformanceAnalysisIntegration(t *testing.T) {
 	// Create temporary directory with test package.json
-	tmpDir, err := ioutil.TempDir("", "performance-test")
+	tmpDir, err := os.MkdirTemp("", "performance-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -36,7 +35,7 @@ func TestPerformanceAnalysisIntegration(t *testing.T) {
 	}`
 
 	packagePath := filepath.Join(tmpDir, "package.json")
-	err = ioutil.WriteFile(packagePath, []byte(packageJSON), 0644)
+	err = os.WriteFile(packagePath, []byte(packageJSON), 0644)
 	require.NoError(t, err)
 
 	// Create dependency analyzer with performance analysis enabled
@@ -120,7 +119,7 @@ func TestPerformanceAnalysisIntegration(t *testing.T) {
 
 func TestPerformanceAnalysisDisabled(t *testing.T) {
 	// Create temporary directory with test package.json
-	tmpDir, err := ioutil.TempDir("", "performance-disabled-test")
+	tmpDir, err := os.MkdirTemp("", "performance-disabled-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -134,7 +133,7 @@ func TestPerformanceAnalysisDisabled(t *testing.T) {
 	}`
 
 	packagePath := filepath.Join(tmpDir, "package.json")
-	err = ioutil.WriteFile(packagePath, []byte(packageJSON), 0644)
+	err = os.WriteFile(packagePath, []byte(packageJSON), 0644)
 	require.NoError(t, err)
 
 	// Create dependency analyzer with performance analysis disabled
@@ -165,7 +164,7 @@ func TestPerformanceAnalysisDisabled(t *testing.T) {
 
 func TestBundleAnalysisWithBudgetViolations(t *testing.T) {
 	// Create temporary directory with large dependency list
-	tmpDir, err := ioutil.TempDir("", "bundle-budget-test")
+	tmpDir, err := os.MkdirTemp("", "bundle-budget-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -184,7 +183,7 @@ func TestBundleAnalysisWithBudgetViolations(t *testing.T) {
 	}`
 
 	packagePath := filepath.Join(tmpDir, "package.json")
-	err = ioutil.WriteFile(packagePath, []byte(packageJSON), 0644)
+	err = os.WriteFile(packagePath, []byte(packageJSON), 0644)
 	require.NoError(t, err)
 
 	// Create analyzer with bundle analysis and tight budgets
@@ -226,7 +225,7 @@ func TestBundleAnalysisWithBudgetViolations(t *testing.T) {
 }
 
 func TestTreeShakingAnalysis(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "tree-shaking-test")
+	tmpDir, err := os.MkdirTemp("", "tree-shaking-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -242,7 +241,7 @@ func TestTreeShakingAnalysis(t *testing.T) {
 	}`
 
 	packagePath := filepath.Join(tmpDir, "package.json")
-	err = ioutil.WriteFile(packagePath, []byte(packageJSON), 0644)
+	err = os.WriteFile(packagePath, []byte(packageJSON), 0644)
 	require.NoError(t, err)
 
 	config := DependencyAnalyzerConfig{
@@ -278,7 +277,7 @@ func TestTreeShakingAnalysis(t *testing.T) {
 }
 
 func TestPerformanceRecommendationGeneration(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "recommendations-test")
+	tmpDir, err := os.MkdirTemp("", "recommendations-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -293,7 +292,7 @@ func TestPerformanceRecommendationGeneration(t *testing.T) {
 	}`
 
 	packagePath := filepath.Join(tmpDir, "package.json")
-	err = ioutil.WriteFile(packagePath, []byte(packageJSON), 0644)
+	err = os.WriteFile(packagePath, []byte(packageJSON), 0644)
 	require.NoError(t, err)
 
 	config := DependencyAnalyzerConfig{
@@ -330,7 +329,7 @@ func TestPerformanceRecommendationGeneration(t *testing.T) {
 }
 
 func TestAnalysisResultSerialization(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "serialization-test")
+	tmpDir, err := os.MkdirTemp("", "serialization-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -343,7 +342,7 @@ func TestAnalysisResultSerialization(t *testing.T) {
 	}`
 
 	packagePath := filepath.Join(tmpDir, "package.json")
-	err = ioutil.WriteFile(packagePath, []byte(packageJSON), 0644)
+	err = os.WriteFile(packagePath, []byte(packageJSON), 0644)
 	require.NoError(t, err)
 
 	config := DependencyAnalyzerConfig{
@@ -402,7 +401,7 @@ func TestAnalysisResultSerialization(t *testing.T) {
 }
 
 func TestPerformanceAnalysisWithEmptyDependencies(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "empty-deps-test")
+	tmpDir, err := os.MkdirTemp("", "empty-deps-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -414,7 +413,7 @@ func TestPerformanceAnalysisWithEmptyDependencies(t *testing.T) {
 	}`
 
 	packagePath := filepath.Join(tmpDir, "package.json")
-	err = ioutil.WriteFile(packagePath, []byte(packageJSON), 0644)
+	err = os.WriteFile(packagePath, []byte(packageJSON), 0644)
 	require.NoError(t, err)
 
 	config := DependencyAnalyzerConfig{
@@ -440,7 +439,7 @@ func TestPerformanceAnalysisWithEmptyDependencies(t *testing.T) {
 }
 
 func TestPerformanceAnalysisTimeout(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "timeout-test")
+	tmpDir, err := os.MkdirTemp("", "timeout-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -453,7 +452,7 @@ func TestPerformanceAnalysisTimeout(t *testing.T) {
 	}`
 
 	packagePath := filepath.Join(tmpDir, "package.json")
-	err = ioutil.WriteFile(packagePath, []byte(packageJSON), 0644)
+	err = os.WriteFile(packagePath, []byte(packageJSON), 0644)
 	require.NoError(t, err)
 
 	config := DependencyAnalyzerConfig{

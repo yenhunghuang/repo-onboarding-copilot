@@ -512,7 +512,10 @@ func (a *Analyzer) identifyComponent(filePath string) string {
 }
 
 func (a *Analyzer) getComponentName(componentID string) string {
-	return strings.Title(componentID)
+	if componentID == "" {
+		return ""
+	}
+	return strings.ToUpper(componentID[:1]) + componentID[1:]
 }
 
 func (a *Analyzer) getComponentType(filePath string) string {

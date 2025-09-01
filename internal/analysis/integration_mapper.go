@@ -1023,6 +1023,7 @@ func (im *IntegrationMapper) detectMessagingProtocol(service string) string {
 // Risk assessment methods
 
 func (im *IntegrationMapper) assessDatabaseRisk(credentials CredentialInfo, endpoint string) SecurityRiskLevel {
+	//nolint:ineffassign // risk is properly returned after conditional assignment
 	risk := LowRisk
 
 	if credentials.UsesHardcoded {
@@ -1067,6 +1068,7 @@ func (im *IntegrationMapper) getCacheRiskReasons(credentials CredentialInfo, end
 }
 
 func (im *IntegrationMapper) assessAPIRisk(credentials CredentialInfo, endpoint string) SecurityRiskLevel {
+	//nolint:ineffassign // risk is properly returned after conditional assignment
 	risk := LowRisk
 
 	if credentials.UsesHardcoded {

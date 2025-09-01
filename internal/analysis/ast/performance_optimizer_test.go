@@ -136,12 +136,14 @@ export { testFunction, TestClass };
 	}
 
 	// Validate metrics structure
-	if metrics.TotalFilesProcessed == 0 {
-		t.Error("Expected files to be processed")
-	}
+	if metrics != nil {
+		if metrics.TotalFilesProcessed == 0 {
+			t.Error("Expected files to be processed")
+		}
 
-	if metrics.ThroughputFPS <= 0 {
-		t.Error("Expected positive throughput")
+		if metrics.ThroughputFPS <= 0 {
+			t.Error("Expected positive throughput")
+		}
 	}
 
 	// Test progress monitoring

@@ -354,19 +354,24 @@ func TestContainerVulnerabilityScanning(t *testing.T) {
 // isDockerAvailable checks if Docker is available on the system
 // Enhanced to work with Docker-in-Docker (DinD) environments
 func isDockerAvailable() bool {
-	// Check if we're in a CI environment with DinD
-	dockerHost := os.Getenv("DOCKER_HOST")
-	if dockerHost != "" {
-		// In DinD environment, check connectivity with proper host configuration
-		cmd := exec.Command("docker", "info")
-		cmd.Env = append(os.Environ(),
-			"DOCKER_HOST="+dockerHost,
-			"DOCKER_TLS_VERIFY="+os.Getenv("DOCKER_TLS_VERIFY"),
-		)
-		return cmd.Run() == nil
+	// Try multiple Docker commands with increasing complexity
+	commands := [][]string{
+		{"docker", "version"},
+		{"docker", "info"},
+		{"docker", "ps", "-q"},
 	}
 
-	// Standard Docker availability check for local environments
-	cmd := exec.Command("docker", "version")
-	return cmd.Run() == nil
+	for _, cmdArgs := range commands {
+		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
+
+		// Always inherit the full environment to ensure DinD variables are passed
+		cmd.Env = os.Environ()
+
+		if cmd.Run() == nil {
+			return true
+		}
+	}
+
+	// If all commands failed, Docker is not available
+	return false
 }

@@ -40,6 +40,7 @@ jobs:
         if: always()
         with:
           sarif_file: 'gosec-results.sarif'
+          category: 'gosec-analysis'
 
       - name: Generate Security Report
         if: always()
@@ -171,12 +172,14 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-fs-results.sarif'
+          category: 'trivy-filesystem'
 
       - name: Upload Trivy config results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-config-results.sarif'
+          category: 'trivy-configuration'
 
       - name: Generate Trivy Report
         run: |
@@ -271,6 +274,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-image-results.sarif'
+          category: 'trivy-docker-image'
 
       - name: Generate Docker Security Report
         if: steps.dockerfile-check.outputs.dockerfile_exists == 'true'

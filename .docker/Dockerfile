@@ -1,9 +1,9 @@
 # Multi-stage build for secure and optimized container
 ARG GO_VERSION=1.23
-ARG ALPINE_VERSION=3.18
+ARG ALPINE_VERSION=3.19
 
-# Build stage
-FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS builder
+# Build stage - Use available Go 1.23 Alpine image
+FROM golang:${GO_VERSION}-alpine AS builder
 
 # Install security updates and build dependencies
 RUN apk update && apk add --no-cache \

@@ -132,19 +132,19 @@ func (co *ContainerOrchestrator) CreateSecureContainer(ctx context.Context, volu
 	if err != nil {
 		// Categorize and provide helpful error messages
 		errorCategory, helpMessage := co.categorizeContainerError(string(output), err)
-		
+
 		co.auditLogger.WithFields(map[string]interface{}{
-			"operation":       "container_creation_failure",
-			"error":           err.Error(),
-			"docker_output":   sanitizeDockerOutput(string(output)),
-			"error_category":  errorCategory,
-			"help_message":    helpMessage,
-			"docker_args":     strings.Join(args, " "),
-			"execution_time":  time.Since(startTime).Seconds(),
-			"timestamp":       time.Now().Unix(),
+			"operation":      "container_creation_failure",
+			"error":          err.Error(),
+			"docker_output":  sanitizeDockerOutput(string(output)),
+			"error_category": errorCategory,
+			"help_message":   helpMessage,
+			"docker_args":    strings.Join(args, " "),
+			"execution_time": time.Since(startTime).Seconds(),
+			"timestamp":      time.Now().Unix(),
 		}).Error("Failed to create secure container")
-		
-		return "", fmt.Errorf("failed to create container (%s): %w\nOutput: %s\nSuggestion: %s", 
+
+		return "", fmt.Errorf("failed to create container (%s): %w\nOutput: %s\nSuggestion: %s",
 			errorCategory, err, string(output), helpMessage)
 	}
 
@@ -464,14 +464,14 @@ func (co *ContainerOrchestrator) resolveSeccompProfile() string {
 			profilePath := co.findSeccompProfile()
 			if profilePath != "" {
 				co.auditLogger.WithFields(map[string]interface{}{
-					"operation":      "seccomp_profile_resolution",
-					"environment":    "docker-in-docker",
-					"profile_path":   profilePath,
-					"timestamp":      time.Now().Unix(),
+					"operation":    "seccomp_profile_resolution",
+					"environment":  "docker-in-docker",
+					"profile_path": profilePath,
+					"timestamp":    time.Now().Unix(),
 				}).Info("Using explicit seccomp profile for DinD environment")
 				return fmt.Sprintf("seccomp=%s", profilePath)
 			}
-			
+
 			// Fallback: disable seccomp in DinD if profile not found
 			co.auditLogger.WithFields(map[string]interface{}{
 				"operation":   "seccomp_profile_fallback",
@@ -481,11 +481,11 @@ func (co *ContainerOrchestrator) resolveSeccompProfile() string {
 			}).Warn("Seccomp profile not found in DinD - falling back to unconfined mode")
 			return "seccomp=unconfined"
 		}
-		
+
 		// In native Docker environments, use default
 		return "seccomp=default"
 	}
-	
+
 	// Use explicit profile path
 	return fmt.Sprintf("seccomp=%s", co.config.SeccompProfile)
 }
@@ -493,22 +493,22 @@ func (co *ContainerOrchestrator) resolveSeccompProfile() string {
 // isDockerInDocker detects if running in Docker-in-Docker environment
 func (co *ContainerOrchestrator) isDockerInDocker() bool {
 	// Check for CI environment variables
-	if os.Getenv("GITHUB_ACTIONS") == "true" || 
-	   os.Getenv("CI") == "true" ||
-	   os.Getenv("DOCKER_HOST") != "" {
+	if os.Getenv("GITHUB_ACTIONS") == "true" ||
+		os.Getenv("CI") == "true" ||
+		os.Getenv("DOCKER_HOST") != "" {
 		return true
 	}
-	
+
 	// Check if we're running inside a container
 	if _, err := os.Stat("/.dockerenv"); err == nil {
 		return true
 	}
-	
+
 	// Check for DinD-specific indicators
 	if os.Getenv("DOCKER_TLS_VERIFY") == "1" {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -516,12 +516,12 @@ func (co *ContainerOrchestrator) isDockerInDocker() bool {
 func (co *ContainerOrchestrator) findSeccompProfile() string {
 	// Define potential profile locations
 	candidatePaths := []string{
-		"./configs/security/seccomp-analysis.json",        // Local development
+		"./configs/security/seccomp-analysis.json",          // Local development
 		"/workspace/configs/security/seccomp-analysis.json", // Container workspace
 		"/app/configs/security/seccomp-analysis.json",       // App directory
 		"/tmp/seccomp-profile.json",                         // Temp location for CI
 	}
-	
+
 	for _, path := range candidatePaths {
 		if absPath, err := filepath.Abs(path); err == nil {
 			if _, err := os.Stat(absPath); err == nil {
@@ -534,13 +534,13 @@ func (co *ContainerOrchestrator) findSeccompProfile() string {
 			}
 		}
 	}
-	
+
 	co.auditLogger.WithFields(map[string]interface{}{
 		"operation":      "seccomp_profile_search",
 		"searched_paths": candidatePaths,
 		"timestamp":      time.Now().Unix(),
 	}).Warn("No seccomp profile found in expected locations")
-	
+
 	return ""
 }
 
@@ -548,65 +548,65 @@ func (co *ContainerOrchestrator) findSeccompProfile() string {
 func (co *ContainerOrchestrator) categorizeContainerError(output string, err error) (category string, helpMessage string) {
 	outputLower := strings.ToLower(output)
 	errLower := strings.ToLower(err.Error())
-	
+
 	// Seccomp profile errors
 	if strings.Contains(outputLower, "seccomp profile") && strings.Contains(outputLower, "failed") {
-		return "seccomp_profile_error", 
+		return "seccomp_profile_error",
 			"Seccomp profile not found. In DinD environments, ensure the profile is accessible or disable seccomp temporarily."
 	}
-	
+
 	// Docker daemon connectivity issues
 	if strings.Contains(errLower, "cannot connect to the docker daemon") ||
-	   strings.Contains(outputLower, "connection refused") {
+		strings.Contains(outputLower, "connection refused") {
 		return "docker_daemon_error",
 			"Docker daemon is not accessible. Verify Docker is running and accessible at " + os.Getenv("DOCKER_HOST")
 	}
-	
+
 	// Image pull errors
 	if strings.Contains(outputLower, "unable to find image") ||
-	   strings.Contains(outputLower, "pull access denied") {
+		strings.Contains(outputLower, "pull access denied") {
 		return "image_pull_error",
 			"Container image is not available. Try: docker pull " + co.config.Image
 	}
-	
+
 	// Resource limit errors
 	if strings.Contains(outputLower, "memory") && strings.Contains(outputLower, "limit") {
 		return "resource_limit_error",
 			"Memory limit too restrictive. Current limit: " + fmt.Sprintf("%dGB", co.config.MemoryLimitGB)
 	}
-	
+
 	// Permission/privilege errors
 	if strings.Contains(outputLower, "permission denied") ||
-	   strings.Contains(outputLower, "operation not permitted") {
+		strings.Contains(outputLower, "operation not permitted") {
 		return "permission_error",
 			"Docker permissions issue. In CI: ensure privileged mode. Local: check Docker group membership."
 	}
-	
+
 	// Network isolation issues
 	if strings.Contains(outputLower, "network") && strings.Contains(outputLower, "none") {
 		return "network_isolation_error",
 			"Network isolation mode 'none' may not be supported in this environment."
 	}
-	
+
 	// AppArmor profile errors
 	if strings.Contains(outputLower, "apparmor") {
 		return "apparmor_profile_error",
 			"AppArmor profile not available. This is common in containers - profile will be disabled."
 	}
-	
+
 	// User namespace errors
 	if strings.Contains(outputLower, "user namespace") || strings.Contains(outputLower, "userns") {
 		return "user_namespace_error",
 			"User namespace isolation not supported in this Docker environment."
 	}
-	
+
 	// Generic exit code errors
 	if strings.Contains(errLower, "exit status 125") {
 		return "docker_argument_error",
 			"Invalid Docker arguments. Check container configuration and Docker version compatibility."
 	}
-	
+
 	// Default case
-	return "unknown_error", 
+	return "unknown_error",
 		"Unexpected container creation failure. Check Docker daemon status and container configuration."
 }

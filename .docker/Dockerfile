@@ -53,8 +53,8 @@ RUN mkdir -p /app /tmp/analysis && \
 # Copy binary from builder stage
 COPY --from=builder --chown=appuser:appgroup /build/repo-onboarding-copilot /app/
 
-# Copy configuration files if they exist
-COPY --from=builder --chown=appuser:appgroup /build/configs/ /app/configs/ 2>/dev/null || true
+# Copy configuration files
+COPY --from=builder --chown=appuser:appgroup /build/configs/ /app/configs/
 
 # Set working directory
 WORKDIR /app
